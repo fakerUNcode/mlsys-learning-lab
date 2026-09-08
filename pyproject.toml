@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlsys-learning-lab"
+version = "0.1.0"
+description = "Learning projects for CUDA, inference systems and AI compilers"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pytest",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+benchmark = [
+    "pandas",
+    "matplotlib",
+    "seaborn",
+]
+torch = [
+    "torch",
+    "torchvision",
+]
+[tool.setuptools]
+packages = []

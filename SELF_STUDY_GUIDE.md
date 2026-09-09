@@ -172,6 +172,8 @@ git status
 
 详细的名词解释、实测输出、两道验收题及解析见 [reports/stage0_environment.md](reports/stage0_environment.md)。
 
+阶段 0 还要阅读报告第 12 节，完成一次 benchmark 方法练习：明确 warmup、同步位置、重复次数、统计量，以及 kernel 时间和端到端时间的区别。
+
 你需要能解释：Python 虚拟环境、PyTorch、CUDA Runtime、CUDA Toolkit、驱动、`nvcc`、CMake 和 Ninja 分别是什么。
 
 验收：能说清楚“PyTorch 能否使用 GPU”和“系统是否能编译 CUDA 代码”是两个相关但不同的问题。

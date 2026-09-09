@@ -1204,7 +1204,315 @@ torch.cuda.is_available(): True
 
 这只能证明当前驱动和当前 Runtime 兼容，不能证明所有旧驱动都兼容。
 
-## 12. 一张表总结两个问题
+## 12. Benchmark 基础：预热、同步、重复运行与统计
+
+阶段 0 最后要学会回答：
+
+> 一个 CUDA 程序到底跑了多久？这个结果是否可信？
+
+如果不做预热、同步和重复统计，测到的可能是 CUDA 初始化、PTX JIT、内存分配、Python 调度或 CPU 提交时间，而不是 kernel 的稳定执行时间。
+
+### 12.1 先区分四种时间
+
+以 vector_add 为例，一次运行可能包含：
+
+~~~text
+总时间
+├── Python/Host 准备
+├── CUDA Context 初始化
+├── PTX JIT 编译
+├── 显存分配
+├── H2D：CPU → GPU
+├── kernel 执行
+├── D2H：GPU → CPU
+└── 同步与输出
+~~~
+
+| 时间 | 回答的问题 | 常用测量方式 |
+| --- | --- | --- |
+| 首次运行时间 | 冷启动有多慢 | 单独记录 |
+| kernel 时间 | GPU 计算本身多快 | CUDA Event |
+| 端到端时间 | 一次完整请求多快 | CPU 计时 + 同步 |
+| 吞吐 | 单位时间完成多少工作 | 稳定运行后计算 |
+
+kernel 时间和端到端时间不能混成一个数字。
+
+### 12.2 预热 Warmup：让系统进入稳定状态
+
+预热是在正式计时前，先执行若干次相同操作并丢弃结果：
+
+~~~text
+准备相同的输入
+    ↓
+预热 10～100 次，不记录
+    ↓
+正式测量
+~~~
+
+第一次运行可能触发 CUDA Context 创建、动态库加载、PTX JIT、PyTorch 显存分配器建立缓存、GPU 升频、cache 初始化或算法选择。因此第一次通常不是稳定状态。
+
+预热应使用相同的 shape、dtype、device、batch、stream、内存布局和 kernel 参数。工厂类比：预热像开工前启动机器、加热设备、把原料送到工位。
+
+### 12.3 同步 Synchronization：确认 GPU 真的完成
+
+CUDA kernel launch 通常是异步的：
+
+~~~text
+CPU 提交 kernel → 很快返回 → CPU 继续执行
+                              ↓
+                         GPU 仍在计算
+~~~
+
+错误的 CPU 计时：
+
+~~~python
+t0 = time.perf_counter()
+run_kernel()
+t1 = time.perf_counter()
+~~~
+
+可能只测到了 CPU 提交任务的时间。正确的 CPU 计时需要在前后同步：
+
+~~~python
+torch.cuda.synchronize()
+t0 = time.perf_counter()
+
+run_kernel()
+
+torch.cuda.synchronize()
+t1 = time.perf_counter()
+~~~
+
+CUDA Event 更适合测 GPU 时间：
+
+~~~python
+start = torch.cuda.Event(enable_timing=True)
+end = torch.cuda.Event(enable_timing=True)
+
+start.record()
+run_kernel()
+end.record()
+
+end.synchronize()
+elapsed_ms = start.elapsed_time(end)
+~~~
+
+| 方法 | 适合测什么 | 注意事项 |
+| --- | --- | --- |
+| CPU perf_counter + synchronize | 端到端或包含 Host 等待的区间 | 同步会把异步行为变成阻塞 |
+| CUDA Event | GPU stream 上的 kernel 时间 | 不自动包含所有 CPU 和 I/O |
+| profiler | 时间线、kernel 和内存细节 | 有额外开销，适合分析瓶颈 |
+
+工厂类比：同步是等待车间确认“货物真的加工完了”。没有同步，只能测到“下订单”的时间。
+
+### 12.4 重复运行：一次样本不能代表规律
+
+GPU 测量会受到时钟、温度、其他进程、内存缓存和操作系统调度影响。因此正式测量要重复运行：
+
+~~~text
+固定输入和环境
+    ↓
+warmup 次数
+    ↓
+repeat 次数
+    ↓
+保存每次耗时
+    ↓
+计算统计量
+~~~
+
+| 场景 | Warmup | 正式重复 |
+| --- | ---: | ---: |
+| 开发检查 | 10 | 30 |
+| 普通比较 | 20～50 | 100～300 |
+| 报告数据 | 50～100 | 300～1000 |
+
+长时间测量要注意 GPU 过热导致降频；必要时分批运行并记录温度、功耗和时钟。
+
+### 12.5 统计方法：从样本得到结论
+
+假设得到 N 个毫秒样本：
+
+~~~text
+samples = [t1, t2, ..., tN]
+~~~
+
+| 统计量 | 含义 |
+| --- | --- |
+| min | 观测到的最快时间 |
+| mean | 算术平均时间 |
+| median / p50 | 中间样本，对少量异常值更稳定 |
+| p95 | 95% 样本不超过的耗时 |
+| p99 | 99% 样本不超过的耗时 |
+| std | 样本波动程度 |
+| max | 观测到的最慢时间 |
+
+~~~python
+import numpy as np
+
+samples_ms = np.asarray(samples_ms)
+summary = {
+    "min_ms": float(samples_ms.min()),
+    "mean_ms": float(samples_ms.mean()),
+    "p50_ms": float(np.percentile(samples_ms, 50)),
+    "p95_ms": float(np.percentile(samples_ms, 95)),
+    "p99_ms": float(np.percentile(samples_ms, 99)),
+    "std_ms": float(samples_ms.std(ddof=1)),
+}
+~~~
+
+p95 是延迟分布的百分位，不是 95% 置信区间。baseline 和 candidate 必须使用相同输入、GPU、dtype、warmup、repeat、同步规则和计时边界。
+
+~~~text
+speedup = baseline_median_ms / candidate_median_ms
+~~~
+
+speedup 大于 1 且正确性相同，才说明 candidate 在该条件下更快；还要观察 p95、显存和波动。
+
+### 12.6 用 vector_add 做规范测量
+
+N=8 的例子用于理解线程，不适合测性能。性能测试应使用足够大的输入：
+
+~~~python
+import torch
+
+N = 1 << 24
+A = torch.ones(N, device="cuda", dtype=torch.float32)
+B = torch.full_like(A, 2.0)
+
+def run_once():
+    return A + B
+
+expected = A + B
+actual = run_once()
+torch.testing.assert_close(actual, expected)
+
+for _ in range(20):
+    run_once()
+torch.cuda.synchronize()
+
+start = torch.cuda.Event(enable_timing=True)
+end = torch.cuda.Event(enable_timing=True)
+
+start.record()
+for _ in range(100):
+    run_once()
+end.record()
+end.synchronize()
+
+mean_ms = start.elapsed_time(end) / 100
+print(f"mean GPU time: {mean_ms:.3f} ms")
+~~~
+
+这测量的是输入已经位于 GPU、连续执行时 A+B 的平均 device time，不包含完整的 CPU 准备和 D2H。
+
+若测端到端时间，应把 H2D、kernel、D2H 放入同一边界，并在边界两端同步：
+
+~~~python
+import time
+
+torch.cuda.synchronize()
+t0 = time.perf_counter()
+
+A_gpu = A_cpu.to("cuda")
+B_gpu = B_cpu.to("cuda")
+C_gpu = A_gpu + B_gpu
+torch.cuda.synchronize()
+C_cpu = C_gpu.cpu()
+torch.cuda.synchronize()
+
+t1 = time.perf_counter()
+print(f"end-to-end: {(t1 - t0) * 1000:.3f} ms")
+~~~
+
+~~~text
+kernel benchmark：GPU 计算本身
+end-to-end benchmark：一次完整数据路径
+~~~
+
+### 12.7 本项目实测：CPU 与 GPU 的同规模对比
+
+本次使用相同的输入规模、数据类型和计算任务进行对比：
+
+~~~text
+N = 2^24 = 16,777,216
+dtype = float32
+操作 = C = A + B
+correctness = PASS
+~~~
+
+GPU 测试结果：
+
+~~~text
+device: cuda
+warmup: 50
+iterations: 300
+p50_ms: 0.2468
+p95_ms: 0.2717
+p99_ms: 0.2821
+effective_read_write_bandwidth_GB_s: 815.64
+~~~
+
+CPU 测试结果：
+
+~~~text
+device: cpu
+warmup: 20
+iterations: 100
+p50_ms: 2.7744
+p95_ms: 4.5584
+p99_ms: 8.7950
+effective_read_write_bandwidth_GB_s: 72.56
+~~~
+
+按照 P50 延迟计算：
+
+~~~text
+CPU/GPU = 2.7744 / 0.2468 ≈ 11.24
+~~~
+
+因此，在这组输入和测试方法下，GPU 的向量加法约比 CPU 快 11.2 倍；按照有效读写带宽计算，结论也约为 11.2 倍：
+
+~~~text
+815.64 / 72.56 ≈ 11.24
+~~~
+
+这个实验说明向量加法主要受内存访问吞吐影响。每个元素需要读取 A、读取 B、写入 C，计算本身只有一次加法。GPU 能让大量线程并行访问数据，因此在数据规模足够大时具有明显优势。
+
+CPU 的 P95、P99 明显高于 P50，说明部分样本受到操作系统调度、CPU 动态调频、线程竞争或其他后台任务影响。GPU 的 P50、P95、P99 更接近，说明本次 GPU 测试的稳定性更好。
+
+这里的 `effective_read_write_bandwidth_GB_s` 是按照“读取 A + 读取 B + 写入 C”估算出的有效吞吐，不等于硬件标称的理论峰值带宽。CPU 的有效带宽也不能直接理解为 CPU DRAM 的物理带宽，因为数据可能经过 Cache，并且 PyTorch 可能使用了多线程和向量化指令。
+
+两次测试的正式迭代次数不同：GPU 为 300 次，CPU 为 100 次。因此这个结果适合用于阶段 0 的方法学习和数量级比较；如果要进行严格基准发布，应让 CPU 和 GPU 使用完全相同的 warmup、iterations、线程数、进程状态和报告环境。
+
+这次 Benchmark 测量的是输入已经位于目标设备上的 PyTorch `torch.add` kernel，不包含完整的 CPU→GPU H2D、GPU→CPU D2H 和首次 CUDA 初始化时间。因此它回答的是“稳定计算阶段谁更快”，不是“整个应用从输入到输出谁更快”。
+
+### 12.8 Benchmark 报告和验收
+
+报告至少记录：
+
+| 类别 | 内容 |
+| --- | --- |
+| 代码 | Git commit、baseline/candidate |
+| 硬件 | GPU、Compute Capability、显存 |
+| 软件 | 驱动、CUDA Runtime、Toolkit、PyTorch、编译器 |
+| 输入 | shape、dtype、batch、内存布局 |
+| 方法 | warmup、repeat、计时器、同步位置 |
+| 结果 | median、mean、p95、p99、std、显存 |
+| 状态 | 温度、功耗、时钟、后台负载 |
+| 结论 | 哪个实现更快、快多少、在哪些条件成立 |
+
+阶段 0 的验收问题：
+
+1. 为什么第一次 GPU 运行不能直接当作稳定性能？
+2. 为什么 kernel launch 后必须同步，普通 CPU 计时才可信？
+3. CUDA Event 和 CPU perf_counter 分别适合测什么？
+4. 为什么要重复运行并报告 median/p95，而不是只报告一次？
+5. kernel 时间和端到端时间分别包含哪些数据流环节？
+6. 为什么正确性测试必须先于性能测试？
+
+
+## 13. 一张表总结两个问题
 
 | 你要回答的问题 | 主要检查什么 | 检查命令 |
 | --- | --- | --- |
@@ -1221,7 +1529,7 @@ torch.cuda.is_available() 主要回答：能不能运行已有 CUDA 程序？
 nvcc --version 主要回答：有没有 CUDA 编译器？
 ~~~
 
-## 13. 阶段 0 验收
+## 14. 阶段 0 验收
 
 运行：
 
@@ -1246,7 +1554,7 @@ ninja --version
 
 如果你能回答这些问题，阶段 0 就完成了。
 
-## 14. 官方参考资料
+## 15. 官方参考资料
 
 - NVIDIA CUDA Compatibility: Minor Version Compatibility
   https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html

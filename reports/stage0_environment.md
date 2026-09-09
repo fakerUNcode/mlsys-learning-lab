@@ -352,27 +352,108 @@ g++ 是 GNU C++ 编译器的命令行驱动。它把 CPU 侧 C++ 源码变成 CP
 
 它主要用 CPU、RAM 和 SSD 工作：CPU 执行编译器本身，RAM 保存语法树/中间表示，SSD 读源码并写 .o。g++ 不是 GPU 编译器，也不把 Tensor 数值拿去计算。
 
-### 5.3 nvcc：CUDA 编译器驱动，不只是“编译一个 .cu”
+### 5.3 nvcc 与 Device 代码：PTX、SASS、CUBIN、FATBIN
 
-nvcc 是 NVIDIA CUDA Compiler Driver，属于 CUDA Toolkit。它的“driver”在这里是编译器驱动程序，不是显卡驱动。
-
-一个 .cu 文件同时含有 Host 和 Device 代码。nvcc 的关键性质是协调两条编译路径：
+nvcc 是 NVIDIA CUDA Compiler Driver，属于 CUDA Toolkit；这里的 driver 指“编译器调度器”，不是显卡驱动。它把同一个 .cu 文件拆为 Host C++ 和 Device CUDA 两条路径：
 
 ~~~text
-.cu
- ├─ Host C++ 部分 → 交给宿主 C++ 编译器（例如 g++）
- └─ Device CUDA 部分 → CUDA 编译链 → PTX 和/或目标 GPU 机器码
+Host C++  → 交给 g++ 等宿主编译器
+Device CUDA → 生成 PTX 和/或目标 GPU 的原生代码
 ~~~
 
-Device 侧可能得到：
+#### 四个产物，只记各自负责的一层
 
-| 产物 | 定义 | 何时有用 |
-| --- | --- | --- |
-| PTX | NVIDIA 的虚拟 GPU 指令表示 | 可由驱动在目标 GPU 上 JIT 成实际机器码，利于前向兼容 |
-| SASS/cubin | 面向特定 GPU 架构的实际机器码 | 可直接在匹配架构 GPU 上执行 |
-| fatbin | 可容纳多个架构代码/PTX 的容器 | 一个二进制支持多种 GPU 架构 |
+| 名词 | 全称/性质 | 它装的是什么 | 用途 |
+| --- | --- | --- | --- |
+| PTX | Parallel Thread Execution；虚拟 GPU ISA | 与具体 GPU 型号无关的中间指令 | 由驱动在运行时 JIT（just in time 运行时编译） 为原生代码，提供后备兼容性 |
+| SASS | NVIDIA 常称 SASS assembly；原生 GPU 指令 | 面向一个 SM 架构的机器指令 | GPU 直接执行 |
+| CUBIN | CUDA Binary；单一目标架构的设备二进制 | 一个或多个 kernel 的 SASS、参数和元数据 | 供匹配架构的 GPU 直接加载 |
+| FATBIN | Fat Binary；多架构容器 | 多个 CUBIN 和/或 PTX | 让同一程序适配多代 GPU |
 
-把 nvcc 想成“双语项目总编”：它识别哪些语句给 CPU，哪些语句给 GPU；CPU 部分交给 g++，GPU 部分生成 NVIDIA GPU 可执行代码，然后把两边结果装配起来。
+关键区别：
+
+~~~text
+SASS 是“指令本身”
+CUBIN 是“装有某一架构 SASS 的二进制文件”
+FATBIN 是“装有多个架构 CUBIN/PTX 的容器”
+~~~
+
+#### 完整架构图：分支编译，再统一打包
+
+~~~text
+                         编译阶段
+
+vector_add.cu（Host C++ + 一个 Device kernel）
+                         │
+                         ▼
+                       nvcc
+          ┌──────────────┴───────────────────┐
+          │                                  │
+          ▼                                  ▼
+  Host C++ → g++ → CPU 目标代码      同一个 Device kernel
+                                             │
+                    ┌────────────────────────┼────────────────────────┐
+                    ▼                        ▼                        ▼
+              sm_75 CUBIN               sm_89 CUBIN           sm_120 CUBIN
+               （Turing）                 （Ada）              （Blackwell）
+                    │                        │                        │
+                    └────────────────────────┴────────────────────────┘
+                                             │
+                         构建时可选包含：compute_120 PTX（JIT 后备）
+                                             │
+                                             ▼
+                    FATBIN = 多个 CUBIN 和/或 PTX 的容器
+                                             │
+                                             ▼
+                     嵌入 .o，再链接进 .so 或可执行文件
+
+                         运行阶段
+
+           驱动读取当前 GPU 的 Compute Capability
+                         │
+            ┌────────────┴────────────┐
+            ▼                         ▼
+   找到匹配 CUBIN                没有匹配 CUBIN
+   例如 sm_120                  但有兼容 PTX
+            │                         │
+            ▼                         ▼
+      直接执行 SASS          JIT：PTX → 当前 GPU 的 SASS
+                                      │
+                                      ▼
+                                  缓存后执行
+~~~
+
+FATBIN 中的多份代码实现的是同一个 kernel 语义，只是分别针对不同架构优化；它不是“整代 Blackwell/Rubin 的全部指令集合”。这里的“构建时可选包含 PTX”表示开发者决定是否把 PTX 放进发布产物：它不是与 CUBIN 同时执行的第二份程序，而是在没有匹配 CUBIN 时提供给驱动 JIT 的后备表示。
+
+#### 你的 GPU：Compute Capability、compute_120 与 sm_120
+
+当前 RTX 5080 Laptop：
+
+~~~text
+硬件架构：Blackwell
+Compute Capability：12.0
+虚拟编译目标：compute_120 → PTX
+真实编译目标：sm_120 → SASS/CUBIN
+~~~
+
+Compute Capability 是硬件能力版本；sm_120 是 nvcc 为该硬件目标生成原生代码的标签。两块不同型号 GPU 即使都支持 12.0，SM 数量、显存和频率也可以不同。
+
+可用下面的显式配置同时保留原生代码和 PTX 后备：
+
+~~~bash
+nvcc vector_add.cu -o vector_add \
+  -gencode arch=compute_120,code=sm_120 \
+  -gencode arch=compute_120,code=compute_120
+~~~
+
+第一条 gencode 生成 sm_120 的 CUBIN/SASS；第二条保留 compute_120 PTX。运行时驱动优先选择匹配的 CUBIN，只有没有匹配 CUBIN 且 PTX 兼容时才 JIT。
+
+若要单独查看一个 CUBIN，可生成并反汇编：
+
+~~~bash
+nvcc -arch=sm_120 --cubin vector_add.cu -o vector_add_sm120.cubin
+nvdisasm vector_add_sm120.cubin
+~~~
 
 ### 5.4 .o：还不能独立运行的目标文件
 
@@ -406,7 +487,68 @@ kernel.cu  → kernel.o（包含 Host 代码和嵌入的 Device 代码）
 
 ### 5.6 .so 动态库：可以被进程在运行时装载的二进制组件
 
-.so 是 Linux 的 shared object，共享对象/动态库。它是 ELF 二进制格式的一种产物，不是文本文件，也通常不是你在终端直接执行的主程序。
+.so 是 Linux 的 shared object，共享对象/动态库。它是 ==ELF 二进制格式==的一种产物，不是文本文件，也通常不是你在终端直接执行的主程序。
+
+> ELF 的全称是 Executable and Linkable Format，中文常译为“可执行与可链接格式”。
+>
+> 它是 Linux/Unix 系统中保存二进制程序的一种标准文件格式。以下文件通常都是 ELF：
+>
+> ```
+> ./vector_add              # 可执行程序
+> kernel.o                  # 目标文件
+> my_extension.so           # 动态库
+> 某些 .cubin               # CUDA 设备二进制
+> ```
+>
+> 可以把 ELF 想成“二进制程序的标准包装箱”。箱子里不只装机器指令，还会贴上详细标签，告诉系统：
+>
+> ```
+> ELF 文件
+> ├── 文件头：这是哪种架构、什么类型的文件
+> ├── .text：机器指令
+> ├── .data：已初始化的全局变量
+> ├── .bss：未初始化的全局变量
+> ├── 符号表：函数和变量叫什么、在哪里
+> ├── 重定位信息：链接时哪些地址需要修正
+> └── 动态依赖：运行时还需要加载哪些 .so
+> ```
+>
+> 在 CUDA 场景中，一个 CUBIN 常使用 ELF 结构来保存：
+>
+> ```
+> CUBIN
+> ├── kernel 的 SASS 指令
+> ├── kernel 参数与常量
+> ├── 寄存器、共享内存等元数据
+> └── 符号与链接信息
+> ```
+>
+> 你可以查看 Linux 文件是否为 ELF：
+>
+> ```
+> file 某个文件
+> ```
+>
+> 查看 ELF 头和段：
+>
+> ```
+> readelf -h 某个文件
+> readelf -S 某个文件
+> ```
+>
+> 例如：
+>
+> ```
+> file /bin/ls
+> ```
+>
+> 通常会看到类似：
+>
+> ```
+> ELF 64-bit LSB pie executable, x86-64
+> ```
+>
+> 意思是：这是一个 64 位、小端序、x86-64 架构的 Linux ELF 可执行文件。
 
 对 PyTorch extension 来说：
 
@@ -474,449 +616,294 @@ Python import：动态加载 .so
 初学阶段先用独立可执行文件学习 cudaMalloc、cudaMemcpy 和 kernel launch；随后再学习 .so extension，把相同 kernel 接入 PyTorch。两者共享底层 CUDA 思想，差别是入口和封装方式。
 
 
-## 6. 每个环节究竟做什么：计算机科学视角与工厂视角
+## 6. 追踪一次 vector_add.cu：从源文件到输出数值
 
-### 6.1 先分清三种“数据”
+这一节只跟踪一个具体程序。每一步都说明：它处理什么数据、由谁执行、数据去了哪里。
 
-“工具如何处理数据”中的数据，不只指 Tensor 数值。整个系统里有三类完全不同的数据：
+数学规则：
+
+~~~text
+对每个 0 ≤ i < N：
+C[i] = A[i] + B[i]
+~~~
+
+假设本次运行的输入是：
+
+~~~text
+N = 8，dtype = float32
+
+A = [1, 2, 3, 4, 5, 6, 7, 8]
+B = [10, 20, 30, 40, 50, 60, 70, 80]
+预期 C = [11, 22, 33, 44, 55, 66, 77, 88]
+
+float32 每个元素 4 字节；A、B、C 各占 8 × 4 = 32 字节。
+~~~
+
+先区分三种数据：
 
 | 数据类别 | 例子 | 谁处理它 |
 | --- | --- | --- |
-| 构建数据 | .py/.cpp/.cu 源码、头文件、编译参数、目标架构、.o、.so | CMake、Ninja、nvcc、g++、链接器 |
-| 控制数据 | 调用哪个算子、kernel 参数、显存地址、grid/block 大小、stream 顺序 | Python、PyTorch dispatcher、CUDA Runtime、驱动 |
-| 业务数据 | 输入 Tensor、权重、中间结果、输出 Tensor | CPU、RAM、PCIe/共享内存通道、GPU 显存、SM |
+| 源码/构建数据 | vector_add.cu、.o、CUBIN、FATBIN | nvcc、g++、链接器、Ninja |
+| 控制数据 | N、Device 地址、Grid/Block、stream、kernel 参数 | Host、CUDA Runtime、驱动 |
+| 数值数据 | A/B/C 的 float32 字节 | RAM、传输通路、VRAM、GPU SM |
 
-CMake 和 Ninja 处理的是构建数据，不会读取 Tensor 中的 1、2、3。CUDA Runtime 和驱动主要处理控制数据，同时安排业务数据的分配与搬运。GPU 的计算单元才真正读取 Tensor 数值并执行加法或乘法。
+### 6.1 源文件：一份 .cu 写了两种程序
 
-### 6.2 一条统一的人类世界类比
+~~~cpp
+__global__ void vector_add(
+    const float* A, const float* B, float* C, int N) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < N) C[i] = A[i] + B[i];
+}
 
-把 GPU 程序想成一家工厂：
-
-| 计算机组件 | 工厂中的角色 |
-| --- | --- |
-| 你写的 Python/CUDA 源码 | 产品说明和生产工艺设计稿 |
-| Python 虚拟环境 | 这家工厂专用的工具柜，避免和别的工厂混用工具 |
-| CMake | 工程规划员，把设计稿整理成施工/生产计划 |
-| Ninja | 现场调度员，按依赖和顺序安排每一道构建工序 |
-| nvcc 和 g++ | 制造机器的技师，把人能读的源码变成机器能执行的二进制 |
-| 链接器 | 总装工，把多个零部件和库装成一个 .so 成品 |
-| Python 解释器 | 前台业务员，读取用户命令并调用后端能力 |
-| PyTorch | 生产管理系统，知道不同 Tensor 应该调用哪台机器、哪道工序 |
-| CUDA Runtime | 车间主管，申请仓库空间、安排搬运、提交生产任务 |
-| NVIDIA 驱动 | 工厂与具体机器之间的设备控制层，把通用请求变成硬件可执行命令 |
-| CPU 与 RAM | 办公区和普通仓库，负责控制流程并保存主机侧数据 |
-| PCIe/共享内存通路 | 办公区与 GPU 车间之间的运输通道 |
-| GPU 显存 | GPU 车间旁的专用原料仓库 |
-| GPU 的 SM | 并行生产车间，大量线程在这里执行同一种工序 |
-| 终端 print | 出货窗口，把结果转换成人能看到的文字 |
-
-接下来对每一环都用同样的问题解释：
-
-1. 它收到什么？
-2. 它在软件层做什么？
-3. 它使用什么硬件？
-4. 它输出什么？
-5. 它不负责什么？
-
-### 6.3 源代码与编辑器：写下“想做什么”
-
-**计算机科学视角**
-
-源代码是存放在文件系统中的字节。Python 文件描述高级控制逻辑，C++ 文件描述宿主机代码，CUDA 的 .cu 文件还包含 GPU kernel。
-
-保存文件时：
-
-~~~text
-键盘输入
-  ↓
-编辑器在进程内存中维护文本
-  ↓
-操作系统文件系统
-  ↓
-SSD/磁盘保存 UTF-8 字节
+int main() {
+  // Host：分配内存、拷贝数据、启动 kernel、验证结果
+}
 ~~~
 
-**工厂类比**
+| 代码部分 | 谁执行 | 作用 | 工厂类比 |
+| --- | --- | --- | --- |
+| Host C++ | CPU | 准备数据、组织任务、检查结果 | 项目经理 |
+| Device kernel | GPU 线程 | 对不同 i 并行做 A[i]+B[i] | 大量执行同一工序的工人 |
 
-你是产品设计师，源代码是设计稿。设计稿说明产品怎么做，但纸上的设计稿不会自己开动机器。
+编辑器和文件系统此时只把源码字符写入 SSD；还没有 A/B 数值，更没有 GPU 计算。
 
-**输入、处理和输出**
+### 6.2 编译：把源码变成可启动程序
 
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | 人键入的字符 |
-| 软件手段 | VS Code/编辑器、文件系统 API |
-| 硬件手段 | CPU 处理编辑操作，RAM 保存编辑缓冲区，SSD 持久化文件 |
-| 输出 | .py、.cpp、.cu、CMakeLists.txt 等源文件 |
-| 不负责 | 不执行 Tensor 计算，不启动 GPU |
+示例发布命令：
 
-### 6.4 Python 虚拟环境：决定“使用哪套 Python 工具”
+~~~bash
+nvcc vector_add.cu -o vector_add \
+  -gencode arch=compute_75,code=sm_75 \
+  -gencode arch=compute_89,code=sm_89 \
+  -gencode arch=compute_120,code=sm_120 \
+  -gencode arch=compute_120,code=compute_120
+~~~
 
-**计算机科学视角**
-
-虚拟环境本质上是一个目录和一组路径规则。激活 .venv 后，shell 修改 PATH，使 python 和 pip 优先指向项目目录中的可执行文件；Python 再从该环境的 site-packages 查找 PyTorch。
-
-它不是虚拟机，也不模拟一台新电脑。
-
-**工厂类比**
-
-它是本项目上锁的工具柜。A 工厂的扳手不会和 B 工厂不同型号的扳手混在一起。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | shell 命令、PATH、已安装 Python 包 |
-| 软件手段 | shell 环境变量、Python import 搜索路径 |
-| 硬件手段 | CPU 查找路径，SSD 读取解释器和包文件，RAM 装载代码 |
-| 输出 | 确定本次运行使用哪个 Python、PyTorch 和依赖版本 |
-| 不负责 | 不安装 NVIDIA 驱动，不执行 GPU kernel，不代替 CUDA Toolkit |
-
-### 补充环节 A：pip、pyproject.toml 与 setup.py——启动安装或构建
-
-**计算机科学视角**
-
-pip 是 Python 包安装前端。它读取 pyproject.toml，确定需要哪个 build backend 和哪些构建依赖，然后调用后端完成 wheel 或 editable install。老式项目可能直接运行 setup.py；PyTorch extension 的构建逻辑再去调用 CMake/Ninja 或 torch.utils.cpp_extension。
-
-pip 本身不是 C++ 或 CUDA 编译器。它负责启动、组织和安装：
+编译阶段处理源码和二进制产物，不处理本次运行中的 A/B 数值。
 
 ~~~text
-pip install
-  ↓ 读取 pyproject.toml
-选择 build backend
+vector_add.cu
+      │
+      ▼
+nvcc：识别 Host C++ 与 Device CUDA
+      │
+      ├── Host 路径：g++ 编译为 CPU 目标代码
+      │
+      └── Device 路径：同一个 vector_add kernel 生成
+             ├── sm_75 CUBIN：Turing 的 SASS
+             ├── sm_89 CUBIN：Ada 的 SASS
+             ├── sm_120 CUBIN：Blackwell 的 SASS
+             └── compute_120 PTX：JIT 后备
+                      │
+                      ▼
+              FATBIN：装入多个 Device 代码版本
+                      │
+                      ▼
+        .o：Host 目标代码 + 嵌入 FATBIN
+                      │
+                      ▼
+链接器：.o + CUDA Runtime 等库 → vector_add ELF 可执行文件
+~~~
+
+| 工具/产物 | 此时做什么 | 输入 → 输出 | 不做什么 |
+| --- | --- | --- | --- |
+| nvcc | 协调 Host 与 Device 两条编译路径 | .cu → Host 编译输入、PTX/CUBIN | 不执行向量加法 |
+| g++ | 编译 Host 控制逻辑 | Host C++ → CPU 机器码/.o | 不生成 GPU SASS |
+| CUBIN | 某一架构的 GPU 二进制 | kernel 的 SASS + 元数据 | 不是整代 GPU 的全部指令 |
+| PTX | 虚拟 GPU 指令 | kernel 的 JIT 后备表示 | 不是最终原生机器码 |
+| FATBIN | 多架构容器 | CUBIN/PTX → 一个容器 | 不选择当前运行 GPU |
+| 链接器 | 总装并解析符号 | .o + 库 → ELF | 不启动 kernel |
+| CMake/Ninja（若用） | 生成规则/调度命令 | 构建描述 → 调用 nvcc、g++、链接器 | 不处理 Tensor 数值 |
+
+工厂类比：nvcc/g++ 是制造技师，CUBIN 是某型号 GPU 专用零件，FATBIN 是多型号零件箱，链接器是总装部门。
+
+### 6.3 启动程序：驱动选择本机可执行的 Device 代码
+
+执行：
+
+~~~bash
+./vector_add
+~~~
+
+~~~text
+shell
   ↓
-后端生成编译任务
+操作系统创建进程，加载 ELF 和 CUDA Runtime
   ↓
-CMake/Ninja 或直接调用 nvcc/g++
+main() 在 CPU 开始执行
   ↓
-生成 wheel/.so
+Runtime 初始化 CUDA 上下文
   ↓
-复制或链接到 site-packages
-~~~
-
-**工厂类比**
-
-pip 是采购与安装负责人：根据项目清单寻找所需工具，向工程部门下单，最后把制成品登记到本项目的工具柜。setup.py 或 build backend 是具体承办这张订单的项目经理。
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | 包名、源码目录、pyproject.toml/setup.py、安装参数 |
-| 软件手段 | 依赖解析、构建隔离、调用 build backend、安装 wheel |
-| 硬件手段 | CPU 执行安装逻辑；网络下载包；SSD 保存包、缓存和构建产物 |
-| 输出 | site-packages 中的 Python 包、.so、包元数据 |
-| 不负责 | 不自己生成 GPU 指令；没有 Toolkit 时不能凭空代替 nvcc |
-
-
-### 6.5 CMake：把工程描述变成构建计划
-
-**计算机科学视角**
-
-CMake 读取 CMakeLists.txt，检查编译器、库、头文件位置和目标依赖，然后生成 build.ninja 等构建文件。它处理的是“文件与依赖关系”，不是数值计算。
-
-例如它会形成这样的关系：
-
-~~~text
-kernel.cu 变化 → 需要重新调用 nvcc
-binding.cpp 变化 → 需要重新调用 g++
-两个目标完成 → 才能链接 extension.so
-~~~
-
-**工厂类比**
-
-CMake 是工程规划员。它看设计稿和现有设备，写出“先造零件 A，再造零件 B，最后总装”的生产计划。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | CMakeLists.txt、编译器位置、库路径、编译选项 |
-| 软件手段 | 配置检测、依赖图生成、平台适配 |
-| 硬件手段 | CPU 执行 CMake，RAM 保存依赖图，SSD 读写构建文件 |
-| 输出 | build.ninja、缓存和构建规则 |
-| 不负责 | 通常不直接编译源码，不处理 Tensor，不启动 GPU |
-
-### 6.6 Ninja：按计划调度编译命令
-
-**计算机科学视角**
-
-Ninja 读取 build.ninja，比较输入文件和输出文件的时间戳，决定哪些命令需要执行。它可以并行启动多个编译进程，并在依赖完成后启动链接。
-
-**工厂类比**
-
-Ninja 是现场调度员。它不亲自制造零件，而是告诉不同技师“现在编译 A”“等 A、B 都完成后再链接”。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | build.ninja、文件时间戳、目标名称 |
-| 软件手段 | 依赖图遍历、增量构建、并行进程调度 |
-| 硬件手段 | CPU 运行调度逻辑，操作系统创建 nvcc/g++ 进程，SSD 读写产物 |
-| 输出 | 调用编译器后的 .o、.so 或可执行文件 |
-| 不负责 | 不理解 CUDA 数学含义，不处理运行时 Tensor |
-
-### 6.7 nvcc、g++ 与链接器：把源码变成二进制
-
-**计算机科学视角**
-
-一份 CUDA 扩展通常同时包含两部分：
-
-- host code：在 CPU 上运行，由 g++ 等宿主编译器处理；
-- device code：在 GPU 上运行，由 CUDA 工具链处理。
-
-nvcc 是编译器驱动。它协调 CUDA 前端和宿主 C++ 编译器，产生目标代码。GPU 部分可能包含目标 GPU 的机器码 SASS，也可能包含可由驱动继续 JIT 的 PTX。链接器再把目标文件与 PyTorch、Python、CUDA 库的符号连接成 .so。
-
-简化流程：
-
-~~~text
-文本源码
-  ↓ 词法/语法分析
-编译器内部表示
-  ↓ 优化与代码生成
-CPU 机器码 + GPU 代码
-  ↓ 链接
-.so 动态库
-~~~
-
-**工厂类比**
-
-nvcc 和 g++ 是制造技师，把人类设计稿做成机器零件；链接器是总装工，把零件和现成标准件装成可交付设备。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | .cu/.cpp、头文件、宏、优化级别、GPU 架构参数 |
-| 软件手段 | 解析、类型检查、优化、代码生成、符号链接 |
-| 硬件手段 | 编译主要由 CPU 完成；RAM 保存编译器中间结构；SSD 保存 .o/.so |
-| 输出 | CPU 机器码、PTX/SASS、目标文件和动态库 |
-| 不负责 | 编译时通常不拿训练 Tensor 去 GPU 计算；安装 Toolkit 也不等于驱动可用 |
-
-### 补充环节 B：操作系统与动态加载器——创建进程并装入二进制
-
-**计算机科学视角**
-
-shell 解析 python example.py 后，请求操作系统创建 Python 进程。操作系统为进程建立虚拟地址空间、线程、文件描述符和权限。执行 import torch 或 import my_extension 时，Python 与动态加载器把 .so 映射到进程地址空间，并解析它依赖的其他共享库和函数符号。
-
-如果缺少共享库、ABI 不匹配或没有 GPU 设备访问权限，程序可能在尚未计算 Tensor 之前就失败。
-
-**工厂类比**
-
-操作系统是园区管理方：分配厂房、供电、道路和门禁。动态加载器是设备安装队：把已经制造好的机器搬进厂房，接好接口，确认所有配套零件都能找到。
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | 可执行文件、.so、依赖库名称、用户权限、环境变量 |
-| 软件手段 | 进程/虚拟内存管理、文件映射、符号解析、设备权限检查 |
-| 硬件手段 | CPU 执行内核与加载器代码；MMU 建立地址映射；RAM 保存进程页 |
-| 输出 | 可运行的 Python 进程，以及已加载的 PyTorch/extension 代码 |
-| 不负责 | 不理解神经网络数学，不替代 CUDA Runtime 调度 kernel |
-
-
-### 6.8 Python 解释器：执行控制流程
-
-**计算机科学视角**
-
-Python 解释器在 CPU 上读取 Python 代码，将其编译为 Python 字节码或内部表示，然后逐条执行。遇到 PyTorch 调用时，它把 Python 对象和参数交给 PyTorch 的原生扩展。
-
-例如 x + 1 在 Python 层先表达“对 Tensor x 调用加法”，真正的大规模数值循环通常在 PyTorch C++/CUDA 后端完成。
-
-**工厂类比**
-
-Python 是前台业务员。它接收订单、检查流程、通知生产系统，但不会亲自站在 GPU 车间做几百万次乘法。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | .py 文件、命令行参数、Python 对象 |
-| 软件手段 | 解析/字节码执行、函数调用、异常处理、引用管理 |
-| 硬件手段 | CPU 执行解释器，RAM 保存 Python 对象和进程状态 |
-| 输出 | PyTorch API 调用、控制流、最终 Python 对象 |
-| 不负责 | 不直接调度 GPU warp，不直接解释 GPU 机器码 |
-
-### 6.9 PyTorch：理解 Tensor 并选择算子实现
-
-**计算机科学视角**
-
-PyTorch Tensor 不只是数值数组，还带有 shape、dtype、device、stride、存储地址等元数据。执行 x + 1 时，PyTorch 的 dispatcher 根据这些信息选择 CPU、CUDA 或其他后端实现。
-
-PyTorch 还负责：
-
-- 检查或传播 shape/dtype；
-- 管理 Tensor 生命周期；
-- 在训练时建立 autograd 计算图；
-- 调用已编译算子或自定义 extension；
-- 通过 CUDA caching allocator 管理常用显存块。
-
-**工厂类比**
-
-PyTorch 是生产管理系统。它看到订单上写着“CUDA 仓库里的 float32 Tensor”，于是选择 GPU 生产线，而不是 CPU 生产线。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | Tensor 元数据、数据指针、算子名和参数 |
-| 软件手段 | dispatcher、ATen 算子、autograd、内存分配器 |
-| 硬件手段 | CPU 执行调度代码；Tensor 数据可能位于 RAM 或 GPU 显存 |
-| 输出 | 选中的 kernel、输出 Tensor 元数据、运行时调用 |
-| 不负责 | 不代替 NVIDIA 驱动直接控制 GPU 寄存器，不提供完整 nvcc Toolkit |
-
-### 6.10 CUDA Runtime：组织一次 GPU 作业
-
-**计算机科学视角**
-
-CUDA Runtime 提供 cudaMalloc、cudaMemcpy、kernel launch、stream、event 等能力。PyTorch 通常通过这些能力申请显存、安排异步拷贝、把 kernel 参数和启动配置提交给驱动。
-
-Runtime 处理的重点是“控制和资源”：
-
-~~~text
-在哪块显存放数据？
-在哪条 stream 上执行？
-启动多少 block、每个 block 多少 thread？
-任务之间谁先谁后？
-什么时候同步？
-~~~
-
-**工厂类比**
-
-Runtime 是车间主管：分配仓库位置、安排运输车、填写生产任务单、规定任务顺序。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | 数据地址、字节数、kernel 句柄、参数、grid/block、stream |
-| 软件手段 | Runtime API、stream/event、内存与错误管理 |
-| 硬件手段 | CPU 执行 Runtime 库；通过驱动安排 GPU/复制引擎工作 |
-| 输出 | 给驱动的分配、拷贝、启动和同步请求 |
-| 不负责 | 不亲自执行浮点乘法；Runtime 版本不等于系统 nvcc 版本 |
-
-### 6.11 NVIDIA 驱动：把通用 CUDA 请求变成设备命令
-
-**计算机科学视角**
-
-驱动横跨用户态和内核态。用户态 libcuda 接收 Runtime 请求；内核驱动管理 GPU 上下文、页表、权限、命令提交和硬件通信。必要时，驱动还可能把 PTX JIT 编译为当前 GPU 可执行的机器码。
-
-它也是版本兼容判断的核心位置之一。
-
-**工厂类比**
-
-驱动是拥有设备钥匙和安全权限的设备控制中心。车间主管不能直接拧机器寄存器，必须由控制中心把任务单转换为特定型号设备能执行的命令。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | 显存请求、命令队列、kernel 代码、参数、同步请求 |
-| 软件手段 | libcuda、内核驱动、上下文管理、内存映射、可能的 PTX JIT |
-| 硬件手段 | CPU 执行驱动代码；操作系统内核与 GPU 通信 |
-| 输出 | GPU 命令、内存映射、完成事件或错误码 |
-| 不负责 | 不提供 Python API，不等于 CUDA Toolkit |
-
-### 6.12 CPU、RAM 与传输通路：控制和搬运
-
-**计算机科学视角**
-
-CPU 负责运行 Python、PyTorch 调度、Runtime 和大部分驱动代码。RAM 保存 Python 对象、CPU Tensor、源代码和进程状态。独立 GPU 通常通过 PCIe 与主机交换数据；在 WSL 等环境里，虚拟化层会参与设备暴露，但逻辑边界仍是主机内存和 GPU 显存。
-
-数据搬运可能由 GPU copy engine 执行，CPU 负责提交命令，不一定逐字节亲自复制。页锁定内存和异步拷贝可改善传输，但要配合 stream 和生命周期管理。
-
-**工厂类比**
-
-CPU 是办公室，RAM 是普通仓库，PCIe 是运输公路，copy engine 是搬运车辆。
-
-### 6.13 GPU 显存与 GPU 核心：真正处理 Tensor 数值
-
-**计算机科学视角**
-
-GPU 显存保存输入、权重、中间结果和输出。kernel 启动后，GPU 的命令处理器接收任务，SM 将 thread block 分配给 warp。warp scheduler 发射指令，load/store 单元从显存或缓存读取数据，CUDA core/Tensor Core 执行计算，结果再写回寄存器、缓存或显存。
-
-简化的数据路径：
-
-~~~text
-GPU 显存
-  ↓ load/store 与缓存
-SM 中的寄存器/共享内存
-  ↓ CUDA Core 或 Tensor Core
-计算结果
+NVIDIA 驱动检查 GPU、权限和 Compute Capability
   ↓
-GPU 显存
+从 FATBIN 选择可执行的 Device 代码
 ~~~
 
-**工厂类比**
-
-显存是车间旁的原料仓库；SM 是并行车间；warp 是一组同步工作的工人；CUDA Core/Tensor Core 是执行算术的机器。
-
-**输入、处理和输出**
-
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | GPU 地址、kernel 指令、Tensor 数值 |
-| 软件手段 | 已编译 kernel 决定线程索引、访存和计算规则 |
-| 硬件手段 | command processor、SM、warp scheduler、寄存器、缓存、计算核心、显存控制器 |
-| 输出 | 写回 GPU 显存的 Tensor 结果 |
-| 不负责 | GPU 不读取 Python 语法；CMake/Ninja 也不会在此时参与 |
-
-### 6.14 同步、拷回与 print：结果如何变成人能看到的输出
-
-**计算机科学视角**
-
-kernel launch 往往是异步的：CPU 提交任务后可以继续执行。需要结果时，y.cpu() 会要求把 GPU Tensor 拷回 CPU；如果 GPU 尚未完成，相关操作必须等待。随后 PyTorch 创建 CPU Tensor，Python 再把数值格式化为字符串，终端程序把字符绘制到屏幕。
+当前机器是 RTX 5080 Laptop，Compute Capability 为 12.0。驱动的选择逻辑是：
 
 ~~~text
-GPU 结果
-  ↓ 同步
-GPU 显存
-  ↓ D2H 拷贝
-RAM 中的 CPU Tensor
-  ↓ Python/PyTorch 格式化
-字符数据
-  ↓ 终端与图形系统
-屏幕像素
+FATBIN
+  ├── 有 sm_120 CUBIN
+  │     └── 直接加载其中 SASS；通常不需要 JIT
+  │
+  └── 没有 sm_120 CUBIN
+        ├── 有驱动判定兼容的 PTX
+        │     └── JIT：PTX → 本机 GPU 的 SASS → 缓存 → 执行
+        └── 没有兼容 PTX
+              └── 报错：没有可供该 GPU 执行的 Device 代码
 ~~~
 
-**工厂类比**
+一次运行不会把 sm_75、sm_89、sm_120 全部送去 GPU；只会选择当前硬件能执行的一份。
 
-生产完成后，货物从车间仓库运回出货区；文员读取成品、生成发货单，窗口把结果展示给人。
+### 6.4 Host 在 RAM 准备数据，并在 VRAM 预订货架
 
-**输入、处理和输出**
+Host 侧概念代码：
 
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | GPU Tensor 和“我要在 CPU 查看它”的请求 |
-| 软件手段 | stream 同步、D2H copy、Tensor 格式化、终端输出 |
-| 硬件手段 | copy engine/PCIe 搬运，RAM 保存结果，CPU 转换文本，显示设备呈现 |
-| 输出 | CPU Tensor、文件内容或屏幕文字 |
-| 不负责 | print 不是 kernel 的输出位置；kernel 的直接输出通常先在 GPU 显存中 |
+~~~cpp
+size_t bytes = N * sizeof(float);  // 32 bytes
 
-### 6.15 每个工具在哪个时间段出现
+float* h_A = ...;  // Host RAM
+float* h_B = ...;
+float* h_C = ...;
+
+float *d_A, *d_B, *d_C;
+cudaMalloc(&d_A, bytes);
+cudaMalloc(&d_B, bytes);
+cudaMalloc(&d_C, bytes);
+~~~
+
+此刻：
 
 ~~~text
-写代码时：
-编辑器 + 文件系统 + SSD
-
-配置构建时：
-CMake
-
-执行构建时：
-Ninja → nvcc/g++ → 链接器
-
-启动程序时：
-shell → Python 虚拟环境 → Python 解释器 → 动态加载器
-
-执行算子时：
-PyTorch → CUDA Runtime → NVIDIA 驱动 → GPU
-
-得到可见结果时：
-GPU 显存 → 同步/拷贝 → RAM → Python → 终端
+Host RAM                           Device VRAM
+─────────                          ───────────
+h_A → [1,2,3,4,5,6,7,8]            d_A → 已分配，内容未初始化
+h_B → [10,20,30,40,50,60,70,80]    d_B → 已分配，内容未初始化
+h_C → [?, ?, ?, ?, ?, ?, ?, ?]     d_C → 已分配，内容未初始化
 ~~~
 
-必须注意：这些工具并不是每次都全部出现。使用 PyTorch 预编译算子时，CMake、Ninja 和 nvcc 已经在 PyTorch 发布者构建 wheel 时工作过，本机运行时通常不会再次调用它们。
+cudaMalloc 的软件角色是 Runtime 向驱动申请显存；硬件结果是 VRAM 中预留 32 字节。它不会自动复制 h_A 的内容。
 
+工厂类比：RAM 是办公室仓库，VRAM 是 GPU 车间仓库；cudaMalloc 只是预订车间货架。
 
-## 7. 完整数据流：以向量加一为例
+### 6.5 H2D：输入字节从 RAM 搬到 VRAM
+
+~~~cpp
+cudaMemcpy(d_A, h_A, bytes, cudaMemcpyHostToDevice);
+cudaMemcpy(d_B, h_B, bytes, cudaMemcpyHostToDevice);
+~~~
+
+~~~text
+h_A 的 32 字节 ──H2D──→ d_A 的 32 字节
+h_B 的 32 字节 ──H2D──→ d_B 的 32 字节
+~~~
+
+CUDA Runtime 建立复制请求；驱动安排传输通路和 GPU copy engine。它们只搬运字节，不理解“向量”概念；向量长度 N、dtype 和计算语义由程序解释。
+
+### 6.6 发射 kernel：Host 提交控制命令
+
+~~~cpp
+int threads_per_block = 256;
+int blocks_per_grid = (N + threads_per_block - 1) / threads_per_block;
+// N = 8，所以 blocks_per_grid = 1
+
+vector_add<<<blocks_per_grid, threads_per_block>>>(d_A, d_B, d_C, N);
+cudaGetLastError();
+~~~
+
+~~~text
+Grid：1 个 Block
+Block：256 个线程
+启动线程：256
+有效线程：0 到 7
+越界线程：8 到 255；if (i < N) 阻止它们读写
+~~~
+
+Host 提交的是控制数据：
+
+~~~text
+kernel 地址、d_A/d_B/d_C 的 Device 地址、N=8、Grid=1、Block=256、stream
+~~~
+
+驱动把 Block 安排到可用 SM；GPU 将 256 个线程按 warp（通常 32 线程）调度。Host 不会创建 256 个 CPU 线程。
+
+### 6.7 Device 真正完成 A+B：每个合法线程一个元素
+
+kernel 的下标规则：
+
+~~~cpp
+int i = blockIdx.x * blockDim.x + threadIdx.x;
+if (i < N) C[i] = A[i] + B[i];
+~~~
+
+本例中 blockIdx.x 为 0：
+
+| GPU 线程 | threadIdx.x | i | 读取 | 计算 | 写入 |
+| --- | ---: | ---:| --- | --- | --- |
+| thread 0 | 0 | 0 | 1、10 | 1 + 10 = 11 | d_C[0] = 11 |
+| thread 1 | 1 | 1 | 2、20 | 2 + 20 = 22 | d_C[1] = 22 |
+| thread 2 | 2 | 2 | 3、30 | 3 + 30 = 33 | d_C[2] = 33 |
+| ... | ... | ... | ... | ... | ... |
+| thread 7 | 7 | 7 | 8、80 | 8 + 80 = 88 | d_C[7] = 88 |
+| thread 8–255 | 8–255 | 8–255 | 不读取 | 边界判断失败 | 不写入 |
+
+单个合法线程的数据路径：
+
+~~~text
+GPU VRAM 中 d_A[i]、d_B[i]
+        ↓ load/store 单元与缓存
+SM 寄存器
+        ↓ 浮点运算单元
+A[i] + B[i]
+        ↓ store
+GPU VRAM 中 d_C[i]
+~~~
+
+真正执行浮点加法的是 SM 中的计算单元；CMake、Ninja、Runtime、驱动只负责构建、调度、资源和命令，不替代这一步。
+
+### 6.8 D2H、同步、验证：结果变成人能看到的输出
+
+kernel launch 通常异步。Host 发射后，GPU 可能仍在计算；Host 需要结果时必须等待并复制：
+
+~~~cpp
+cudaDeviceSynchronize();
+cudaMemcpy(h_C, d_C, bytes, cudaMemcpyDeviceToHost);
+
+printf("%f\n", h_C[0]);  // 11.0
+cudaFree(d_A);
+cudaFree(d_B);
+cudaFree(d_C);
+~~~
+
+~~~text
+Device VRAM                          Host RAM
+───────────                          ─────────
+d_C → [11,22,33,44,55,66,77,88] ─D2H→ h_C → [11,22,33,44,55,66,77,88]
+                                               ↓
+                                    printf / 文件 / 下一算子
+~~~
+
+| 动作 | 软件层作用 | 硬件层发生什么 |
+| --- | --- | --- |
+| cudaDeviceSynchronize | 等待任务并暴露执行错误 | CPU 等待 GPU 完成 |
+| cudaMemcpy D2H | 请求复制输出 | 32 字节从 VRAM 经传输通路到 RAM |
+| printf | 把 CPU float 格式化为字符 | CPU 产生文本，终端显示 |
+| cudaFree | 归还 Device 分配 | VRAM 可被后续任务复用 |
+
+### 6.9 一句话复盘
+
+~~~text
+编译时：源码变成“CPU 控制代码 + 多架构 GPU 代码”的 ELF 程序。
+运行时：驱动为 RTX 5080 Laptop 选 sm_120 CUBIN；CPU 把 A/B 从 RAM 搬到 VRAM；
+GPU 线程各自计算一个 C[i]；C 再从 VRAM 回到 RAM，最后由 CPU 打印。
+~~~
+
+若改用 PyTorch extension，VRAM、kernel、驱动和 SM 的底层过程不变；变化只是入口从 ./vector_add 变为 Python import 和 PyTorch Tensor API。
+
+## 7. 对照：PyTorch 内置向量加法的运行路径
+
+第 6 节是自己编译并运行 `vector_add.cu`；本节是调用 PyTorch 已有的加法算子。底层的 Runtime、驱动、VRAM、SM 和数据搬运逻辑仍然存在，但 `nvcc`、CMake、Ninja 已在 PyTorch 发布 wheel 时完成工作，通常不会在本机运行时再次出现。
 
 要计算：
 

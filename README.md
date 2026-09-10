@@ -57,7 +57,9 @@ pytest -q
 
 若需要 PyTorch，请按本机 CUDA 驱动和官方安装矩阵安装匹配的 `torch`，再运行自检脚本。完整部署、运行、排障和报告规范见 [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)；知识路线见 [LEARNING_REPORT.md](LEARNING_REPORT.md)。
 
-如果你是 GPU 初学者，请先阅读 [SELF_STUDY_GUIDE.md](SELF_STUDY_GUIDE.md)，按照阶段任务推进，不要直接跳到复杂 kernel 或大模型优化。
+学习路线以 [Infra Introduction.md](Infra%20Introduction.md) 为准。当前阶段是“阶段 1：C++ 与 Linux Runtime”，其目标是为后续 CUDA kernel、PyTorch C++/CUDA 扩展和推理 Runtime 打牢工程基础。
+
+新的阶段化材料统一从 [learning/README.md](learning/README.md) 进入。阶段目录将前置讲解、程序实例和待答练习分开保存；旧资料通过索引收录，原链接保持不变。
 
 ## 目录导航
 
@@ -70,3 +72,4 @@ pytest -q
 - [reports/stage0_environment.md](reports/stage0_environment.md)
 - [scripts/README.md](scripts/README.md)
 - [tests/README.md](tests/README.md)
+- [learning/README.md](learning/README.md)

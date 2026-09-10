@@ -38,9 +38,9 @@ PyTorch C++/CUDA extension 最终通常生成 `.so`。Python 导入它时，动�
 动态库在 Linux 常见为 `.so`。排查命令：
 
 ```bash
-nm -C ./build/stage1_demo
-ldd ./build/stage1_demo
-readelf -d ./build/stage1_demo
+nm -C ./build/stage1/03-modern-types/modern_types_demo
+ldd ./build/stage1/03-modern-types/modern_types_demo
+readelf -d ./build/stage1/03-modern-types/modern_types_demo
 ```
 
 `nm -C` 查看并反修饰 C++ 符号；`ldd` 查看运行时解析到的动态库；`readelf` 直接读取 ELF 元数据。不要对不可信二进制运行 `ldd`。
@@ -63,7 +63,7 @@ Sanitizer 会改变内存布局和速度，因此用于诊断，不用于性能�
 
 ## 程序实例
 
-完整工程见[程序实例](../examples/README.md)。它把实现放在库目标，把入口放在可执行目标，并通过 CTest 检查解析和所有权行为。
+完整工程见[程序实例](../../examples/README.md)。它把实现放在库目标，把入口放在可执行目标，并通过 CTest 检查解析和所有权行为。
 
 ## 部署说明
 

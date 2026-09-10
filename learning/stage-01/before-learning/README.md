@@ -44,9 +44,15 @@ Python 发起算子
 
 | 顺序 | 文档 | 解决的问题 |
 | --- | --- | --- |
-| 1 | [生命所有权](01-lifetime.md) | 谁持有资源，何时释放 |
-| 2 | [泛型与特性](02-generic.md) | 如何写通用且安全的代码 |
-| 3 | [运行与构建](03-runtime.md) | 代码如何成为可运行程序 |
+| 1 | [生命周期](01-lifetime/README.md) | RAII、构造、析构、拷贝和移动 |
+| 2 | [智能指针](02-smart-pointers/README.md) | 独占、共享和观察所有权 |
+| 3 | [STL基础](03-stl/README.md) | 容器、迭代器、算法和 allocator |
+| 4 | [模板特性](04-templates/README.md) | 泛型与类型 traits |
+| 5 | [C++17](05-cpp17/README.md) | optional、variant、view 和绑定 |
+| 6 | [C++20](06-cpp20/README.md) | concept 与协程初识 |
+| 7 | [错误处理](07-errors/README.md) | exception 与 error code |
+| 8 | [ABI链接](08-abi/README.md) | 动态库、符号与链接 |
+| 9 | [构建测试](09-build-test/README.md) | CMake、CTest 与 Sanitizer |
 
 ## 直观理解
 

@@ -1,39 +1,33 @@
-# 程序实例
+# 示例导航
 
-此实例先用纯 C++ 覆盖 RAII、移动、`unique_ptr`、STL、`optional`、`variant`、`string_view`、结构化绑定、CMake、CTest 和 Sanitizer。它不要求本机有 GPU；目的是先练熟将来构建 CUDA/PyTorch extension 时仍会使用的 Host 侧工具链。
+每个目录是一套独立示例，拥有自己的源码、测试和 CMake 目标。顶层 CMake 可以一次构建全部示例。
 
-输入 `1,2,3,4` 可以暂时理解为一组推理任务的规模配置：解析成功后进入执行路径，解析失败则返回结构化错误。后续会把这里的普通整数替换为 Tensor 元数据和 GPU 任务。
+## 示例列表
 
-## 构建运行
+| 编号 | 示例 | 核心知识 | 程序 |
+| --- | --- | --- | --- |
+| 01 | [生命周期](01-lifetime/README.md) | RAII、构造、析构、移动 | `lifetime_demo` |
+| 02 | [智能指针](02-smart-pointers/README.md) | unique/shared/weak | `smart_pointer_demo` |
+| 03 | [现代类型](03-modern-types/README.md) | STL、optional、variant、string_view | `modern_types_demo` |
 
-```bash
-cd learning/stage-01/examples
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
-cmake --build build
-ctest --test-dir build --output-on-failure
-./build/stage1_demo 1,2,3,4
-```
+## 全部构建
 
-## 检查内存
+从仓库根目录执行：
 
 ```bash
-cmake -S . -B build-asan \
+cmake \
+  -S learning/stage-01/examples \
+  -B build/stage1 \
   -DCMAKE_BUILD_TYPE=Debug \
   -DENABLE_SANITIZERS=ON
-cmake --build build-asan
-ctest --test-dir build-asan --output-on-failure
+cmake --build build/stage1
+ctest --test-dir build/stage1 --output-on-failure
 ```
 
-## 查看链接
+## 单独运行
 
 ```bash
-nm -C build/stage1_demo | grep parse_numbers
-ldd build/stage1_demo
-```
-
-## 预期输出
-
-```text
-count=4 sum=10
-status=ok
+./build/stage1/01-lifetime/lifetime_demo
+./build/stage1/02-smart-pointers/smart_pointer_demo
+./build/stage1/03-modern-types/modern_types_demo 1,2,3,4
 ```

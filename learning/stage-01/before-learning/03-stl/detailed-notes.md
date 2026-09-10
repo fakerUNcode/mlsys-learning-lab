@@ -90,7 +90,7 @@ for (const auto& [key, count] : table) {
 
 ## 程序实例
 
-实例工程使用 `vector`、算法、`optional`、`variant`、`string_view`、结构化绑定和 type traits，见[程序实例](../examples/README.md)。
+实例工程使用 `vector`、算法、`optional`、`variant`、`string_view`、结构化绑定和 type traits，见[程序实例](../../examples/README.md)。
 
 ## 部署说明
 

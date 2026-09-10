@@ -1,0 +1,5 @@
+add_executable(smart_pointer_demo src/main.cpp)
+target_link_libraries(smart_pointer_demo PRIVATE stage1_options)
+add_executable(smart_pointer_test tests/smart_pointer_test.cpp)
+target_link_libraries(smart_pointer_test PRIVATE stage1_options)
+add_test(NAME smart_pointer_test COMMAND smart_pointer_test)

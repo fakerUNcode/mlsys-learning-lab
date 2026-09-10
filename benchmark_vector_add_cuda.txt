@@ -1,0 +1,15 @@
+=== vector add benchmark ===
+device: cuda
+dtype: float32
+elements: 16777216
+warmup: 50
+iterations: 300
+correctness: PASS
+min_ms: 0.2262
+mean_ms: 0.2506
+p50_ms: 0.2468
+p95_ms: 0.2717
+p99_ms: 0.2821
+std_ms: 0.0087
+max_ms: 0.2884
+effective_read_write_bandwidth_GB_s: 815.64

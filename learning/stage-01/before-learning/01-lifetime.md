@@ -220,21 +220,24 @@ GPU buffer 通常不能按普通指针做浅拷贝，否则两个对象会对同
 | `shared_ptr<T>` | 多个 | 多方确实需要共同延长寿命 |
 | `weak_ptr<T>` | 0 | 观察共享对象；打破引用环 |
 
-在推理 Runtime 中，可以这样理解：
+“所有权”可以理解为：**谁有责任保证对象活着，以及最终谁负责销毁它。**在推理 Runtime 中，可以这样理解：
 
-- `unique_ptr<GpuBuffer>`：一次请求独占的临时 workspace；
-- `shared_ptr<Model>`：多个并发请求共同使用的只读模型；
-- `weak_ptr<Model>`：模型缓存只观察模型，不因缓存条目而阻止卸载。
+- `unique_ptr`：**只有我需要它**。我活着它就活着，我销毁它也销毁。适合请求内部的临时对象、独占资源。
+- `shared_ptr`：**大家都需要它**。只要还有一个人在用，对象就不能销毁。适合多个线程/请求共享同一个模型。
+- `weak_ptr`：**我想用它，但不负责养着它**。对象可能已经被别人销毁，所以使用前要 `lock()` 检查。适合缓存、观察者。
+
+核心区别：**unique = 独占，shared = 共同负责生命周期，weak = 只使用/观察，不管生命周期。**
 
 设强引用计数为 \(n_s\)。对象销毁条件是：
 
-\[
+$$
 n_s
 \overset{\text{减至零}}{=}
 0
 \Rightarrow_{\text{释放对象}}
 \text{析构对象}
-\]
+$$
+
 
 ## 符号说明
 
@@ -247,12 +250,39 @@ n_s
 ## 程序实例
 
 ```cpp
+// 创建一个 GpuBuffer 对象，并让 owner 独占它
 auto owner = std::make_unique<GpuBuffer>(bytes);
-// auto copy = owner;              // 编译失败：禁止拷贝
-auto next = std::move(owner);      // 所有权转移
+// ↑                   ↑          ↑
+//自动推断类型          类型        构造参数
+//
+// 等价于：
+// std::unique_ptr<GpuBuffer> owner =
+//     std::make_unique<GpuBuffer>(bytes);
 
+// ❌ unique_ptr 不能复制
+// auto copy = owner;
+// 意思是：不能让 copy 和 owner 同时“独占”同一个对象。
+
+
+// 把 owner 的所有权“转让”给 next，这个操作则合法
+auto next = std::move(owner);
+//
+// 转移前：owner ───→ GpuBuffer
+// 转移后：owner → 空
+//         next  ───→ GpuBuffer
+
+// 创建 Model 对象
 auto shared = std::make_shared<Model>(weights_path);
+//
+// shared 的实际类型：std::shared_ptr<Model>
+// shared ───→ Model。Model 可以被多个 shared_ptr 共同拥有
+
+// 创建一个 weak_ptr，用来“观察” shared 指向的 Model
 std::weak_ptr<Model> observer = shared;
+//  ↑         ↑       ↑
+// 类型       Model    变量名
+
+//检查 Model 还活着吗？如果活着，就得到一个临时 shared_ptr，放进 alive
 if (auto alive = observer.lock()) {
   alive->infer(input);
 }
@@ -268,4 +298,4 @@ if (auto alive = observer.lock()) {
 
 ## 直观理解
 
-一块临时显存像只有一把钥匙的 GPU 仓位，交给下个执行阶段后原阶段不能再释放；模型权重像共享仓库，最后一个请求离开才卸载；缓存只是地址簿，不应让旧模型永远占着显存。
+一块临时显存像只有一把钥匙的 GPU 仓位，交给下个执行阶段后原阶段不能再释放；**模型权重（模型推理所需的核心参数数据）**像共享仓库，最后一个请求离开才卸载；缓存只是地址簿，不应让旧模型永远占着显存。

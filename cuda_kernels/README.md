@@ -1,26 +1,43 @@
-# cuda_kernels/
+# CUDA Kernels
 
-## 职责
+从可读 baseline 出发，学习线程映射、内存访问、同步、占用率和 profiler 驱动的 CUDA kernel 优化。
 
-研究 CUDA kernel 从线程映射、内存访问、共享内存、同步、占用率到性能分析的完整链路。每个实验应同时提供可读的 baseline 和有明确假设的优化版本。
+## 当前状态
 
-## 推荐布局
+该模块目前处于规划阶段，尚无可构建的自定义 kernel。已有 CUDA 概念笔记位于 [`Operator-notes/CUDA`](../Operator-notes/CUDA/)，导航见[前置资料](../learning/stage-00/before-learning/README.md)。
+
+## 实验阶梯
+
+1. vector add 与 ReLU；
+2. reduction 与 prefix sum；
+3. transpose 与访存合并；
+4. tiled GEMM；
+5. Softmax、LayerNorm 与融合算子。
+
+每个主题先实现清楚的 baseline，再根据 Nsight 或 benchmark 证据添加优化版本。
+
+## 目录约定
 
 ```text
 cuda_kernels/
 ├── README.md
 ├── <topic>/
 │   ├── kernel.cu
-│   ├── reference.py 或 reference.cpp
+│   ├── reference.py
 │   ├── test_<topic>.py
 │   └── notes.md
-└── CMakeLists.txt（当需要独立 C++ 构建时）
+└── CMakeLists.txt
 ```
 
-## 验证重点
+## 验证要求
 
-先与 NumPy/PyTorch reference 做多形状、多 dtype 比较，再测吞吐和显存。记录 GPU 型号、Compute Capability、block/grid、寄存器、shared memory、occupancy，以及 Nsight Compute/Systems 的关键指标。注意边界条件、非连续 tensor、对齐和错误检查。
+- 与 NumPy 或 PyTorch reference 比较多个 shape 和 dtype。
+- 覆盖空输入、小输入、非整除 block 尺寸和边界索引。
+- 检查每个 CUDA API 与 kernel launch 的错误。
+- 记录 GPU、Compute Capability、grid/block、寄存器和 shared memory。
+- 区分 kernel 时间、传输时间和端到端时间。
+- 使用 profiler 解释 occupancy、访存、分支和 stall。
 
 ## 完成标准
 
-代码能在目标 Compute Capability 上编译，数值误差阈值明确，benchmark 可重复，优化结论有 profiler 证据。
+代码能在声明的 GPU 架构上构建；误差阈值明确；测试和 benchmark 可从仓库根目录运行；优化结论有 baseline 与 profiler 证据。

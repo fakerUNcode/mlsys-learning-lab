@@ -1,26 +1,37 @@
-# pytorch_extensions/
+# PyTorch Extensions
 
-## 职责
+把 C++/CUDA 实现安全地接入 PyTorch，覆盖 Python API、ATen Tensor 检查、构建打包、CPU fallback、CUDA 路径和自动化测试。
 
-存放 PyTorch C++/CUDA extension：从 Python API、ATen tensor 检查、编译打包，到 CPU fallback、CUDA 实现、autograd 和测试。
+## 当前状态
 
-## 推荐布局
+该模块处于设计阶段，尚无可安装扩展。阶段 1 正在准备 C++ 生命周期、ABI、CMake 和错误处理基础，见[阶段 1](../learning/stage-01/README.md)。
+
+## 目录约定
 
 ```text
 pytorch_extensions/
 └── <extension_name>/
-    ├── pyproject.toml 或 setup.py
-    ├── __init__.py
+    ├── pyproject.toml
     ├── binding.cpp
-    ├── kernel.cu / cpu.cpp
+    ├── cpu.cpp
+    ├── kernel.cu
     ├── ops.py
     └── tests/
 ```
 
-## 实现规范
+## 接口约定
 
-检查 device、dtype、shape、contiguous 要求和 stream；不要在库代码中隐式搬运数据。为 CPU/GPU/不同 dtype 设计清晰错误信息，若参与训练则实现并测试 backward。构建时固定编译参数并记录 PyTorch、CUDA、编译器和 Compute Capability。
+- 显式检查 device、dtype、shape、layout 和 contiguous 要求。
+- 遵循 PyTorch 当前 stream，不在库代码中隐式搬运 Tensor。
+- 检查 CUDA API 和 kernel launch 错误，并转换为清楚的上层错误。
+- 若算子参与训练，需要实现并测试 backward。
+- 记录 PyTorch、CUDA、编译器、ABI 和 Compute Capability。
+- Python 引用、C++ 对象和 Device buffer 的所有权必须清楚。
+
+## 验证矩阵
+
+至少覆盖 CPU、CUDA、支持的 dtype、典型与边界 shape、非连续输入、错误输入和梯度检查。无 GPU 环境应明确 skip GPU 测试。
 
 ## 完成标准
 
-可 editable install、可 import、CPU fallback 可用、GPU 路径有数值与梯度测试，并能在干净环境中重建。
+扩展可以 editable install 和 import；CPU fallback 与 GPU 路径结果一致；错误信息可操作；可在干净环境重建；性能结论包含 PyTorch reference 和完整环境。

@@ -1,75 +1,118 @@
 # MLSys Learning Lab
 
-统一的机器学习系统学习与实验仓库，覆盖 GPU/CUDA kernel、PyTorch C++/CUDA 扩展、推理系统、编译器和性能基准。仓库的目标不是只收集代码，而是让每个实验都能被复现、测量、解释和沉淀为报告。
+一个以证据驱动方式学习机器学习系统的实验仓库，覆盖 C++/Linux Runtime、CUDA kernel、PyTorch 扩展、推理系统、性能基准与 AI 编译器。
 
-## 当前状态与还剩哪些任务
+> 项目正在持续建设。目前处于阶段 1：C++ 与 Linux Runtime。目录存在不代表对应实现已经完成，请以各模块的“当前状态”为准。
 
-仓库骨架、Python 项目配置、环境自检脚本和模块级文档已建立。当前仍需按个人学习路线逐步补齐可运行实验：
+## 项目目标
 
-1. 在 `benchmarks/` 建立统一的输入规模、warmup、重复次数、计时同步和结果保存规范。
-2. 在 `cuda_kernels/` 完成至少一个 baseline kernel 与一个优化版本，并记录 occupancy、带宽、访存和正确性结果。
-3. 在 `pytorch_extensions/` 完成一个可安装、可测试的 C++/CUDA extension，覆盖 CPU fallback 与错误处理。
-4. 在 `inference/` 建立端到端推理基线，测量 latency、throughput、显存和 batch size 的关系。
-5. 在 `compiler/` 选择一个编译器/IR 实验（如 FX、TorchInductor、Triton 或 MLIR），保存 IR、优化前后代码和分析。
-6. 为以上模块补充 `tests/` 中的单元测试、数值校验和最小 CI；必要时增加真实 GPU 测试标记。
-7. 在 `reports/` 逐项写实验报告，记录硬件、软件版本、命令、原始结果、结论和下一步。
-8. 在真实 NVIDIA 环境执行 `bash scripts/check_environment.sh`，把输出作为每次实验的环境快照。
-
-这里的“完成”标准是：代码能运行、结果能复现、基线有对照、结论有数据，而不是目录中仅有示例文件。
-
-## 建立文件大纲与项目总架构
+这里不只收集代码或笔记。每个实验都应形成一条可复现的证据链：
 
 ```text
-mlsys-learning-lab/
-├── benchmarks/              # 基准测试、计时工具、结果格式与实验矩阵
-├── cuda_kernels/             # CUDA kernel、launch 配置、正确性与性能实验
-├── pytorch_extensions/       # PyTorch C++/CUDA extension 与 Python 封装
-├── inference/                # 模型推理、服务化、batch/精度/显存实验
-├── compiler/                 # 图捕获、IR、算子融合、代码生成与编译实验
-├── reports/                  # 各实验报告、原始结果和复盘材料
-├── scripts/                  # 环境检查、运行、汇总和自动化脚本
-├── tests/                    # 跨模块测试与回归测试
-├── pyproject.toml            # Python 版本、依赖和构建元数据
-├── DEPLOYMENT_GUIDE.md       # 项目介绍、安装部署和运行手册
-├── LEARNING_REPORT.md        # 相关知识点的系统学习报告
-└── README.md                 # 总览、架构、剩余任务和导航
+问题与假设 → baseline → 正确性测试 → 性能测量 → profiler 证据 → 结论与复盘
 ```
 
-## 全局工作流
+长期主线为 C++/Linux → CUDA → PyTorch/Triton → LLM 推理 → AI Infra → LLVM/MLIR。完整规划见 [Infra 学习指南](Infra%20Introduction.md)，当前讲义从 [learning/README.md](learning/README.md) 进入。
 
-```text
-环境自检 → 选择问题与 baseline → 实现 → 正确性验证 → 性能测量
-    ↑                                             ↓
-报告复现 ← 保存命令/版本/数据/图表 ← 分析瓶颈与优化假设
-```
+## 当前状态
 
-各模块 README 给出该目录的职责、推荐文件布局、输入输出、验证指标和完成标准。跨模块的公共约定是：先保证正确性，再做性能优化；所有 GPU 计时都要同步；所有结论都要带硬件、软件版本和运行参数。
+| 模块 | 状态 | 当前内容 |
+| --- | --- | --- |
+| 学习材料 | 进行中 | 阶段 0 索引、阶段 1 C++ 讲义与示例 |
+| 环境检查 | 可用 | GPU、CUDA、PyTorch、编译器和 Git 快照 |
+| Benchmark | 初版可用 | PyTorch CPU/GPU 向量加法基准 |
+| CUDA kernel | 规划中 | 文档骨架与既有 CUDA 专题笔记 |
+| PyTorch 扩展 | 规划中 | 接口和验证约定 |
+| 推理系统 | 规划中 | 指标与目录约定 |
+| 编译器实验 | 规划中 | 图、IR 和 Pass 实验约定 |
 
 ## 快速开始
 
+要求 Python 3.10+。GPU 实验还需要兼容的 NVIDIA 驱动；只有编译 CUDA 源码时才要求完整 CUDA Toolkit。
+
 ```bash
+git clone git@github.com:fakerUNcode/mlsys-learning-lab.git
+cd mlsys-learning-lab
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[benchmark]'
 bash scripts/check_environment.sh --purpose=bootstrap
-pytest -q
+python benchmarks/benchmark_vector_add.py \
+  --device cpu --n 1024 --warmup 1 --iters 2
 ```
 
-若需要 PyTorch，请按本机 CUDA 驱动和官方安装矩阵安装匹配的 `torch`，再运行自检脚本。完整部署、运行、排障和报告规范见 [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)；知识路线见 [LEARNING_REPORT.md](LEARNING_REPORT.md)。
+PyTorch 相关依赖可用 `python -m pip install -e '.[torch,benchmark]'` 安装。CUDA wheel 需要按本机环境选择，详见[部署指南](DEPLOYMENT_GUIDE.md)。
 
-学习路线以 [Infra Introduction.md](Infra%20Introduction.md) 为准。当前阶段是“阶段 1：C++ 与 Linux Runtime”，其目标是为后续 CUDA kernel、PyTorch C++/CUDA 扩展和推理 Runtime 打牢工程基础。
+## 首个实验
 
-新的阶段化材料统一从 [learning/README.md](learning/README.md) 进入。阶段目录将前置讲解、程序实例和待答练习分开保存；旧资料通过索引收录，原链接保持不变。
+无 GPU 时先运行 CPU 路径：
 
-## 目录导航
+```bash
+python benchmarks/benchmark_vector_add.py \
+  --device cpu --n 1048576 --warmup 5 --iters 20
+```
 
-- [benchmarks/README.md](benchmarks/README.md)
-- [cuda_kernels/README.md](cuda_kernels/README.md)
-- [pytorch_extensions/README.md](pytorch_extensions/README.md)
-- [inference/README.md](inference/README.md)
-- [compiler/README.md](compiler/README.md)
-- [reports/README.md](reports/README.md)
-- [reports/stage0_environment.md](reports/stage0_environment.md)
-- [scripts/README.md](scripts/README.md)
-- [tests/README.md](tests/README.md)
-- [learning/README.md](learning/README.md)
+有可用 NVIDIA GPU 和 CUDA 版 PyTorch 时：
+
+```bash
+python benchmarks/benchmark_vector_add.py \
+  --device cuda --n 16777216 --warmup 20 --iters 100
+```
+
+## 项目结构
+
+| 路径 | 内容 | 文档 |
+| --- | --- | --- |
+| `learning/` | 分阶段讲义、实例与练习 | [学习入口](learning/README.md) |
+| `benchmarks/` | 计时、输入矩阵和结果规范 | [基准测试](benchmarks/README.md) |
+| `cuda_kernels/` | CUDA kernel 与性能实验 | [CUDA 算子](cuda_kernels/README.md) |
+| `pytorch_extensions/` | C++/CUDA extension | [PyTorch 扩展](pytorch_extensions/README.md) |
+| `inference/` | 模型执行与服务性能 | [推理实验](inference/README.md) |
+| `compiler/` | 图、IR、Pass 与代码生成 | [编译器实验](compiler/README.md) |
+| `tests/` | 跨模块回归测试 | [测试约定](tests/README.md) |
+| `reports/` | 环境、数据与实验结论 | [报告规范](reports/README.md) |
+| `scripts/` | 环境检查与自动化入口 | [脚本说明](scripts/README.md) |
+| `Operator-notes/` | 既有 CUDA 专题笔记 | [阶段 0 索引](learning/stage-00/before-learning/README.md) |
+
+## 实验规范
+
+- 先验证正确性，再讨论性能。
+- GPU 计时必须处理异步执行，区分 device time 与端到端时间。
+- 测量前 warmup，多次采样，并报告统计量而非单次最好结果。
+- 记录输入、随机种子、硬件、驱动、依赖、编译选项和 Git commit。
+- 优化同时保留 baseline，并说明收益、代价与适用边界。
+- 不提交大型权重、构建产物和原始 profiler 文件；报告中保留复现方法。
+
+## 参与方式
+
+欢迎通过 Issue 提交可复现的问题、实验建议或资料纠错。代码贡献应保持单一主题，并包含背景、根目录运行命令、正确性测试；性能改动还需包含 baseline、环境和原始指标。
+
+提交前至少运行：
+
+```bash
+git diff --check
+python benchmarks/benchmark_vector_add.py \
+  --device cpu --n 1024 --warmup 1 --iters 2
+```
+
+Python 测试加入后，统一入口为 `pytest -q`；当前仓库尚未收集到 Python 测试。
+
+涉及阶段 1 C++ 示例时，再运行：
+
+```bash
+cmake -S learning/stage-01/examples \
+  -B /tmp/mlsys-stage1-build -DENABLE_SANITIZERS=ON
+cmake --build /tmp/mlsys-stage1-build
+ctest --test-dir /tmp/mlsys-stage1-build --output-on-failure
+```
+
+## 路线文档
+
+- [Infra 学习指南](Infra%20Introduction.md)：阶段路线与验收标准。
+- [学习入口](learning/README.md)：当前阶段化材料。
+- [部署指南](DEPLOYMENT_GUIDE.md)：安装、运行与排障。
+- [学习报告](LEARNING_REPORT.md)：已有知识总结。
+
+## 许可状态
+
+仓库目前尚未添加开源许可证。在许可证明确前，源码可公开阅读，但复用、分发和衍生使用不应被默认视为已授权。

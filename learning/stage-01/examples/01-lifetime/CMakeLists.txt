@@ -1,0 +1,5 @@
+add_executable(lifetime_demo src/main.cpp)
+target_link_libraries(lifetime_demo PRIVATE stage1_options)
+add_executable(lifetime_test tests/lifetime_test.cpp)
+target_link_libraries(lifetime_test PRIVATE stage1_options)
+add_test(NAME lifetime_test COMMAND lifetime_test)

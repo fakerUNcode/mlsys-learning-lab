@@ -1,4 +1,4 @@
-# 生命所有权
+# 生命周期
 
 ## 前置基础
 
@@ -290,7 +290,7 @@ if (auto alive = observer.lock()) {
 
 这里的 `GpuBuffer` 与 `Model` 表示后续项目要实现的资源类，用来展示所有权关系，不属于本阶段可执行示例中的真实 CUDA 类型。
 
-完整可运行版本见[程序实例](../examples/README.md)。
+可运行版本见[生命周期示例](../../examples/01-lifetime/README.md)和[指针示例](../../examples/02-smart-pointers/README.md)。
 
 ## 部署说明
 

@@ -33,10 +33,16 @@ allocator、concept、协程和复杂 ABI 只要求能读懂、能查询。通�
 ## 学习顺序
 
 1. [前置总览](before-learning/README.md)
-2. [生命所有权](before-learning/01-lifetime.md)
-3. [泛型与特性](before-learning/02-generic.md)
-4. [运行与构建](before-learning/03-runtime.md)
-5. [程序实例](examples/README.md)
-6. [练习测评](exercises/README.md)
+2. [生命周期](before-learning/01-lifetime/README.md)
+3. [智能指针](before-learning/02-smart-pointers/README.md)
+4. [STL基础](before-learning/03-stl/README.md)
+5. [模板特性](before-learning/04-templates/README.md)
+6. [C++17](before-learning/05-cpp17/README.md)
+7. [C++20](before-learning/06-cpp20/README.md)
+8. [错误处理](before-learning/07-errors/README.md)
+9. [ABI链接](before-learning/08-abi/README.md)
+10. [构建测试](before-learning/09-build-test/README.md)
+11. [程序实例](examples/README.md)
+12. [练习测评](exercises/README.md)
 
 练习页不含答案。提交你的答案后，再逐步批改与评分。

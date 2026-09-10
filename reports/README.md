@@ -2,17 +2,26 @@
 
 保存环境快照、实验方法、原始证据和结论，使其他读者可以复现实验并判断结论是否成立。
 
-## 当前内容
+## 阶段导航
 
-- [阶段 0 环境报告](stage0_environment.md)：解释驱动、CUDA Runtime、Toolkit、nvcc、CMake 与 PyTorch 的关系。
+| 阶段 | 状态 | 报告 |
+| --- | --- | --- |
+| 阶段 0 | 已有 | [环境报告](stage0_environment.md) |
+| 阶段 1 | 进行中 | [C++ 实验](stage-01/README.md) |
+
+阶段 0 的旧报告保留在原位置，避免已有链接失效。从阶段 1 起，每个阶段建立独立目录，并按实验章节拆分。
 
 ## 文件约定
 
 ```text
 reports/
 ├── README.md
-├── stage0_environment.md
-├── <YYYY-MM-DD>-<topic>.md
+├── stage0_environment.md        # 旧报告，保留路径
+├── stage-01/
+│   ├── README.md                # 阶段索引
+│   └── <NN>-<chapter>.md        # 分章报告
+├── stage-<NN>/
+│   └── <YYYY-MM-DD>-<topic>/    # 后续复杂实验可独立建目录
 ├── figures/
 └── data/
 ```

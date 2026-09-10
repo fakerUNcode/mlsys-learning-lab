@@ -1,691 +1,487 @@
 # Infra学习指南
 
-> 适用对象：已经具备 Python、深度学习基础、C/Linux 基础、后端开发经验，并开始学习 CUDA/Triton，希望进入推理系统、AI 性能工程、Runtime 或 AI 编译器方向的学习者。
+面向准备进入 AI Infra、CUDA 算子、推理优化或 ML Systems 方向的学习者。本路线将目标拆成两个时期：实习前建立可投递的核心能力，实习后再扩展到训推系统、分布式、编译器和硬件。
+
+> 当前阶段：阶段 1，C++ 必需基础。
 >
-> 编写时间：2026-09-08
+> 预计投递：约一年后。
 >
-> 总体目标：在 9～15 个月内形成一条可验证的能力链：
->
-> **模型/框架 → 计算图 → 算子 → CUDA/Triton → Runtime/调度 → 推理服务 → Profiling/性能优化 → LLVM/MLIR 编译**
+> 优先方向：CUDA、量化、并行计算。
 
-推荐主线为：
+## 路线原则
 
-> **C++/Linux 工程 → CUDA 性能闭环 → PyTorch 扩展 → Transformer 推理 → 分布式/服务化 → 编译原理 → LLVM/MLIR → 综合项目**
+“从模型到芯片”是长期方向，不是实习前必须完成的清单。实习前只追求一条短而完整的能力链：
 
-强化学习、GAN、传统 CNN 细节、NAS 等内容暂时放在支线。只保留能够帮助你理解模型推理、量化、算子和系统负载的部分。
+```text
+C++ 最低闭环
+→ GPU 并行模型
+→ CUDA 算子
+→ Nsight 分析
+→ PyTorch/Triton 接入
+→ 推理量化
+→ 综合项目
+```
 
-##  学习与验收总原则
+每个阶段必须留下四类证据：
 
-每个阶段都必须留下四类证据：
+1. **代码证据**：能够构建、运行和测试；
+2. **数据证据**：包含 benchmark、profiling 或误差数据；
+3. **解释证据**：说明瓶颈、取舍和失败实验；
+4. **复现证据**：记录环境、命令、版本、硬件和 Git commit。
 
-1. **代码证据**：可构建、可运行、可测试的仓库；
-2. **数据证据**：Benchmark、Profiling、资源占用、正确率；
-3. **解释证据**：一篇说明瓶颈、设计取舍和失败实验的技术文档；
-4. **复现证据**：固定环境、启动命令、版本、硬件型号和结果。
+不以“看完课程”作为完成标准。完成意味着能够独立实现简化版本、解释运行过程、用工具定位问题，并在输入或约束改变时调整方案。
 
-不要用“看完视频/读完源码”作为完成标准。完成标准应是：
+## 双段总览
 
-> 能够独立实现一个简化版本，能解释它为什么这样工作，能用工具证明瓶颈，并能在限制条件变化时做出合理修改。
+| 时期 | 目标 | 主要成果 |
+| --- | --- | --- |
+| 实习前 | 获得 CUDA/推理优化岗位所需的核心实践能力 | CUDA 算子、PyTorch 扩展、量化实验、作品集 |
+| 实习后 | 从局部算子深入完整 ML Systems | 训推 Runtime、分布式、编译系统、硬件协同 |
 
-所有性能数据都必须注明：GPU 型号、驱动/CUDA 版本、编译选项、输入规模、数据类型、预热次数、重复次数和统计方式。不同 GPU 的绝对数值不能直接比较，应优先比较同一环境下的相对提升。
+# 实习前
+
+建议用 10 个月完成主体学习，保留最后 2 个月用于项目打磨、复习和投递。时间是上限参考；达到验收线后即可进入下一阶段。
 
 ## 阶段总览
 
-| 阶段 | 建议用时 | 核心产出 | 通过标志 |
-|---|---:|---|---|
-| 0. 环境与基线 | 1 周 | 可复现实验环境和性能基线 | 能独立定位环境/版本问题 |
-| 1. C++ 与 Linux Runtime | 6～8 周 | 线程池、任务队列、简易 RPC/执行器 | 能定位内存、线程、锁和 IO 问题 |
-| 2. 体系结构与并行性能 | 3～4 周 | CPU/GPU microbenchmark | 能判断 compute-bound/memory-bound |
-| 3. CUDA 性能工程 | 8～10 周 | GEMM、Reduce、Softmax、LayerNorm、Attention | 能用 Nsight 解释优化收益 |
-| 4. PyTorch/Triton 算子集成 | 4～6 周 | C++/CUDA Extension + Triton kernel | 正确性、autograd/编译兼容和性能均达标 |
-| 5. LLM 推理系统 | 8～10 周 | vLLM/SGLang 压测与改造项目 | 能分析 TTFT、TPOT、吞吐、P99 和 KV Cache |
-| 6. AI Infra 与分布式 | 6～8 周 | 服务化、监控、限流、故障恢复 | 能稳定运行并解释资源/故障行为 |
-| 7. 编译原理与 LLVM | 6～8 周 | 小型表达式/张量编译器 | 能读写 AST、IR、SSA 和 Pass |
-| 8. MLIR/图编译 | 8～12 周 | MLIR Dialect/Pass/Lowering 项目 | 能完成一个端到端 lowering |
-| 9. 综合作品集 | 4～6 周 | 端到端推理优化项目 | 可作为简历和面试主项目 |
+| 阶段 | 用时 | 核心产出 | 通过标志 |
+| --- | ---: | --- | --- |
+| 0. 工具基线 | 1～2 周 | 环境快照与可信 benchmark | 能定位环境和计时问题 |
+| 1. C++必需 | 3～4 周 | GPU 资源包装与 C++ 小项目 | 能解释生命周期、构建和错误 |
+| 2. 并行基础 | 3～4 周 | CPU/GPU microbenchmark | 能判断主要性能限制 |
+| 3. CUDA核心 | 6～8 周 | Vector Add、Reduce、Transpose | 能独立写对并测准 kernel |
+| 4. 算子优化 | 6～8 周 | Softmax、Norm 与 GEMM 教学版 | 能用 Nsight 解释收益 |
+| 5. 框架接入 | 4～5 周 | PyTorch 扩展与 Triton 对照 | 算子可安装、测试和调用 |
+| 6. 推理量化 | 5～6 周 | INT8/PTQ 实验与误差报告 | 能解释精度和性能取舍 |
+| 7. 主线项目 | 6～8 周 | 完整 CUDA 推理算子项目 | 可作为简历主项目 |
+| 8. 投递准备 | 4～6 周 | 简历、讲稿和面试复盘 | 能清楚讲述设计与证据 |
 
-##  阶段 0：环境、基线与工作方法
+总用时约 38～51 周。阶段可以重叠少量复习，但同一时期只保留一个主项目。
 
-### 需要学习
+## 阶段0
 
-- Linux/WSL 下的 CUDA、编译器、CMake、Python 虚拟环境；
-- Git 分支、tag、子模块和可复现构建；
-- Docker 基础；
-- `nvidia-smi`、CUDA Toolkit、PyTorch CUDA 版本的关系；
-- Benchmark 的预热、同步、重复运行和统计方法。
+目标：让实验可以复现，并建立正确的性能测量习惯。
 
-### 必做事情
+### 必学
 
-建立一个统一仓库，例如 `mlsys-learning-lab`，目录至少包括：
+- Linux/WSL、Git、Python 虚拟环境；
+- NVIDIA 驱动、CUDA Runtime、Toolkit 和 PyTorch CUDA 的关系；
+- CMake、Ninja、`nvcc` 的职责；
+- warmup、同步、重复采样和统计量；
+- CPU wall time、CUDA Event 和 profiler 时间的区别。
 
-```text
-benchmarks/
-cuda_kernels/
-pytorch_extensions/
-inference/
-compiler/
-reports/
-scripts/
-environment.yml or pyproject.toml
-README.md
-```
+### 产出
 
-完成一个环境自检脚本，输出：
+- 一条命令输出硬件、驱动、CUDA、PyTorch、编译器和 commit；
+- CPU/GPU Vector Add benchmark；
+- 一份环境和计时报告。
 
-- GPU 名称、Compute Capability、显存；
-- 驱动和 CUDA Runtime 版本；
-- PyTorch 版本、CUDA 是否可用；
-- 编译器、CMake、Ninja 版本；
-- 当前 Git commit 和运行参数。
+### 验收
 
-### 注意事项
+- 能解释“PyTorch 可用 GPU”和“本机可编译 CUDA”为什么不同；
+- 性能数字能追溯到输入、环境、命令和代码版本；
+- 能发现未同步造成的错误计时。
 
-- 不要只记录“CUDA 版本”，还要记录 driver、PyTorch wheel 和 GPU 架构；
-- kernel 计时时必须使用 CUDA Event 或 Nsight，不要直接用 CPU wall clock 包住异步调用；
-- 所有实验至少预热 10～50 次，再重复 100～1000 次；
-- 对延迟同时报告 mean、median、P95/P99，避免只报告一个最好成绩。
+## 阶段1
 
-### 达标线
+目标：只学习 CUDA Host 代码与 PyTorch 扩展真正需要的 C++。
 
-- 新机器或新环境能在 30 分钟内完成安装；
-- 一条命令能跑通正确性测试和 benchmark；
-- 任何结果都能追溯到 commit、硬件、版本和参数；
-- 能解释 CPU 计时、CUDA Event 计时和 profiler 结果为什么不同。
+### 必学
 
-## 阶段 1：C++ 与 Linux Runtime
+- RAII、对象生命周期、拷贝与移动；
+- `unique_ptr`、`shared_ptr`、`weak_ptr`；
+- `vector`、`map`、迭代器和常用算法；
+- 模板、泛型和类型 traits 的阅读能力；
+- `optional`、`variant`、`string_view`、结构化绑定；
+- exception、error code 和 CUDA 错误边界；
+- ABI、动态库、符号、CMake、CTest 和 Sanitizer。
 
-###  C++ 知识清单
+> 注：`map`/`unordered_map` 根据任务选用。学习重点是容器语义，不是背诵全部 STL API。
 
-- RAII、对象生命周期、拷贝/移动构造；
-- `unique_ptr`、`shared_ptr`、`weak_ptr` 的使用边界；
-- STL 容器、迭代器、算法和 allocator 基础；
-- 模板、泛型编程和类型 traits；
-- C++17：`optional`、`variant`、`string_view`、结构化绑定；
-- C++20：concept、协程只需初步了解；
-- exception 与 error code 的取舍；
-- ABI、动态库、符号和链接；
-- CMake、单元测试、Sanitizer。
+### 略学
 
-###  Linux 与并发知识清单
+- allocator 的职责和内存池思想；
+- C++20 concept 的接口约束；
+- 协程的暂停与恢复模型；
+- ABI 的常见兼容风险。
 
-- 进程、线程、虚拟内存、页表、mmap；
-- 文件描述符、阻塞/非阻塞 IO、epoll；
-- mutex、condition variable、semaphore、spinlock、atomic；
-- false sharing、cache line、锁竞争；
-- TCP、HTTP、RPC 和超时；
-- `gdb`、`strace`、`perf`、AddressSanitizer、ThreadSanitizer。
+略学内容只需“能读懂、能查资料”，暂不自行实现复杂 allocator 或协程框架。
 
-###  必做项目：C++ 异步执行器
+### 暂缓
 
-实现一个可复用的异步执行器，功能按顺序增加：
+- 通用 RPC 框架；
+- 完整线程池和复杂任务取消；
+- 网络服务治理；
+- 模板元编程技巧题。
 
-1. 固定大小线程池；
-2. 有界任务队列；
-3. `submit()` 返回 Future；
-4. 优雅停止和任务取消；
-5. 超时、重试和任务优先级；
-6. 指标：队列长度、活跃线程、成功/失败数、任务等待时间；
-7. 一个简单的 HTTP/RPC 入口；
-8. 用 C++ 执行矩阵乘或模拟推理任务。
+### 产出
 
-### 注意事项
+实现一个小型 C++ GPU 资源模型：用 RAII 模拟或包装 Buffer、Stream、Event 的所有权，支持移动、错误传播、单元测试和 Sanitizer 构建。
 
-- 队列满时必须定义行为：阻塞、拒绝或丢弃，不能静默覆盖；
-- 停止流程必须考虑生产者、消费者和正在执行的任务；
-- 不要用 `detach()` 逃避生命周期管理；
-- 记录任务等待时间与执行时间，二者是不同瓶颈；
-- 用 TSan 检查数据竞争，用 ASan 检查越界和 use-after-free；
-- 用 `perf` 验证锁竞争，而不是凭感觉优化。
+### 验收
 
-### 达标线
+- 能解释 GPU buffer 为什么通常禁止浅拷贝；
+- 能为 workspace、共享模型和模型缓存选择智能指针；
+- 能排查一次 `.so` 缺失符号或动态库查找问题；
+- CTest、ASan 和 UBSan 通过。
 
-- 单元测试覆盖正常、满队列、超时、停止、异常任务等情况；
-- 通过 ASan、TSan；
-- 能解释线程数增加后吞吐为何不一定增加；
-- 能用 perf 找到至少一个真实瓶颈并完成优化；
-- 代码具备清晰的 ownership、错误处理和 CMake 构建方式。
+当前材料见 [阶段 1](learning/stage-01/README.md)。
 
-## 阶段 2：计算机体系结构与并行性能
+## 阶段2
 
-### 需要学习
+目标：建立分析 CUDA 性能所需的最小体系结构模型。
 
-- Cache line、L1/L2/L3、TLB、预取；
-- SIMD、AVX2/AVX-512 的基本思想；
-- 分支预测和分支失效；
-- 内存带宽、访问延迟、NUMA；
-- GPU 的 SM、Warp、寄存器、共享内存、全局内存；
-- SIMT 与 CPU SIMD 的区别；
-- Roofline Model 和算术强度；
-- 数据并行、流水线并行、模型并行。
+### 必学
 
-### 必做项目：CPU/GPU Microbenchmark
+- CPU cache line、局部性和 SIMD 基本思想；
+- GPU SM、Warp、Block、Grid；
+- SIMT 与 SIMD 的区别；
+- Global/Shared Memory、寄存器和同步；
+- 内存带宽、延迟、算术强度和 Roofline；
+- coalescing、bank conflict、warp divergence；
+- false sharing 作为 CPU 并行对照。
 
-实现以下对比：
+### 产出
 
-- 连续访问和跨步访问；
-- AoS 与 SoA；
-- 分支密集和无分支代码；
-- CPU 单线程、多线程和 SIMD；
-- GPU naive kernel 与 tiled kernel；
-- 不同矩阵规模下的算术强度。
+完成连续/跨步访存、CPU/GPU Vector Add 和简单矩阵运算 microbenchmark，记录数据规模、延迟和有效带宽。
 
-每组实验都要画出：数据规模—延迟、数据规模—带宽或吞吐的关系。
+### 验收
 
-### 达标线
+能根据数据判断瓶颈主要来自计算、带宽、延迟、同步还是 launch overhead，并给出下一步实验，而不是直接猜优化方案。
 
-- 能根据实验判断程序主要受计算、内存带宽、延迟、同步还是启动开销限制；
-- 能用 Roofline 解释优化方向；
-- 能解释为什么增加线程后可能变慢；
-- 能解释 CPU cache miss、GPU memory transaction、occupancy 之间的关系。
+## 阶段3
 
-##  阶段 3：CUDA 性能工程
+目标：能够独立编写正确、可测量的 CUDA kernel。
 
-这是你当前最值得集中投入的阶段。你已有 CUDA 笔记，但需要将空白和薄弱部分补全。
+### 必学
 
-### 必须补齐的 CUDA 基础
+- 一维和多维线程索引；
+- grid-stride loop 与边界处理；
+- `cudaMalloc`、`cudaMemcpy`、Stream 和 Event；
+- kernel 异步执行和错误检查；
+- shared memory、同步和原子操作；
+- warp shuffle 的基本使用；
+- Compute Sanitizer 与 Nsight Systems 入门。
 
-- CUDA API 错误检查；
-- kernel 异步执行和显式同步；
-- Grid-stride loop；
-- 三维索引和边界处理；
-- Stream、Event、异步 memcpy；
-- Unified Memory 的适用边界；
-- 原子操作；
-- Register、spill、local memory；
-- Constant memory 和只读数据路径。
-
-###  必须掌握的性能主题
-
-- Coalesced memory access；
-- Shared memory 与 bank conflict；
-- Warp divergence；
-- Warp shuffle、vote、match 指令；
-- Occupancy；
-- Kernel launch overhead；
-- Double buffering 和计算/传输重叠；
-- FP16、BF16、混合精度；
-- Tensor Core/WMMA 的基本使用；
-- cuBLAS/cuDNN 与手写 kernel 的边界。
-
-### 必做项目 A：高质量 Reduction
-
-从 naive 版本开始，依次实现：
-
-1. 全局内存归约；
-2. 共享内存归约；
-3. 交错寻址版本；
-4. 无发散版本；
-5. warp shuffle 版本；
-6. 多 block、多 kernel 级联版本；
-7. 与 PyTorch `sum`、CUB 或其他库比较。
-
-记录：正确性、不同输入规模、不同 block size、吞吐、占用率、warp stall 和内存访问指标。
-
-### 必做项目 B：GEMM 优化阶梯
-
-实现并比较：
+### 算子阶梯
 
 ```text
-CPU naive
-→ CUDA naive
-→ shared-memory tiling
-→ register tiling
-→ vectorized load
-→ double buffering
-→ cuBLAS
-→ optional Tensor Core
+Vector Add
+→ ReLU
+→ Reduction
+→ Transpose
 ```
 
-至少覆盖方阵和非方阵、边界不能整除 tile 的情况。
+每个算子都保留 PyTorch/CPU reference、naive kernel、边界测试和 benchmark。
 
-### 必做项目 C：Softmax、LayerNorm、Fused Attention
+### 验收
 
-顺序建议：
+- 覆盖空输入、小输入和非整除 block 尺寸；
+- 能区分 H2D、kernel、D2H 和端到端时间；
+- 能定位一次 Device 越界或异步错误；
+- 能解释 block size 变化为何可能改善或损害性能。
 
-1. Row-wise Softmax；
-2. LayerNorm/RMSNorm；
-3. 融合 bias + activation；
-4. 简化版 scaled dot-product attention；
-5. 处理变长输入或 mask。
+## 阶段4
 
-重点观察：中间张量是否写回显存、数值稳定性、寄存器压力、shared memory 使用和融合收益。
+目标：从“会写 kernel”进入“用证据优化算子”。
 
-### Profiling 工具路线
+### 必学
 
-- `cuda-memcheck`/Compute Sanitizer：先查正确性；
-- Nsight Systems：看 CPU/GPU 时间线、Stream、kernel 启动和同步；
-- Nsight Compute：看单 kernel 的 SOL、访存、warp stall、occupancy、source correlation；
-- PyTorch Profiler：看 Python/算子/设备之间的整体关系。
+- Nsight Systems 时间线；
+- Nsight Compute 的吞吐、访存、occupancy 和 warp stall；
+- reduction 的 shared memory 与 shuffle 优化；
+- transpose 的合并访问和 bank conflict；
+- Softmax 的数值稳定性；
+- LayerNorm/RMSNorm 的归约、访存和融合；
+- GEMM tiling 与 Tensor Core 的基本原理。
 
-Nsight Compute 官方文档提供 profiling guide、CLI、UI、报告比较和 Python 报告接口，可作为主要工具手册：[Nsight Compute Documentation](https://docs.nvidia.com/nsight-compute/)。
+### 范围
 
-### 注意事项
+GEMM 只实现教学版本并与 cuBLAS 对照，不把“超过 cuBLAS”设为验收目标。Attention 只理解计算与内存瓶颈，不在本阶段复刻完整 FlashAttention。
 
-- 不要先优化再测量；
-- 不要把 occupancy 当作越高越好，最终目标是有效吞吐/延迟；
-- 不要只看 kernel duration，要看端到端时间和数据搬运；
-- 不要用不稳定的随机输入掩盖 NaN、Inf 和边界错误；
-- FP16/BF16 优化必须与 FP32 参考实现比较误差；
-- 任何“提升 X 倍”都要说明 baseline、输入规模、数据类型和测量方法。
+### 产出
 
-### 达标线
+- 一个 Reduction 优化阶梯；
+- 一个 Softmax 或 RMSNorm 优化项目；
+- Nsight 报告与性能分析。
 
-- 能从零写出带错误检查、边界处理和测试的 CUDA kernel；
-- Reduction、GEMM、Softmax、LayerNorm 至少各有一个可复现实现；
-- 对一个 kernel 完成两轮以上 profiling 驱动优化；
-- 同一 GPU 上至少有一个算子相对 baseline 提升 1.5 倍以上，或明确证明已经接近库函数/硬件上限；
-- 能写出一份 2～5 页的性能报告，解释每个优化为什么有效或无效；
-- 正确性误差阈值、性能结果和失败实验均有记录。
+### 验收
 
-## 阶段 4：PyTorch、C++/CUDA Extension 与 Triton
+每次优化都能回答：改变了什么、影响哪个硬件瓶颈、数据是否支持判断、在哪些 shape 上失效。
 
-### 需要学习
+## 阶段5
 
-- Tensor、Storage、Stride、contiguous；
-- dispatcher、operator registration、device dispatch；
-- autograd、fake/meta kernel、`torch.compile` 兼容性；
-- C++ Extension 的编译、加载和 ABI；
-- Triton 的 program ID、block pointer、mask、reduction、autotune；
-- Python baseline、Triton kernel、CUDA kernel、库函数四者的比较方法。
+目标：让底层算子成为 PyTorch 可以安全调用的组件。
 
-PyTorch 官方扩展教程目前包含自定义 C++/CUDA Operator、dispatcher 和 `torch.library` 路线，建议优先按官方推荐接口复现，而不是从旧式绑定方式开始：[PyTorch Extending](https://docs.pytorch.org/tutorials/extension.html) 和 [Custom C++ and CUDA Operators](https://docs.pytorch.org/tutorials/advanced/cpp_custom_ops.html)。
+### 必学
 
-Triton 官方教程建议按 Vector Addition、Fused Softmax、Matrix Multiplication、Layer Normalization、Fused Attention 的顺序学习：[Triton Tutorials](https://triton-lang.org/main/getting-started/tutorials/index.html)。
+- PyTorch C++/CUDA Extension 构建；
+- ATen Tensor 的 device、dtype、shape、stride；
+- CPU fallback 与 CUDA dispatch；
+- 当前 CUDA Stream 和异步语义；
+- autograd 的使用边界；
+- Triton program model 与自动调优入门。
 
-### 必做项目：同一算子的三种实现
+### 产出
 
-选择 LayerNorm 或 Softmax，实现：
+为同一算子提供三种实现：PyTorch reference、C++/CUDA extension 和 Triton，并用相同输入矩阵验证正确性和性能。
 
-1. PyTorch 参考版本；
-2. Triton 版本；
-3. C++/CUDA Extension 版本。
+### 验收
 
-加入：
+- 扩展可安装、导入和重建；
+- 错误输入给出明确提示；
+- 支持约定的 dtype、shape 和非连续输入策略；
+- 性能对比不隐藏编译、搬运或同步成本。
 
-- CPU/GPU 正确性测试；
-- 随机输入和极端输入；
-- dtype 测试；
-- `torch.library.opcheck` 或等价检查；
-- autograd 检查；
-- 不同 shape 的 benchmark；
-- `torch.compile` 兼容性测试；
-- 失败 shape 的明确报错。
+## 阶段6
 
-### 达标线
+目标：理解量化如何同时改变数值误差、内存流量和硬件执行。
 
-- 能独立完成 PyTorch 注册、编译、加载和测试；
-- 自定义算子结果与参考实现误差在预先定义的范围内；
-- 能解释 stride、layout 和 contiguous 对 kernel 的影响；
-- 至少一个 Triton kernel 在目标 shape 上达到 PyTorch baseline 的 0.8～1.2 倍以上，并能解释未达到更高性能的原因；
-- 能区分 Python 调度开销、kernel 开销、内存访问和编译开销。
+### 前置基础
 
-## 阶段 5：Transformer 与 LLM 推理系统
+只需掌握线性映射和误差概念：
 
-###  必须掌握的模型执行知识
+\[
+q
+\overset{\text{缩放取整}}{=}
+\operatorname{round}
+\left(
+\frac{x}{s}
+\right)
++z
+\]
 
-- Transformer decoder 单层计算顺序；
-- Prefill 与 Decode 的计算差异；
-- MHA、MQA、GQA；
-- KV Cache 的 shape、布局、增长和回收；
-- Attention mask、causal mask、sliding window；
-- Sampling、停止条件和 streaming；
-- FP16/BF16/INT8/FP8 的基本取舍；
-- weight-only、activation、KV Cache 量化的区别。
+\[
+\hat{x}
+\overset{\text{反量化}}{=}
+s(q-z)
+\]
 
-### 必须掌握的系统知识
+### 符号说明
 
-- Continuous Batching；
-- Paged KV Cache；
-- Prefix Cache；
-- Chunked Prefill；
-- Admission control 和限流；
-- 请求队列、调度、超时和取消；
-- tensor parallel、pipeline parallel 的基本通信路径；
-- TTFT、TPOT、throughput、concurrency、P50/P95/P99。
+- \(x\)：原始浮点值。
+- \(q\)：量化后的整数值。
+- \(s\)：scale，缩放因子。
+- \(z\)：zero-point，零点。
+- \(\hat{x}\)：反量化近似值。
+- \(\operatorname{round}\)：取整算子。
 
-###  必做项目 A：推理基准平台
+### 必学
 
-使用 vLLM 或 SGLang 部署一个可运行模型，编写 benchmark 客户端，控制：
+- FP32、FP16、BF16 和 INT8 的表示差异；
+- 对称/非对称量化；
+- per-tensor 与 per-channel；
+- PTQ、校准、饱和和舍入误差；
+- 权重大小、显存带宽、计算吞吐与反量化开销；
+- 量化前后的误差与端到端性能测量。
 
-- 输入 token 长度；
-- 输出 token 长度；
-- 并发数；
-- 请求到达速率；
-- streaming 开关；
-- batch 或 cache 配置；
-- 数据类型和量化配置。
+### 暂缓
 
-输出：
+- 完整 QAT 训练工程；
+- GPTQ、AWQ 的源码级复现；
+- FP8 分布式训练；
+- 面向特定芯片的极限量化格式。
 
-- TTFT；
-- TPOT/ITL；
-- 总吞吐和 output token 吞吐；
-- P50/P95/P99；
-- GPU 利用率；
-- 显存和 KV Cache 使用；
-- 错误率、超时率和队列等待时间。
+### 产出
 
-### 必做项目 B：简化版 Paged KV Cache
+实现一个 INT8 量化/反量化实验，并完成量化线性层或 weight-only 推理对照，报告模型大小、误差、延迟和吞吐。
 
-不要一开始直接修改大型推理框架。先用 Python 或 C++ 实现一个教学版：
+### 验收
 
-- 固定大小 KV block；
-- block table；
-- 请求到 block 的映射；
-- 分配、释放和复用；
-- 不同长度请求的碎片率比较；
-- contiguous cache 与 paged cache 的对比。
+能解释精度下降来自哪里，性能收益是否被反量化、数据搬运或小输入开销抵消，并明确结论的设备与 shape 范围。
 
-然后阅读 vLLM 的实现，把教学版概念映射到真实系统。
+### 直观理解
 
-PagedAttention 的原始论文适合用来理解“分页式 KV Cache”的设计动机：[Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)。
+量化像把精密刻度改成较粗刻度：数字更省空间、搬运更快，但必须记录换算比例。刻度太粗会丢失细节；换算工作太多时，省下的搬运时间也可能被抵消。
 
-### 必做项目 C：修改一个真实推理模块
+## 阶段7
 
-从以下内容中选一个：
+目标：把前六阶段收束为一个可以展示、复现和深入追问的项目。
 
-- scheduler 指标；
-- KV Cache 统计；
-- 请求限流；
-- prefix cache 实验；
-- chunked prefill 实验；
-- attention backend 对比；
-- benchmark/metrics 改进。
+### 项目主题
 
-要求先建立 baseline，再修改，再回归测试和压测。不要只提交“能跑”的代码，要说明在什么 workload 下收益、在哪些场景回退。
+推荐主题：**PyTorch 可调用的 CUDA 推理算子实验室**。
 
-### 注意事项
+最小范围：
 
-- TTFT 和 TPOT 不能混成一个 latency；
-- offline benchmark 和 online serving benchmark 结论不同；
-- 不同 prompt 分布会显著改变结论；
-- 不能只测满载吞吐，要测低并发延迟和突发流量；
-- 修改框架时固定 commit，避免 upstream 变化导致无法复现。
+1. PyTorch reference；
+2. naive CUDA kernel；
+3. 至少一个有证据的优化版本；
+4. FP16/BF16 中的一种低精度路径；
+5. INT8 或 weight-only 量化路径；
+6. C++/CUDA Extension；
+7. 可选 Triton 对照；
+8. 正确性、边界和误差测试；
+9. CUDA Event benchmark；
+10. Nsight 分析和复现文档。
 
-### 达标线
+算子顺序建议为 Reduction → Softmax → RMSNorm → 量化线性层。优先完成闭环，不强求全部实现。
 
-- 能解释 Prefill/Decode 的瓶颈差异；
-- 能根据 KV Cache 估算并发上限；
-- 能独立完成一组可重复的压测报告；
-- 能定位一次 P99 延迟上升的原因；
-- 至少完成一个真实推理框架模块的修改或实验；
-- 具备一个可公开展示的推理优化项目。
+### 验收
 
-## 阶段 6：AI Infra 与分布式系统
+- 新环境可以根据 README 构建和运行；
+- baseline、优化和量化路径可以公平比较；
+- 结论包含失败案例和适用边界；
+- 项目能在 10 分钟内讲清问题、设计、证据和下一步。
 
-### 需要学习
+## 阶段8
 
-- Docker 镜像、GPU runtime、健康检查；
-- Kubernetes Pod、Deployment、Service、ConfigMap、Secret；
-- GPU 资源请求、节点标签、taint/toleration；
-- Prometheus 指标、Grafana、日志和 tracing；
-- 限流、排队、重试、熔断、超时、幂等；
-- 模型版本、灰度、回滚；
-- NCCL、NVLink、PCIe、RDMA 的基本关系；
-- data/tensor/pipeline parallel 的基本通信模式。
+目标：把项目能力转化为可投递、可面试的证据。
 
-### 必做项目：单机多实例推理平台原型
+### 必做
 
-实现：
+- 清理仓库入口、构建命令和依赖；
+- 固定一组可复现 benchmark；
+- 完成架构图、性能表和关键 profiler 截图；
+- 为主项目准备 3 分钟和 10 分钟讲稿；
+- 复习 C++、CUDA、操作系统和并行计算高频问题；
+- 从真实岗位描述反查缺口；
+- 小批量投递并根据反馈迭代。
 
-- 模型注册和版本信息；
-- 启动多个推理实例；
-- GPU/端口分配；
-- 请求路由和限流；
-- readiness/liveness；
-- Prometheus 指标；
-- 失败重试和超时；
-- 灰度发布和回滚；
-- 压测脚本和故障注入。
+### 验收
 
-初期可以在 Docker Compose 或单机 Kubernetes 上完成，不必一开始搭建复杂云集群。
+面对“为什么更快”“为什么这样管理内存”“量化损失在哪里”“换一张 GPU 是否仍成立”等问题，可以用项目数据回答，而不是只复述概念。
 
-### 故障注入清单
+# 实习后
 
-- 模型加载失败；
-- GPU 显存不足；
-- 一个实例无响应；
-- 请求超时；
-- 队列持续增长；
-- GPU 温度或利用率异常；
-- 指标服务不可用。
+实习后不再按固定顺序通关全部内容，而是根据工作任务选择一条主线，其余路线作为补充。
 
-### 达标线
+## 训推系统
 
-- 能从日志和指标定位请求失败原因；
-- 故障实例不会继续接收新请求；
-- 重试不会造成无限放大；
-- 有明确的 P99、错误率和队列长度告警；
-- 能解释多实例吞吐提升受限于什么；
-- 至少完成一次灰度和一次回滚演练。
+关注模型从加载到稳定服务的完整执行过程：
 
-##  阶段 7：编译原理与 LLVM
+- Transformer 与 MoE 的执行结构；
+- KV Cache、Paged Attention 和 Continuous Batching；
+- TTFT、TPOT、吞吐、P99 和显存；
+- vLLM、SGLang 等系统的调度与扩展机制；
+- 训练 Runtime、算子融合、activation checkpoint 和混合精度；
+- 性能、稳定性和资源利用率的联合优化。
 
-### 需要学习
+建议产出：修改真实推理或训练模块，并通过压测、profiling 和故障案例证明收益。
 
-- Lexer、Parser、AST；
-- 符号表和类型检查；
-- CFG、基本块、SSA；
-- 常量折叠、死代码消除、公共子表达式；
-- 数据流分析；
-- IR 设计；
-- 指令选择、寄存器分配、代码生成的基本概念；
-- LLVM IR、Module、Function、BasicBlock、Value、Pass。
+## 分布式
 
-### 必做项目：张量表达式编译器
+关注多卡、多机环境中的通信、调度和可靠性：
 
-支持以下表达式：
+- NCCL collective 与拓扑；
+- DP、TP、PP、EP 和 ZeRO；
+- 通信与计算重叠；
+- 参数、梯度、激活和 KV Cache 的切分；
+- 调度、限流、监控、容错和故障恢复；
+- NUMA、PCIe、NVLink 与网络对性能的影响。
+
+建议产出：一个可观测的多 GPU 训推实验，包含扩展效率、通信占比和故障注入报告。
+
+## 编译系统
+
+关注从模型图到硬件代码的自动变换：
+
+- FX、TorchDynamo、AOTAutograd 和 TorchInductor；
+- Triton 调度与代码生成；
+- AST、IR、SSA、Pass 和数据流分析；
+- LLVM IR、优化与后端；
+- MLIR Dialect、Rewrite、Lowering；
+- shape、layout、fusion 和 memory planning。
+
+建议产出：一个小型张量编译器或 MLIR lowering 项目，保存变换前后 IR、等价性测试和性能结果。
+
+## 硬件协同
+
+关注算子、编译器与芯片之间的接口：
+
+- GPU SM、scheduler、register file 和内存层次；
+- Tensor Core、MMA 指令与数据布局；
+- Cache、TLB、PCIe、NVLink 和 HBM；
+- ISA、SASS/PTX 和编译结果分析；
+- Roofline 与更细粒度的性能模型；
+- 面向硬件约束的 kernel、量化和编译策略。
+
+建议产出：选取一个算子，从模型语义、IR、PTX/SASS、硬件计数器到端到端性能完成纵向分析。
+
+## 长期能力
+
+长期目标不是把所有工具都学一遍，而是能沿下面的链路定位问题：
 
 ```text
-C = A + B
-D = relu(C)
-E = matmul(D, W)
+模型结构
+→ 计算图
+→ 算子与量化
+→ CUDA/Triton
+→ Runtime 与调度
+→ 分布式训推
+→ 编译器
+→ GPU 体系结构
 ```
 
-分阶段实现：
+当问题发生在任意一层时，能判断它是否真正源于该层，能向相邻层追踪，并用代码与数据验证判断。
 
-1. 词法和语法；
-2. AST；
-3. shape/type checking；
-4. 简单 tensor IR；
-5. 常量折叠；
-6. elementwise fusion；
-7. 打印 IR；
-8. 输出 C++/CUDA 伪代码或 LLVM IR。
+# 执行方法
 
-LLVM 官方 Kaleidoscope 教程适合作为前端、AST、IR 和代码生成的复现路线，但必须使用与你安装的 LLVM 版本匹配的教程版本：[LLVM Kaleidoscope](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/LangImpl03.html)。
+## 每周节奏
 
-### 达标线
-
-- 能解释 AST、CFG、SSA 的用途和关系；
-- 能实现至少两个优化 Pass；
-- 能展示优化前后的 IR 差异；
-- 能把一个简单表达式 lower 到 LLVM IR 或可执行代码；
-- 能解释为什么图优化和 kernel 优化不是同一个层次的问题。
-
-##  阶段 8：MLIR、图优化与 AI 编译器
-
-### 需要学习
-
-- MLIR Context、Module、Operation、Region、Block；
-- Dialect、Operation、Type、Attribute；
-- ODS/TableGen；
-- Rewrite Pattern、Canonicalization；
-- Pass 管理；
-- shape inference；
-- tensor/memref；
-- affine/linalg；
-- bufferization；
-- tiling、fusion、vectorization；
-- LLVM lowering；
-- layout 和 memory space。
-
-### 官方复现路线
-
-按 MLIR Toy Tutorial 的顺序完成：
-
-1. AST 和 Toy 语言；
-2. 生成基础 MLIR；
-3. 写高层 rewrite；
-4. 用 interface 做通用变换；
-5. lower 到 affine/linalg；
-6. lower 到 LLVM；
-7. 增加一种自定义类型。
-
-官方教程明确覆盖了 Dialect、Rewrite Pattern、Interface、部分 lowering 和 LLVM code generation，适合作为第一条可复现路线：[MLIR Toy Tutorial](https://mlir.llvm.org/docs/Tutorials/Toy/)。
-
-### 必做项目：Elementwise 图编译器
-
-实现一个小型模型图编译流程：
-
-```text
-JSON/ONNX-like graph
-→ Graph IR
-→ shape inference
-→ constant folding
-→ elementwise fusion
-→ layout decision
-→ bufferization
-→ linalg/affine
-→ LLVM 或 CUDA 目标
-```
-
-第一版只支持：Add、Mul、Relu、Matmul、Transpose。重点不是支持很多算子，而是把完整 pipeline 跑通。
-
-### 注意事项
-
-- 不要一开始就阅读整个 MLIR 源码；先跑通 Toy Tutorial；
-- 每个 Pass 都要有输入 IR、输出 IR 和测试；
-- 把合法性约束写成 verifier 或测试，不要只依赖人工检查；
-- 明确区分 tensor-level、buffer-level 和 hardware-level 优化；
-- Fusion 可能增加寄存器压力，不能假设融合总是更快；
-- Tiling、layout、vectorization 必须结合目标硬件验证。
-
-### 达标线
-
-- 能定义一个简单 Dialect 或扩展一个已有 Dialect；
-- 能写一个 Pattern Rewrite 和一个 Pass；
-- 能完成至少一次 tensor→memref 或 linalg→LLVM 的 lowering；
-- 能对一个图做融合并验证数值一致性；
-- 能用 benchmark 证明优化对某些 shape 有益、对另一些 shape 可能有害。
-
-## 阶段 9：综合作品集项目
-
-最终建议形成三个互相连接的项目，而不是很多零散 demo。
-
-### 项目一：Kernel Lab
-
-包含：
-
-- Reduction；
-- GEMM；
-- Softmax；
-- LayerNorm/RMSNorm；
-- Attention；
-- CUDA 与 Triton 双版本；
-- correctness、benchmark、Nsight 报告。
-
-验收：至少一个真实模型相关算子在固定 shape 上有可解释的性能提升。
-
-### 项目二：Inference Lab
-
-包含：
-
-- vLLM/SGLang 部署；
-- benchmark 客户端；
-- TTFT/TPOT/P99；
-- KV Cache 实验；
-- 调度或 cache 模块改造；
-- Prometheus/Grafana 指标；
-- 故障和回滚演练。
-
-验收：能从端到端压测结果定位到 kernel、显存、调度或服务层的瓶颈。
-
-### 项目三：Mini Compiler
-
-包含：
-
-- Graph IR；
-- shape inference；
-- fusion pass；
-- layout 或 tiling pass；
-- MLIR/LLVM lowering；
-- 至少一个目标 kernel；
-- 数值和性能回归测试。
-
-验收：输入一个小型计算图，自动输出优化后的 IR 和可执行目标，并能展示优化前后的差异。
-
-## 每周执行模板
-
-建议每周投入 12～18 小时：
-
-- 3 小时：阅读概念和官方文档；
-- 6～8 小时：实现项目；
-- 2～3 小时：测试、benchmark、profiling；
-- 1～2 小时：整理实验报告和复盘；
-- 1～2 小时：阅读真实项目源码。
-
-每周必须完成一个可验证闭环：
+建议每周只围绕一个可验证问题推进：
 
 ```text
 提出问题
+→ 阅读最少资料
 → 写 baseline
-→ 设计实验
-→ 测量
-→ 修改
-→ 复测
+→ 加正确性测试
+→ 测量和 profiling
 → 解释结果
-→ 记录失败实验
+→ 提交代码和报告
 ```
 
-推荐每周记录：
+推荐时间分配：
 
-- 本周新增的一个核心概念；
-- 一个最小可运行实现；
-- 一个性能数据表或时间线；
-- 一个失败实验；
-- 一个仍未解释的问题；
-- 下周要验证的假设。
+| 工作 | 比例 |
+| --- | ---: |
+| 编码与调试 | 45% |
+| 测试与测量 | 20% |
+| 阅读资料 | 20% |
+| 报告与复盘 | 15% |
 
-##  什么时候算真正达到目标
+## 停止规则
 
-你可以认为自己具备“推理系统/性能工程初级到中级”的能力，当你能够独立完成以下任务：
+以下情况应停止扩展范围：
 
-1. 写一个 C++/CUDA/Triton 算子并处理异常、边界和测试；
-2. 用 Nsight 或 PyTorch Profiler 找到瓶颈，而不是凭经验猜；
-3. 解释 Transformer Prefill、Decode、KV Cache 和 Continuous Batching；
-4. 部署模型并报告 TTFT、TPOT、吞吐和 P99；
-5. 修改推理框架的一个模块并完成回归压测；
-6. 实现一个简单计算图和优化 Pass；
-7. 阅读并解释一段 PyTorch、vLLM、Triton 或 MLIR 的核心代码；
-8. 面对性能下降时，能按“服务—调度—Runtime—kernel—硬件”逐层定位。
+- 当前实验还没有正确性测试；
+- benchmark 没有 warmup 或同步；
+- 同时维护超过一个主项目；
+- 只增加新算子，不分析已有结果；
+- 为了完整而学习当前项目用不到的框架；
+- 无法用自己的话说明本周获得的证据。
 
-## 你现在的直接行动顺序
+## 调整规则
 
-如果从今天开始执行，建议严格按下面顺序：
+每四周复盘一次：
 
-1. 补全 CUDA 错误检查、Coalesced Access、Warp Shuffle、Occupancy、Stream；
-2. 完成 Reduction、GEMM、Softmax、LayerNorm 四个 benchmark；
-3. 用 PyTorch C++/CUDA Extension 封装 LayerNorm 或 Softmax；
-4. 用 Triton 重写同一算子并比较；
-5. 实现 C++ 线程池和异步任务队列；
-6. 部署 vLLM/SGLang，完成完整压测报告；
-7. 实现教学版 Paged KV Cache；
-8. 阅读并修改一个真实推理框架模块；
-9. 学习 LLVM Kaleidoscope，完成张量表达式编译器；
-10. 完成 MLIR Toy Tutorial，再做自己的 Elementwise 图编译器。
+1. 本月新增了哪些可运行证据？
+2. 哪个知识点实际阻塞了项目？
+3. 哪些内容只是因为“以后可能有用”而加入？
+4. 下一月能否删除至少一个低优先任务？
+5. 当前项目是否更接近可投递状态？
 
-最重要的约束是：在 CUDA 性能闭环和推理系统项目完成之前，不要把主要精力转移到大规模 MLIR 源码阅读，也不要继续无边界扩展深度学习理论目录。
+岗位描述用于校准方向，不用于无限增加关键词。只有重复出现在目标岗位、并且阻塞当前项目的能力，才提升为近期主线。
 
-## 参考入口
+## 当前行动
 
-- [NVIDIA CUDA C Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
-- [NVIDIA Nsight Compute Documentation](https://docs.nvidia.com/nsight-compute/)
-- [PyTorch Extending Documentation](https://docs.pytorch.org/tutorials/extension.html)
-- [PyTorch Custom C++ and CUDA Operators](https://docs.pytorch.org/tutorials/advanced/cpp_custom_ops.html)
-- [Triton Official Tutorials](https://triton-lang.org/main/getting-started/tutorials/index.html)
-- [Triton GitHub](https://github.com/triton-lang/triton)
-- [vLLM GitHub](https://github.com/vllm-project/vllm)
-- [vLLM Documentation](https://docs.vllm.ai/)
-- [LLVM Kaleidoscope Tutorial](https://llvm.org/docs/tutorial/)
-- [MLIR Toy Tutorial](https://mlir.llvm.org/docs/Tutorials/Toy/)
+当前只推进阶段 1：
+
+1. 完成 [C++ 前置讲义](learning/stage-01/before-learning/README.md)；
+2. 构建并运行 [阶段 1 示例](learning/stage-01/examples/README.md)；
+3. 提交 [练习测评](learning/stage-01/exercises/README.md)；
+4. 用 RAII 和移动语义实现一个 GPU 资源模型；
+5. 通过 CTest、ASan 和 UBSan；
+6. 达到验收线后进入 GPU 并行基础，不扩展 RPC 或复杂协程。
+
+## 资料入口
+
+- [项目 README](README.md)
+- [学习入口](learning/README.md)
+- [部署指南](DEPLOYMENT_GUIDE.md)
+- [CUDA 文档](https://docs.nvidia.com/cuda/)
+- [Nsight Compute](https://docs.nvidia.com/nsight-compute/)
+- [PyTorch 扩展](https://docs.pytorch.org/tutorials/advanced/cpp_custom_ops.html)
+- [Triton 教程](https://triton-lang.org/main/getting-started/tutorials/)
+- [LLVM 教程](https://llvm.org/docs/tutorial/)
+- [MLIR 教程](https://mlir.llvm.org/docs/Tutorials/Toy/)

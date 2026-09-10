@@ -1,6 +1,6 @@
 # MLSys Learning Lab
 
-一个以证据驱动方式学习机器学习系统的实验仓库，覆盖 C++/Linux Runtime、CUDA kernel、PyTorch 扩展、推理系统、性能基准与 AI 编译器。
+一个以证据驱动方式学习机器学习系统的实验仓库。实习前优先建设 C++、GPU 并行、CUDA、PyTorch/Triton 和推理量化能力；实习后再向训推系统、分布式、编译器与硬件协同深化。
 
 > 项目正在持续建设。目前处于阶段 1：C++ 与 Linux Runtime。目录存在不代表对应实现已经完成，请以各模块的“当前状态”为准。
 
@@ -12,7 +12,7 @@
 问题与假设 → baseline → 正确性测试 → 性能测量 → profiler 证据 → 结论与复盘
 ```
 
-长期主线为 C++/Linux → CUDA → PyTorch/Triton → LLM 推理 → AI Infra → LLVM/MLIR。完整规划见 [Infra 学习指南](Infra%20Introduction.md)，当前讲义从 [learning/README.md](learning/README.md) 进入。
+路线分为“实习前 9 阶段”和“实习后 4 条深化路线”。实习前用约一年形成可投递的 CUDA/推理优化项目；“从模型到芯片”作为长期方向，不作为近期完成清单。完整规划见 [Infra 学习指南](Infra%20Introduction.md)，当前讲义从 [learning/README.md](learning/README.md) 进入。
 
 ## 当前状态
 
@@ -25,6 +25,8 @@
 | PyTorch 扩展 | 规划中 | 接口和验证约定 |
 | 推理系统 | 规划中 | 指标与目录约定 |
 | 编译器实验 | 规划中 | 图、IR 和 Pass 实验约定 |
+
+实习前主线为：工具基线 → C++ 必需 → 并行基础 → CUDA 核心 → 算子优化 → 框架接入 → 推理量化 → 主线项目 → 投递准备。训推系统、分布式、编译系统与硬件协同属于实习后深化路线。
 
 ## 快速开始
 
@@ -108,7 +110,7 @@ ctest --test-dir /tmp/mlsys-stage1-build --output-on-failure
 
 ## 路线文档
 
-- [Infra 学习指南](Infra%20Introduction.md)：阶段路线与验收标准。
+- [Infra 学习指南](Infra%20Introduction.md)：实习前路线、实习后深化方向与验收标准。
 - [学习入口](learning/README.md)：当前阶段化材料。
 - [部署指南](DEPLOYMENT_GUIDE.md)：安装、运行与排障。
 - [学习报告](LEARNING_REPORT.md)：已有知识总结。

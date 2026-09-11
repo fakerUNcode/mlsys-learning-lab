@@ -18,13 +18,13 @@ GPU buffer 管理类通常禁止拷贝并允许移动。否则两个包装对象
 
 ## 程序实例
 
-生命周期示例明确删除拷贝构造，并在移动后检查源大小为零、目标大小保持不变。
+当前示例把 `variant` 中的 `vector<int>` 移动到 `unique_ptr<vector<int>>` 管理的新对象。它展示所有权转移，但没有检查移动后源 vector 的具体内容；“源大小为零”只属于讲义推演，不能算当前测试结论。
 
 ## 部署说明
 
 ```bash
-cmake --build build/stage1 --target lifetime_test
-ctest --test-dir build/stage1 -R lifetime --output-on-failure
+cmake --build build/stage1-lifetime --target stage1_test
+ctest --test-dir build/stage1-lifetime --output-on-failure
 ```
 
 ## 直观理解

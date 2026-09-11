@@ -38,9 +38,9 @@ PyTorch C++/CUDA extension 最终通常生成 `.so`。Python 导入它时，动�
 动态库在 Linux 常见为 `.so`。排查命令：
 
 ```bash
-nm -C ./build/stage1/03-modern-types/modern_types_demo
-ldd ./build/stage1/03-modern-types/modern_types_demo
-readelf -d ./build/stage1/03-modern-types/modern_types_demo
+nm -C ./build/stage1-lifetime/stage1_demo
+ldd ./build/stage1-lifetime/stage1_demo
+readelf -d ./build/stage1-lifetime/stage1_demo
 ```
 
 `nm -C` 查看并反修饰 C++ 符号；`ldd` 查看运行时解析到的动态库；`readelf` 直接读取 ELF 元数据。不要对不可信二进制运行 `ldd`。

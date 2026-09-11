@@ -37,7 +37,7 @@ e-b
 
 ## 程序实例
 
-[现代类型示例](../../examples/03-modern-types/README.md)使用 vector 和 accumulate。
+[阶段示例](../../examples/README.md)使用 vector 和 accumulate。
 
 ## 直观理解
 

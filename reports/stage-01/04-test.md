@@ -8,7 +8,7 @@
 
 ## 测试源码
 
-完整文件现位于 [`runtime_test.cpp`](../../learning/stage-01/examples/03-modern-types/tests/runtime_test.cpp)。测试程序使用标准 `assert`，没有引入第三方测试框架。
+完整文件位于 [`runtime_test.cpp`](../../learning/stage-01/examples/tests/runtime_test.cpp)。测试程序使用标准 `assert`，没有引入第三方测试框架。
 
 ### 成功解析
 

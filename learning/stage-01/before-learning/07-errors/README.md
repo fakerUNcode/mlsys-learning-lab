@@ -23,7 +23,7 @@ CUDA kernel 异步执行，launch 成功不代表执行完成。必要同步点�
 
 ## 程序实例
 
-[现代类型示例](../../examples/03-modern-types/README.md)使用 variant 表达解析成功或失败，并用退出码通知 shell。
+[阶段示例](../../examples/README.md)使用 variant 表达解析成功或失败，并用退出码通知 shell。
 
 ## 直观理解
 

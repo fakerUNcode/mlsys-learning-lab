@@ -290,7 +290,7 @@ if (auto alive = observer.lock()) {
 
 这里的 `GpuBuffer` 与 `Model` 表示后续项目要实现的资源类，用来展示所有权关系，不属于本阶段可执行示例中的真实 CUDA 类型。
 
-可运行版本见[生命周期示例](../../examples/01-lifetime/README.md)和[指针示例](../../examples/02-smart-pointers/README.md)。
+当前可运行版本见[阶段示例](../../examples/README.md)。其中 `unique_ptr<vector<int>>` 展示独占所有权；`GpuBuffer` 与 `Model` 仍是本讲义的概念代码，尚未实现为独立程序。
 
 ## 部署说明
 

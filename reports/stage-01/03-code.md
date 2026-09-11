@@ -26,7 +26,7 @@ runtime_test.cpp
 
 ## 头文件
 
-完整文件现位于 [`runtime_demo.hpp`](../../learning/stage-01/examples/03-modern-types/include/runtime_demo.hpp)。
+完整文件位于 [`runtime_demo.hpp`](../../learning/stage-01/examples/include/runtime_demo.hpp)。
 
 ### 单次包含
 
@@ -111,7 +111,7 @@ std::optional<int> sum_if_not_empty(
 
 ## 解析实现
 
-完整文件现位于 [`runtime_demo.cpp`](../../learning/stage-01/examples/03-modern-types/src/runtime_demo.cpp)。
+完整文件位于 [`runtime_demo.cpp`](../../learning/stage-01/examples/src/runtime_demo.cpp)。
 
 ### 引入声明
 
@@ -359,7 +359,7 @@ std::optional<int> sum_if_not_empty(
 
 ## 程序入口
 
-完整文件现位于 [`main.cpp`](../../learning/stage-01/examples/03-modern-types/src/main.cpp)。
+完整文件位于 [`main.cpp`](../../learning/stage-01/examples/src/main.cpp)。
 
 ### 入口参数
 

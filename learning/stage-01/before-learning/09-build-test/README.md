@@ -21,18 +21,18 @@ ASan 不能检查 CUDA Device 越界；GPU 代码后续使用 Compute Sanitizer�
 
 ## 程序实例
 
-顶层[示例导航](../../examples/README.md)可一次构建三个独立工程并运行全部测试。
+[阶段示例](../../examples/README.md)构建一个核心库、一个示例程序和一个测试程序，结构与阶段报告一致。
 
 ## 部署说明
 
 ```bash
 cmake \
   -S learning/stage-01/examples \
-  -B build/stage1-asan \
+  -B build/stage1-lifetime-asan \
   -DCMAKE_BUILD_TYPE=Debug \
   -DENABLE_SANITIZERS=ON
-cmake --build build/stage1-asan
-ctest --test-dir build/stage1-asan --output-on-failure
+cmake --build build/stage1-lifetime-asan
+ctest --test-dir build/stage1-lifetime-asan --output-on-failure
 ```
 
 ## 直观理解

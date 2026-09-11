@@ -10,4 +10,4 @@
 
 ## 程序实例
 
-运行[生命周期示例](../../examples/01-lifetime/README.md)，观察 acquire、move 和 release 的先后顺序。
+运行[阶段示例](../../examples/README.md)，观察 `variant` 中的 vector 如何移动到 `unique_ptr`，以及局部对象离开 `main()` 后如何自动清理。

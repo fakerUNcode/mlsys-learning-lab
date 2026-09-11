@@ -19,14 +19,14 @@
 
 ## 程序实例
 
-见[生命周期示例](../../examples/01-lifetime/README.md)。示例用 Host 数组模拟 Device buffer，因此不需要 CUDA 环境。
+见[阶段示例](../../examples/README.md)。示例使用 `vector` 和 `unique_ptr` 管理 Host 内存，不需要 CUDA 环境；GPU buffer 仍是后续扩展方向。
 
 ## 部署说明
 
 ```bash
-cmake -S learning/stage-01/examples -B build/stage1
-cmake --build build/stage1 --target lifetime_demo
-./build/stage1/01-lifetime/lifetime_demo
+cmake -S learning/stage-01/examples -B build/stage1-lifetime
+cmake --build build/stage1-lifetime --target stage1_demo
+./build/stage1-lifetime/stage1_demo 1,2,3,4
 ```
 
 ## 直观理解

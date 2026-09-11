@@ -1,39 +1,32 @@
-// “现代类型”核心库的最小测试。
+// 这是核心库的自动测试程序。它不检查终端输出，而是直接调用接口，验证三个最重要的
+// 约定：正确输入会得到数组，非法输入会得到错误，空数组没有可计算的和。
 //
-// 当前覆盖：
-// - 合法整数列表；
-// - 非法字符；
-// - 空 vector 的求和。
-//
-// 尚未覆盖空字符串、连续逗号、末尾逗号、整数越界和求和溢出。
-
+// assert(条件) 在条件为假时立即让测试失败；CTest 看到非零退出码就报告 Failed。
+// 因为定义 NDEBUG 后 assert 可能被移除，所以本示例应使用 Debug 构建运行测试。
 #include "runtime_demo.hpp"
 
-#include <cassert>      // assert
-#include <string_view>  // 错误候选类型
-#include <vector>       // 成功候选类型
+#include <cassert>
+#include <string_view>
+#include <vector>
 
 int main() {
-  // 成功路径：2、3、5 应被解析为 vector<int>。
+  // 场景 1：验证正常数据流。
+  // "2,3,5" 必须先进入 variant 的 vector<int> 成功分支；若类型不对，第一条
+  // 断言失败。随后以引用读取该数组，验证求和结果为 10。
   auto parsed = stage1::parse_numbers("2,3,5");
-
-  // 先检查 variant 的当前候选，再使用 std::get 取值。
-  // 如果跳过检查且候选类型错误，std::get 会抛 bad_variant_access。
   assert(std::holds_alternative<std::vector<int>>(parsed));
-
-  // const& 避免复制 vector；引用有效期依赖 parsed。
   const auto& values = std::get<std::vector<int>>(parsed);
-
-  // optional 有值且内容为 10 时，该比较才成立。
   assert(stage1::sum_if_not_empty(values) == 10);
 
-  // 错误路径：x 不是完整整数，结果应保存错误 string_view。
+  // 场景 2：验证错误不会被忽略。
+  // "x" 不是整数；若实现错误地跳过它、接受部分内容或返回成功数组，此断言都会失败。
   auto invalid = stage1::parse_numbers("2,x");
   assert(std::get<std::string_view>(invalid) == "invalid integer");
 
-  // {} 构造一个临时空 vector；函数应返回 nullopt。
+  // 场景 3：验证空数组的语义。
+  // 这里要的不是数值 0，而是 optional 没有值；若误把空数组当成普通求和结果，
+  // has_value() 会变为 true，此断言便会失败。
   assert(!stage1::sum_if_not_empty({}).has_value());
 
-  // 全部断言通过后返回 0，CTest 将测试标记为 Passed。
   return 0;
 }

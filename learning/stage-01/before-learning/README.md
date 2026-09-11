@@ -44,6 +44,7 @@ Python 发起算子
 
 | 顺序 | 文档 | 解决的问题 |
 | --- | --- | --- |
+| 0 | [语法地基](00-cpp-basics/README.md) | 读懂类型、函数、引用、指针和现代语法 |
 | 1 | [生命周期](01-lifetime/README.md) | RAII、构造、析构、拷贝和移动 |
 | 2 | [智能指针](02-smart-pointers/README.md) | 独占、共享和观察所有权 |
 | 3 | [STL基础](03-stl/README.md) | 容器、迭代器、算法和 allocator |

@@ -1,8 +1,0 @@
-add_library(modern_types_core src/runtime_demo.cpp)
-target_include_directories(modern_types_core PUBLIC include)
-target_link_libraries(modern_types_core PUBLIC stage1_options)
-add_executable(modern_types_demo src/main.cpp)
-target_link_libraries(modern_types_demo PRIVATE modern_types_core)
-add_executable(modern_types_test tests/runtime_test.cpp)
-target_link_libraries(modern_types_test PRIVATE modern_types_core)
-add_test(NAME modern_types_test COMMAND modern_types_test)

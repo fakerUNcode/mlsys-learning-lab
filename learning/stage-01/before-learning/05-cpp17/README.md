@@ -17,13 +17,13 @@
 
 ## 程序实例
 
-[现代类型示例](../../examples/03-modern-types/README.md)将输入解析为成功 vector 或错误 view，并把空集求和表达为 `nullopt`。
+[阶段示例](../../examples/README.md)将输入解析为成功 vector 或错误 view，并把空集求和表达为 `nullopt`。
 
 ## 部署说明
 
 ```bash
-cmake --build build/stage1 --target modern_types_demo
-./build/stage1/03-modern-types/modern_types_demo 1,2,3,4
+cmake --build build/stage1-lifetime --target stage1_demo
+./build/stage1-lifetime/stage1_demo 1,2,3,4
 ```
 
 ## 直观理解

@@ -22,10 +22,6 @@
 
 本次程序只使用 CPU 和标准 C++17，没有调用 CUDA Runtime，也没有分配 Device Memory。报告中涉及 GPU buffer 的内容只用于说明知识迁移关系，不代表本实验已经验证 GPU 生命周期。
 
-## 目录变更
-
-报告记录的是重构前的 `stage1_demo/stage1_test`。同一份解析源码现已归入[现代类型示例](../../learning/stage-01/examples/03-modern-types/README.md)，目标改名为 `modern_types_demo/modern_types_test`。历史输出保持原样，新运行命令以示例 README 为准。
-
 ## 后续任务
 
 完成现有[练习测评](../../learning/stage-01/exercises/README.md)后，再把纯 CPU 所有权模型扩展为可选 CUDA 环境下的 `GpuBuffer` RAII 包装器。

@@ -17,44 +17,21 @@
 - 输出四章、共千行以上的实验解析报告；
 - 保存 CUDA Vector Add 实测结果；
 - 将阶段 1 讲义按九个主题拆分；
-- 将示例拆成生命周期、智能指针、现代类型三个独立工程；
-- 使用新顶层 CMake 构建三项测试，结果 `3/3` 通过。
+- 曾尝试把示例拆成三个工程，随后发现这会让既有报告、目标名和命令失配；
+- 最终恢复原始单工程，并把详细注释放在与报告一致的源码和 CMake 中。
 
 ## 今日证据
 
-新目录的验证结果：
+最终目录的验证结果：
 
 ```text
-lifetime_test      Passed
-smart_pointer_test Passed
-modern_types_test  Passed
+stage1_test Passed
 
 100% tests passed
-0 tests failed out of 3
+0 tests failed out of 1
 ```
 
-生命周期示例输出：
-
-```text
-acquire 1024 elements
-move ownership
-source_size=0
-target_size=1024
-release 1024 elements
-```
-
-它表明模拟 buffer 在构造时获取资源，移动后源对象为空，最终只有目标对象释放资源。
-
-智能指针示例输出：
-
-```text
-load demo-model
-owners=2
-unload demo-model
-cache_expired=true
-```
-
-它表明两个请求共同拥有模型；请求结束后模型卸载；只持有 `weak_ptr` 的缓存没有延长模型寿命。
+当前可执行程序输出 `count=4 sum=10` 和 `status=ok`。它验证解析、vector、variant、optional 与 unique_ptr 路径；模拟 GPU buffer 和 shared/weak 模型缓存仍属于讲义内容，不能计为已经运行验证。
 
 ## 掌握边界
 
@@ -64,7 +41,6 @@ cache_expired=true
 - CTest 根据退出状态判断测试结果；
 - `vector` 和 `unique_ptr` 的自动清理；
 - 移动后所有权由源对象转给目标对象；
-- `shared_ptr` 强引用数量与 `weak_ptr` 观察关系；
 - `variant` 成功/错误分支；
 - `optional` 的有值/无值表达；
 - shell 退出码；
@@ -75,7 +51,7 @@ cache_expired=true
 - 真实 `cudaMalloc/cudaFree`；
 - CUDA Stream 上的异步资源寿命；
 - 自定义拷贝赋值和移动赋值；
-- `shared_ptr` 循环引用；
+- `shared_ptr` 引用计数、weak_ptr 观察和循环引用；
 - 迭代器失效；
 - 多 dtype 模板；
 - 动态库 `.so` 和符号故障；
@@ -100,11 +76,11 @@ cache_expired=true
 
 下一小节只做智能指针，不同时展开 STL 或并发：
 
-1. 运行 `smart_pointer_demo`；
+1. 在现有单工程中新增智能指针代码前，先确定它对应哪篇报告；
 2. 画出两个 `shared_ptr` 与一个 `weak_ptr` 的关系；
-3. 在每个作用域边界记录 `use_count()`；
-4. 删除最后一个强引用后检查 `expired()`；
-5. 完成一份不含猜测的运行记录。
+3. 设计每个作用域边界应记录的 `use_count()`；
+4. 设计最后一个强引用删除后的 `expired()` 检查；
+5. 同时更新源码、CMake、测试、README 和报告，再运行验证。
 
 ## 直观理解
 

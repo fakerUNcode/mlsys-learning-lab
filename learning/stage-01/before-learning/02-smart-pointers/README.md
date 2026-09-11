@@ -31,14 +31,11 @@ n_s
 
 ## 程序实例
 
-见[指针示例](../../examples/02-smart-pointers/README.md)。它模拟两个请求共享模型，而缓存不延长模型寿命。
+本节暂时只有讲义中的 `Model` 代码片段。当前[阶段示例](../../examples/README.md)只实际运行 `unique_ptr`；`shared_ptr/weak_ptr` 独立程序列入后续计划，不能写成已经验证。
 
 ## 部署说明
 
-```bash
-cmake --build build/stage1 --target smart_pointer_demo
-./build/stage1/02-smart-pointers/smart_pointer_demo
-```
+当前没有 `shared_ptr/weak_ptr` 可执行目标，因此本节不提供容易误解的运行命令。新增程序时必须同步增加 CMake 目标、测试和对应报告，再把命令写到这里。
 
 ## 直观理解
 

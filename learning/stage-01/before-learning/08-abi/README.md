@@ -20,9 +20,9 @@ ABI 约定调用方式、类型布局、符号命名和异常边界。PyTorch ex
 ## 排查命令
 
 ```bash
-nm -C ./build/stage1/03-modern-types/modern_types_demo
-ldd ./build/stage1/03-modern-types/modern_types_demo
-readelf -d ./build/stage1/03-modern-types/modern_types_demo
+nm -C ./build/stage1-lifetime/stage1_demo
+ldd ./build/stage1-lifetime/stage1_demo
+readelf -d ./build/stage1-lifetime/stage1_demo
 ```
 
 不要对来源不可信的二进制执行 `ldd`。

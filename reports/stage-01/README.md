@@ -12,7 +12,9 @@
 | [构建解析](02-build.md) | CMake、编译、静态库、链接和 CTest |
 | [源码解析](03-code.md) | 头文件、解析函数、入口和对象生命周期 |
 | [测试检查](04-test.md) | 测试分支、ASan、UBSan、局限与排错 |
-| [今日总结](05-daily-summary.md) | 今日证据、掌握边界与剩余计划 |
+| [历史总结](05-daily-summary.md) | 旧版当日复盘；新日志已迁移至 daily-record |
+
+最新学习进度与每日记录见 [daily-record](../../daily-record/README.md)。
 
 ## 阅读顺序
 

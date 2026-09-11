@@ -4,6 +4,8 @@
 
 > 项目正在持续建设。目前处于阶段 1：C++ 与 Linux Runtime。目录存在不代表对应实现已经完成，请以各模块的“当前状态”为准。
 
+当前学习位置为“阶段 1 → 第 00 节语法地基 → 入门测评修正”。每日记录和总进度统一见 [学习进度](daily-record/README.md)。
+
 ## 项目目标
 
 这里不只收集代码或笔记。每个实验都应形成一条可复现的证据链：
@@ -66,6 +68,7 @@ python benchmarks/benchmark_vector_add.py \
 | 路径 | 内容 | 文档 |
 | --- | --- | --- |
 | `learning/` | 分阶段讲义、实例与练习 | [学习入口](learning/README.md) |
+| `daily-record/` | 每日学习日志与当前进度 | [学习进度](daily-record/README.md) |
 | `benchmarks/` | 计时、输入矩阵和结果规范 | [基准测试](benchmarks/README.md) |
 | `cuda_kernels/` | CUDA kernel 与性能实验 | [CUDA 算子](cuda_kernels/README.md) |
 | `pytorch_extensions/` | C++/CUDA extension | [PyTorch 扩展](pytorch_extensions/README.md) |
@@ -112,6 +115,7 @@ ctest --test-dir /tmp/mlsys-stage1-build --output-on-failure
 
 - [Infra 学习指南](Infra%20Introduction.md)：实习前路线、实习后深化方向与验收标准。
 - [学习入口](learning/README.md)：当前阶段化材料。
+- [学习进度](daily-record/README.md)：每日记录、掌握边界与下一步。
 - [部署指南](DEPLOYMENT_GUIDE.md)：安装、运行与排障。
 - [学习报告](LEARNING_REPORT.md)：已有知识总结。
 

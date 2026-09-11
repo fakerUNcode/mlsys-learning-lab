@@ -2,6 +2,8 @@
 
 主题：面向 CUDA Host 侧开发的 C++ 必需知识，建议用时 3～4 周。
 
+当前进度：第 `00` 节“语法地基”的入门测评修正。总进度与每日证据见 [学习进度](../../daily-record/README.md)。
+
 ## 主线位置
 
 本阶段不追求完整掌握现代 C++，只获得继续学习 GPU 并行、CUDA kernel 和 PyTorch 扩展所需的最低闭环：
@@ -33,16 +35,17 @@ allocator、concept、协程和复杂 ABI 只要求能读懂、能查询。通�
 ## 学习顺序
 
 1. [前置总览](before-learning/README.md)
-2. [生命周期](before-learning/01-lifetime/README.md)
-3. [智能指针](before-learning/02-smart-pointers/README.md)
-4. [STL基础](before-learning/03-stl/README.md)
-5. [模板特性](before-learning/04-templates/README.md)
-6. [C++17](before-learning/05-cpp17/README.md)
-7. [C++20](before-learning/06-cpp20/README.md)
-8. [错误处理](before-learning/07-errors/README.md)
-9. [ABI链接](before-learning/08-abi/README.md)
-10. [构建测试](before-learning/09-build-test/README.md)
-11. [程序实例](examples/README.md)
-12. [练习测评](exercises/README.md)
+2. [语法地基](before-learning/00-cpp-basics/README.md)
+3. [生命周期](before-learning/01-lifetime/README.md)
+4. [智能指针](before-learning/02-smart-pointers/README.md)
+5. [STL基础](before-learning/03-stl/README.md)
+6. [模板特性](before-learning/04-templates/README.md)
+7. [C++17](before-learning/05-cpp17/README.md)
+8. [C++20](before-learning/06-cpp20/README.md)
+9. [错误处理](before-learning/07-errors/README.md)
+10. [ABI链接](before-learning/08-abi/README.md)
+11. [构建测试](before-learning/09-build-test/README.md)
+12. [程序实例](examples/README.md)
+13. [练习测评](exercises/README.md)
 
 练习页不含答案。提交你的答案后，再逐步批改与评分。

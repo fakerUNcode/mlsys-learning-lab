@@ -2,6 +2,8 @@
 
 本目录保存阶段 1“C++ 必需基础”的实验报告。报告按章节拆分，避免把构建日志、源码解析和结论堆在同一个大文件中。
 
+本目录保留早期单工程布局下的实验过程记录。当前课程讲义和按主题拆分的可执行示例以 [`learning/stage-01`](../../learning/stage-01/README.md) 为准；新的示例构建入口见其 [`examples/README.md`](../../learning/stage-01/examples/README.md)。
+
 ## 本次实验
 
 主题：C++17 生命周期示例的构建、运行、测试与 Sanitizer 验证。

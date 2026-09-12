@@ -9,9 +9,9 @@
 ```bash
 c++ \
   -std=c++17 \
-  -Ilearning/stage-01/examples/include \
-  learning/stage-01/exercises/00-cpp-basics/second-question.cpp \
-  learning/stage-01/examples/src/runtime_demo.cpp \
+  -Ilearning/stage-01/examples/00-runtime-foundations/include \
+  learning/stage-01/exercises/00-cpp-language-basics/variant-error-path-exercise.cpp \
+  learning/stage-01/examples/00-runtime-foundations/src/runtime_demo.cpp \
   -o build/stage1-checkpoint-q2
 ```
 

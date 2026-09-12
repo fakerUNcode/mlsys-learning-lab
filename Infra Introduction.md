@@ -2,7 +2,7 @@
 
 面向准备进入 AI Infra、CUDA 算子、推理优化或 ML Systems 方向的学习者。本路线将目标拆成两个时期：实习前建立可投递的核心能力，实习后再扩展到训推系统、分布式、编译器和硬件。
 
-> 当前阶段：阶段 1，C++ 必需基础；当前小节为第 00 节“语法地基”的入门测评修正。
+> 当前阶段：阶段 1，C++ 必需基础；第 00～03 节已完成，下一步学习第 04 节模板与类型特性。
 >
 > 预计投递：约一年后。
 >
@@ -469,12 +469,12 @@ s(q-z)
 
 当前只推进阶段 1：
 
-1. 完成 [C++ 前置讲义](learning/stage-01/before-learning/README.md)；
-2. 构建并运行 [阶段 1 示例](learning/stage-01/examples/README.md)；
-3. 提交 [练习测评](learning/stage-01/exercises/README.md)；
+1. 学习 [`unique_ptr`、`shared_ptr`、`weak_ptr`](learning/stage-01/lessons/02-smart-pointer-ownership/README.md) 并运行专题示例；
+2. 解释独占所有权转移、强引用计数和弱引用过期检查；
+3. 继续学习 STL、模板与 C++17、错误处理、ABI 和构建测试；
 4. 用 RAII 和移动语义实现一个 GPU 资源模型；
 5. 通过 CTest、ASan 和 UBSan；
-6. 达到验收线后进入 GPU 并行基础，不扩展 RPC 或复杂协程。
+6. 达到阶段验收线后进入 GPU 并行基础，不扩展 RPC 或复杂协程。
 
 ## 资料入口
 

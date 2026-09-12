@@ -109,7 +109,7 @@ if (text.empty()) {
 
 ## 程序实例
 
-在 [main.cpp](../../examples/src/main.cpp) 中依次找出 `input`、`result`、`values` 和 `sum`，为每个名字写下：
+在 [main.cpp](../../examples/00-runtime-foundations/src/main.cpp) 中依次找出 `input`、`result`、`values` 和 `sum`，为每个名字写下：
 
 - 完整类型；
 - 是否拥有底层数据；

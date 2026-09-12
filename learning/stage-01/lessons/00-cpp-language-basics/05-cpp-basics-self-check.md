@@ -24,7 +24,7 @@ const auto& values =
    1. 保存`std::vector< int >`。
 
 2. `values` 是否复制了两个整数？依据是什么？
-   1. values没有复制两个整数，在确认result是`<std::vector< int >`后，std::get输出了对result的左值引用给values，values只是result的一个别名。
+   1. values没有复制两个整数，在确认result是`<std::vector< int >`后，std::get输出了对result的左值引用给values，values只是result中vector的一个别名。
 
 3. 谁拥有这组整数？
    1. result

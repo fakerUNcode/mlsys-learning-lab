@@ -7,7 +7,7 @@ learning/
 ├── stage-00/
 │   └── before-learning/   # 已有环境与 CUDA 资料导航
 └── stage-01/
-    ├── before-learning/   # C++ 与 Linux Runtime 前置讲解
+    ├── lessons/   # C++ 与 Linux Runtime 分节讲义
     ├── examples/          # 可编译程序
     └── exercises/         # 待作答练习，不含答案
 ```

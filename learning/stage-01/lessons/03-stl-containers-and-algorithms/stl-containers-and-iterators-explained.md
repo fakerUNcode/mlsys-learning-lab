@@ -146,9 +146,7 @@ void print_op_name(std::string_view name) {
 
 
 
-C++
-
-```
+```c++
 std::pair<int, int> shape{1920, 1080};
 auto [width, height] = shape; // 直接拆出 width 和 height
 ```

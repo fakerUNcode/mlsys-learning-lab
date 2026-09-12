@@ -19,7 +19,7 @@ CUDA kernel 异步执行，launch 成功不代表执行完成。必要同步点�
 
 ## 延伸阅读
 
-[详细笔记](detailed-notes.md)保留原错误、ABI 和构建综合讲解。
+[详细笔记](cpp-error-handling-examples.md)保留原错误、ABI 和构建综合讲解。
 
 ## 程序实例
 

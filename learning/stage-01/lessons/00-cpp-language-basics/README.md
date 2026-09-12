@@ -50,11 +50,11 @@
 
 | 顺序 | 文档 | 本次任务 |
 | --- | --- | --- |
-| 1 | [代码结构](01-code-structure.md) | 看懂一个 C++ 工程怎样组成 |
-| 2 | [类型与值](02-types-values.md) | 看懂声明、初始化、const 和 auto |
-| 3 | [函数内存](03-functions-memory.md) | 看懂值、引用、指针和生命周期 |
-| 4 | [现代语法](04-modern-syntax.md) | 看懂模板、variant、optional 和绑定 |
-| 5 | [入门测评](05-checkpoint.md) | 判断是否可以进入第 01 节 |
+| 1 | [代码结构](01-cpp-files-headers-and-build-targets.md) | 看懂一个 C++ 工程怎样组成 |
+| 2 | [类型与值](02-cpp-types-objects-and-values.md) | 看懂声明、初始化、const 和 auto |
+| 3 | [函数内存](03-functions-references-and-memory.md) | 看懂值、引用、指针和生命周期 |
+| 4 | [现代语法](04-modern-cpp-syntax-reading-guide.md) | 看懂模板、variant、optional 和绑定 |
+| 5 | [入门测评](05-cpp-basics-self-check.md) | 判断是否可以进入第 01 节 |
 
 ## 通过标准
 

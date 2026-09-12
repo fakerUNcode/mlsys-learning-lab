@@ -360,7 +360,7 @@ std::from_chars(
 
 ## 程序实例
 
-按这个顺序阅读 [runtime_demo.cpp](../../examples/src/runtime_demo.cpp)：
+按这个顺序阅读 [runtime_demo.cpp](../../examples/00-runtime-foundations/src/runtime_demo.cpp)：
 
 1. `string_view` 划分当前 token；
 2. 结构化绑定接收转换结果；

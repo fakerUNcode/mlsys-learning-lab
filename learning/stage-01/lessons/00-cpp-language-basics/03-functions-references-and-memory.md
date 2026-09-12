@@ -106,7 +106,7 @@ auto values =
 
 ## 程序实例
 
-阅读 [main.cpp](../../examples/src/main.cpp)，沿着下面的所有权变化口述一遍：
+阅读 [main.cpp](../../examples/00-runtime-foundations/src/main.cpp)，沿着下面的所有权变化口述一遍：
 
 ```text
 result 拥有成功数组

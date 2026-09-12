@@ -63,15 +63,15 @@ stage1_test Passed
 
 按阶段 1 新导航依次推进：
 
-1. 完成[生命周期](../../learning/stage-01/before-learning/01-lifetime/README.md)练习，能手画构造、移动与析构顺序；
-2. 运行[智能指针](../../learning/stage-01/before-learning/02-smart-pointers/README.md)示例，修改作用域并预测引用计数；
-3. 学习[STL基础](../../learning/stage-01/before-learning/03-stl/README.md)，重点验证 vector 扩容后的迭代器失效；
-4. 学习[模板特性](../../learning/stage-01/before-learning/04-templates/README.md)，为后续多 dtype kernel 做准备；
-5. 复盘[C++17](../../learning/stage-01/before-learning/05-cpp17/README.md)并补足边界测试；
-6. 快速浏览[C++20](../../learning/stage-01/before-learning/06-cpp20/README.md)，不深入协程实现；
-7. 对照[错误处理](../../learning/stage-01/before-learning/07-errors/README.md)改进解析错误上下文；
-8. 完成[ABI链接](../../learning/stage-01/before-learning/08-abi/README.md)的 `nm/ldd/readelf` 实验；
-9. 使用[构建测试](../../learning/stage-01/before-learning/09-build-test/README.md)统一复查 ASan/UBSan；
+1. 完成[生命周期](../../learning/stage-01/lessons/01-object-lifetime-and-move/README.md)练习，能手画构造、移动与析构顺序；
+2. 运行[智能指针](../../learning/stage-01/lessons/02-smart-pointer-ownership/README.md)示例，修改作用域并预测引用计数；
+3. 学习[STL基础](../../learning/stage-01/lessons/03-stl-containers-and-algorithms/README.md)，重点验证 vector 扩容后的迭代器失效；
+4. 学习[模板特性](../../learning/stage-01/lessons/04-templates-and-type-traits/README.md)，为后续多 dtype kernel 做准备；
+5. 复盘[C++17](../../learning/stage-01/lessons/05-cpp17-types-and-features/README.md)并补足边界测试；
+6. 快速浏览[C++20](../../learning/stage-01/lessons/06-cpp20-concepts-and-coroutines/README.md)，不深入协程实现；
+7. 对照[错误处理](../../learning/stage-01/lessons/07-error-handling/README.md)改进解析错误上下文；
+8. 完成[ABI链接](../../learning/stage-01/lessons/08-abi-and-dynamic-linking/README.md)的 `nm/ldd/readelf` 实验；
+9. 使用[构建测试](../../learning/stage-01/lessons/09-build-test-sanitizers/README.md)统一复查 ASan/UBSan；
 10. 完成阶段练习后进入 GPU 并行基础。
 
 ## 下次任务

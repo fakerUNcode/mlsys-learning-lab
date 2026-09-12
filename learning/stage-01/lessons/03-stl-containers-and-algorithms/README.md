@@ -17,11 +17,12 @@
 
 范围元素数量为：
 
-\[
+$$
 N
 \overset{\text{迭代器作差}}{=}
 e-b
-\]
+$$
+
 
 ## 符号说明
 
@@ -33,11 +34,11 @@ e-b
 
 ## 延伸阅读
 
-[详细笔记](detailed-notes.md)还包含模板、C++17 和 allocator 的原综合讲解；拆分后的主题以各目录 README 为准。
+[详细笔记](stl-containers-and-iterators-explained.md)还包含模板、C++17 和 allocator 的原综合讲解；拆分后的主题以各目录 README 为准。
 
 ## 程序实例
 
-[阶段示例](../../examples/README.md)使用 vector 和 accumulate。
+[STL 专题示例](../../examples/03-stl-containers-and-algorithms/README.md)使用一个简化的推理任务队列演示 `vector`、迭代器、`sort`、`find_if`、`count_if` 和 `accumulate`。
 
 ## 直观理解
 

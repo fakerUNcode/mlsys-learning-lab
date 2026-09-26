@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mlsys-learning-lab"
 version = "0.1.0"
-description = "Learning projects for CUDA, inference systems and AI compilers"
+description = "Foundation learning and verification experiments for PyTorch, CUDA and ML systems"
 requires-python = ">=3.10"
 dependencies = [
     "numpy",

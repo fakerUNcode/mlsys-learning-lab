@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-该模块处于设计阶段，尚无可安装扩展。阶段 1 正在准备 C++ 生命周期、ABI、CMake 和错误处理基础，见[阶段 1](../learning/stage-01/README.md)。
+该模块处于设计阶段，尚无可安装扩展。已有 C++ 材料保留，接口与构建知识按需补缺，见[历史阶段 1](../learning/stage-01/README.md)。本模块用于最小接口验证；真实模型算子集成在[年度主项目](../../overlap-decode/README.md)。
 
 ## 目录约定
 
@@ -24,7 +24,8 @@ pytorch_extensions/
 - 显式检查 device、dtype、shape、layout 和 contiguous 要求。
 - 遵循 PyTorch 当前 stream，不在库代码中隐式搬运 Tensor。
 - 检查 CUDA API 和 kernel launch 错误，并转换为清楚的上层错误。
-- 若算子参与训练，需要实现并测试 backward。
+- 推理算子明确不支持 backward 的边界；若参与训练，再实现并测试 backward。
+- 正式集成明确 dispatcher 注册、alias/mutation 契约；需要编译支持时增加 FakeTensor/meta 实现，注册检查和数值测试分开。
 - 记录 PyTorch、CUDA、编译器、ABI 和 Compute Capability。
 - Python 引用、C++ 对象和 Device buffer 的所有权必须清楚。
 

@@ -63,8 +63,8 @@ int main() {
               // 如果程序能运行到这里，说明 left 和 right 的 priority 绝对相等。
               // 此时采用 `<` 代表升序：如果 left 的批量大小更小，就返回 true。
               // 这保证了在优先级完全一样的情况下，batch_size 较小的任务会排在前面。
-              return left.batch_size < right.batch_size;
-            });
+              return left.batch_size < right.batch_size; 
+            });   
 
   std::cout << "scheduled tasks:\n";
 

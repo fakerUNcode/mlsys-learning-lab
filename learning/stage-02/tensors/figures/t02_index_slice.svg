@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="450" viewBox="0 0 1040 450" role="img" aria-labelledby="title desc">
+<title id="title">整数索引和切片如何改变 shape</title><desc id="desc">对 shape 二三四的张量，整数索引保留所选行的数字但去掉长度为一的行轴；单行切片保留该轴。</desc>
+<rect width="1040" height="410" rx="18" fill="#f7fafc"/>
+<text x="36" y="46" font-family="sans-serif" font-size="24" font-weight="700" fill="#18324b">输入有两个样本；每个样本是 3 行 × 4 列</text>
+<text x="45" y="79" font-family="sans-serif" font-size="17" fill="#526678">x.shape = (2, 3, 4)　这里高亮轴 1 的索引 1（第二行）</text>
+<g font-family="sans-serif" text-anchor="middle" font-size="17">
+  <text x="65" y="118" fill="#315a7d">样本 0</text>
+  <g fill="#fff" stroke="#93a9bb"><rect x="35" y="130" width="62" height="38"/><rect x="97" y="130" width="62" height="38"/><rect x="159" y="130" width="62" height="38"/><rect x="221" y="130" width="62" height="38"/></g>
+  <g fill="#334e68"><text x="66" y="155">0</text><text x="128" y="155">1</text><text x="190" y="155">2</text><text x="252" y="155">3</text></g>
+  <g fill="#ffe2a8" stroke="#d39024" stroke-width="2"><rect x="35" y="168" width="62" height="38"/><rect x="97" y="168" width="62" height="38"/><rect x="159" y="168" width="62" height="38"/><rect x="221" y="168" width="62" height="38"/></g>
+  <g fill="#5d3b00"><text x="66" y="193">4</text><text x="128" y="193">5</text><text x="190" y="193">6</text><text x="252" y="193">7</text></g>
+  <g fill="#fff" stroke="#93a9bb"><rect x="35" y="206" width="62" height="38"/><rect x="97" y="206" width="62" height="38"/><rect x="159" y="206" width="62" height="38"/><rect x="221" y="206" width="62" height="38"/></g>
+  <g fill="#334e68"><text x="66" y="231">8</text><text x="128" y="231">9</text><text x="190" y="231">10</text><text x="252" y="231">11</text></g>
+  <text x="65" y="278" fill="#315a7d">样本 1</text>
+  <g fill="#fff" stroke="#93a9bb"><rect x="35" y="289" width="62" height="38"/><rect x="97" y="289" width="62" height="38"/><rect x="159" y="289" width="62" height="38"/><rect x="221" y="289" width="62" height="38"/></g>
+  <g fill="#334e68"><text x="66" y="314">12</text><text x="128" y="314">13</text><text x="190" y="314">14</text><text x="252" y="314">15</text></g>
+  <g fill="#ffe2a8" stroke="#d39024" stroke-width="2"><rect x="35" y="327" width="62" height="38"/><rect x="97" y="327" width="62" height="38"/><rect x="159" y="327" width="62" height="38"/><rect x="221" y="327" width="62" height="38"/></g>
+  <g fill="#5d3b00"><text x="66" y="352">16</text><text x="128" y="352">17</text><text x="190" y="352">18</text><text x="252" y="352">19</text></g>
+  <g fill="#fff" stroke="#93a9bb"><rect x="35" y="365" width="62" height="38"/><rect x="97" y="365" width="62" height="38"/><rect x="159" y="365" width="62" height="38"/><rect x="221" y="365" width="62" height="38"/></g>
+  <g fill="#334e68"><text x="66" y="390">20</text><text x="128" y="390">21</text><text x="190" y="390">22</text><text x="252" y="390">23</text></g>
+</g>
+<path d="M315 245H390" stroke="#315a7d" stroke-width="3"/><path d="M378 235L392 245L378 255" fill="none" stroke="#315a7d" stroke-width="3"/>
+<rect x="405" y="116" width="290" height="104" rx="14" fill="#fff" stroke="#cad5df"/>
+<text x="430" y="151" font-family="sans-serif" font-size="18" font-weight="700" fill="#18324b">整数索引：x[:, 1, :]</text>
+<text x="430" y="181" font-family="sans-serif" font-size="16" fill="#425466">每个样本取中间一行</text><text x="430" y="207" font-family="sans-serif" font-size="16" fill="#425466">shape (2, 4)：行轴被选定后去掉</text>
+<rect x="405" y="250" width="290" height="104" rx="14" fill="#fff" stroke="#cad5df"/>
+<text x="430" y="285" font-family="sans-serif" font-size="18" font-weight="700" fill="#18324b">单行切片：x[:, 1:2, :]</text>
+<text x="430" y="315" font-family="sans-serif" font-size="16" fill="#425466">取相同的两行数值</text><text x="430" y="341" font-family="sans-serif" font-size="16" fill="#425466">shape (2, 1, 4)：保留长度 1 的行轴</text>
+<path d="M713 168H770M713 302H770" stroke="#315a7d" stroke-width="3"/><path d="M758 158L772 168L758 178M758 292L772 302L758 312" fill="none" stroke="#315a7d" stroke-width="3"/>
+<rect x="790" y="150" width="218" height="176" rx="14" fill="#eef5fa" stroke="#9bb2c5"/>
+<text x="815" y="188" font-family="sans-serif" font-size="18" font-weight="700" fill="#18324b">数值一样</text>
+<text x="815" y="222" font-family="sans-serif" font-size="16" fill="#425466">区别是结果 shape：</text>
+<text x="815" y="257" font-family="sans-serif" font-size="17" fill="#315a7d">(2, 4)</text>
+<text x="875" y="257" font-family="sans-serif" font-size="17" fill="#425466">去掉行轴</text>
+<text x="815" y="292" font-family="sans-serif" font-size="17" fill="#315a7d">(2, 1, 4)</text>
+<text x="902" y="292" font-family="sans-serif" font-size="17" fill="#425466">保留</text>
+</svg>

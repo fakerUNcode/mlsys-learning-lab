@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="430" viewBox="0 0 1120 430" role="img" aria-labelledby="title desc">
+<title id="title">转置视图如何改变 stride 和 storage 槽位对应</title><desc id="desc">原矩阵 shape 二乘三 stride 三一，转置后 shape 三乘二 stride 一三，仍访问原 storage。转置后按行读槽位零三一四二五。</desc>
+<rect width="1120" height="430" rx="18" fill="#f7fafc"/>
+<text x="32" y="46" font-family="sans-serif" font-size="24" font-weight="700" fill="#18324b">transpose：shape 与 stride 交换，底层 storage 不搬家</text>
+<g font-family="sans-serif" text-anchor="middle">
+ <text x="205" y="94" font-size="19" font-weight="700" fill="#315a7d">原 Tensor x</text><text x="205" y="122" font-size="16" fill="#526678">shape (2,3)　stride (3,1)</text>
+ <g font-size="19"><rect x="80" y="145" width="76" height="52" fill="#e8f1f8" stroke="#7192ad"/><text x="118" y="179" fill="#18324b">10·0</text><rect x="158" y="145" width="76" height="52" fill="#e8f1f8" stroke="#7192ad"/><text x="196" y="179" fill="#18324b">20·1</text><rect x="236" y="145" width="76" height="52" fill="#e8f1f8" stroke="#7192ad"/><text x="274" y="179" fill="#18324b">30·2</text>
+ <rect x="80" y="199" width="76" height="52" fill="#e8f1f8" stroke="#7192ad"/><text x="118" y="233" fill="#18324b">40·3</text><rect x="158" y="199" width="76" height="52" fill="#e8f1f8" stroke="#7192ad"/><text x="196" y="233" fill="#18324b">50·4</text><rect x="236" y="199" width="76" height="52" fill="#e8f1f8" stroke="#7192ad"/><text x="274" y="233" fill="#18324b">60·5</text></g>
+ <text x="205" y="288" font-size="15" fill="#526678">每格：数值 · storage 槽位</text>
+ <text x="560" y="194" font-size="28" fill="#526678">transpose(0,1)</text><path d="M410 205H710" stroke="#315a7d" stroke-width="3"/><path d="M696 195L710 205L696 215" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <text x="880" y="94" font-size="19" font-weight="700" fill="#315a7d">转置视图 t</text><text x="880" y="122" font-size="16" fill="#526678">shape (3,2)　stride (1,3)</text>
+ <g font-size="19"><rect x="770" y="145" width="90" height="52" fill="#fff3d9" stroke="#d39024"/><text x="815" y="179" fill="#5d3b00">10·0</text><rect x="862" y="145" width="90" height="52" fill="#fff3d9" stroke="#d39024"/><text x="907" y="179" fill="#5d3b00">40·3</text>
+ <rect x="770" y="199" width="90" height="52" fill="#fff3d9" stroke="#d39024"/><text x="815" y="233" fill="#5d3b00">20·1</text><rect x="862" y="199" width="90" height="52" fill="#fff3d9" stroke="#d39024"/><text x="907" y="233" fill="#5d3b00">50·4</text>
+ <rect x="770" y="253" width="90" height="52" fill="#fff3d9" stroke="#d39024"/><text x="815" y="287" fill="#5d3b00">30·2</text><rect x="862" y="253" width="90" height="52" fill="#fff3d9" stroke="#d39024"/><text x="907" y="287" fill="#5d3b00">60·5</text></g>
+ <text x="560" y="353" font-size="17" fill="#425466">按 t 的行顺序访问原槽位：0 → 3 → 1 → 4 → 2 → 5（不是连续顺序）</text>
+</g>
+<rect x="61" y="375" width="999" height="34" rx="8" fill="#e9eef2"/><text x="560" y="398" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#425466">每格标注“值·槽位”；转置改变坐标到槽位的映射，未复制元素。</text>
+</svg>

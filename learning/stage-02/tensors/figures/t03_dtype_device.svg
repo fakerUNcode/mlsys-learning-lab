@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="400" viewBox="0 0 1080 400" role="img" aria-labelledby="title desc">
+<title id="title">dtype 与 device 转换会将值写入目标存储</title><desc id="desc">float32 转 float16 会编码到另一种存储；CPU 到 GPU 再回 CPU 都是不同存储中的对应元素槽位。</desc>
+<rect width="1080" height="400" rx="18" fill="#f7fafc"/>
+<text x="34" y="46" font-family="sans-serif" font-size="24" font-weight="700" fill="#18324b">dtype / device 转换：逻辑索引相同，目标 storage 不同</text>
+<text x="50" y="97" font-family="sans-serif" font-size="18" font-weight="700" fill="#315a7d">dtype 转换：float32 → float16</text>
+<g font-family="sans-serif" text-anchor="middle">
+ <rect x="50" y="117" width="270" height="98" rx="12" fill="#e8f1f8" stroke="#7192ad"/>
+ <text x="185" y="149" font-size="17" fill="#18324b">源 storage · float32（每项 4 B）</text>
+ <rect x="85" y="164" width="92" height="38" fill="#fff" stroke="#93a9bb"/><text x="131" y="189" font-size="15" fill="#334e68">槽0: 1.25</text>
+ <rect x="182" y="164" width="92" height="38" fill="#fff" stroke="#93a9bb"/><text x="228" y="189" font-size="15" fill="#334e68">槽1: 2.5</text>
+ <path d="M337 166H420" stroke="#315a7d" stroke-width="3"/><path d="M406 156L420 166L406 176" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <rect x="440" y="117" width="270" height="98" rx="12" fill="#eee9f7" stroke="#9582b4"/>
+ <text x="575" y="149" font-size="17" fill="#342553">目标 storage · float16（每项 2 B）</text>
+ <rect x="475" y="164" width="92" height="38" fill="#fff" stroke="#b4a7ca"/><text x="521" y="189" font-size="15" fill="#493b60">槽0: 1.25</text>
+ <rect x="572" y="164" width="92" height="38" fill="#fff" stroke="#b4a7ca"/><text x="618" y="189" font-size="15" fill="#493b60">槽1: 2.5</text>
+</g>
+<text x="50" y="260" font-family="sans-serif" font-size="18" font-weight="700" fill="#315a7d">device 转换：CPU → GPU → CPU</text>
+<g font-family="sans-serif" text-anchor="middle" font-size="15">
+ <rect x="50" y="278" width="235" height="77" rx="12" fill="#e8f1f8" stroke="#7192ad"/><text x="167" y="307" fill="#18324b" font-weight="700">CPU 原 storage</text><text x="167" y="334" fill="#425466">槽位 0..3：0, 1, 2, 3</text>
+ <path d="M295 316H390" stroke="#315a7d" stroke-width="3"/><path d="M376 306L390 316L376 326" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <rect x="410" y="278" width="235" height="77" rx="12" fill="#e5f3e8" stroke="#79a581"/><text x="527" y="307" fill="#20452a" font-weight="700">GPU 新 storage</text><text x="527" y="334" fill="#426c49">槽位 0..3：0, 1, 2, 3</text>
+ <path d="M655 316H750" stroke="#315a7d" stroke-width="3"/><path d="M736 306L750 316L736 326" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <rect x="770" y="278" width="260" height="77" rx="12" fill="#e8f1f8" stroke="#7192ad"/><text x="900" y="307" fill="#18324b" font-weight="700">返回后的 CPU storage</text><text x="900" y="334" fill="#425466">槽位 0..3：0, 1, 2, 3</text>
+</g>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+<title id="title">Tensor shape 与轴</title><desc id="desc">二维 Tensor shape 为二乘三，轴零表示行，轴一表示列，逻辑坐标一二对应数值六十。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#315a7d"/></marker></defs>
+<rect width="920" height="360" rx="18" fill="#f7fafc"/>
+<text x="42" y="52" font-family="sans-serif" font-size="25" font-weight="700" fill="#18324b">shape 说每个轴有多长，坐标用轴索引选一个元素</text>
+<text x="72" y="102" font-family="sans-serif" font-size="18" fill="#315a7d">x.shape = (2, 3)　 两行 × 三列</text>
+<g font-family="sans-serif" font-size="21" text-anchor="middle">
+  <rect x="90" y="128" width="100" height="62" rx="8" fill="#e8f1f8" stroke="#7192ad"/><text x="140" y="168" fill="#18324b">10</text>
+  <rect x="194" y="128" width="100" height="62" rx="8" fill="#e8f1f8" stroke="#7192ad"/><text x="244" y="168" fill="#18324b">20</text>
+  <rect x="298" y="128" width="100" height="62" rx="8" fill="#e8f1f8" stroke="#7192ad"/><text x="348" y="168" fill="#18324b">30</text>
+  <rect x="90" y="194" width="100" height="62" rx="8" fill="#e8f1f8" stroke="#7192ad"/><text x="140" y="234" fill="#18324b">40</text>
+  <rect x="194" y="194" width="100" height="62" rx="8" fill="#e8f1f8" stroke="#7192ad"/><text x="244" y="234" fill="#18324b">50</text>
+  <rect x="298" y="194" width="100" height="62" rx="8" fill="#ffe2a8" stroke="#d39024" stroke-width="2"/><text x="348" y="234" fill="#5d3b00">60</text>
+</g>
+<path d="M90 285H398" stroke="#315a7d" stroke-width="3" marker-end="url(#arrow)"/><text x="210" y="319" font-family="sans-serif" font-size="17" fill="#315a7d">轴 1：列索引 0、1、2（长度 3）</text>
+<path d="M55 128V256" stroke="#315a7d" stroke-width="3" marker-end="url(#arrow)"/><text x="20" y="288" font-family="sans-serif" font-size="17" fill="#315a7d" transform="rotate(-90 20 288)">轴 0：行索引（长度 2）</text>
+<rect x="500" y="125" width="365" height="135" rx="14" fill="#fff" stroke="#cad5df"/>
+<text x="530" y="164" font-family="sans-serif" font-size="20" fill="#18324b">逻辑坐标 x[1, 2]</text>
+<text x="530" y="201" font-family="sans-serif" font-size="18" fill="#425466">轴 0 取索引 1：第二行</text>
+<text x="530" y="233" font-family="sans-serif" font-size="18" fill="#425466">轴 1 取索引 2：第三列 → 60</text>
+</svg>

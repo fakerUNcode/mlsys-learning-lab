@@ -13,6 +13,8 @@
 
 每个实验建立独立目录，包含代码、测试和 README。当前没有这些实现，不把任务清单计为成果。
 
+本周已完成的 T01/T02 与正在进行的 T03 材料见 [Tensor 学习目录](tensors/README.md)、[T02 作答与批阅](tensors/t02/README.md)和[T03 实验记录](tensors/t03/README.md)。
+
 ## 第五至八周
 
 实现小型语言模型训练与生成，验证有/无 KV Cache 的下一 token logits，估算权重/激活/KV 容量。同步在 [年度主项目](../../../overlap-decode/README.md) 跑通公开小模型基线；本目录保留简化验证代码。

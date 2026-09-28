@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="330" viewBox="0 0 1000 330" role="img" aria-labelledby="title desc">
+<title id="title">批量矩阵乘法的 shape</title><desc id="desc">两个批次的三乘四矩阵乘两个批次的四乘五矩阵，得到两个批次的三乘五矩阵。</desc>
+<rect width="1000" height="330" rx="18" fill="#f7fafc"/>
+<text x="34" y="48" font-family="sans-serif" font-size="24" font-weight="700" fill="#18324b">批量矩阵乘法：末两轴做矩阵乘法，前面的轴是批次</text>
+<g font-family="sans-serif" text-anchor="middle">
+ <rect x="55" y="100" width="275" height="150" rx="14" fill="#e8f1f8" stroke="#7192ad"/>
+ <text x="192" y="137" font-size="20" font-weight="700" fill="#18324b">A.shape = (2, 3, 4)</text>
+ <text x="192" y="177" font-size="17" fill="#315a7d">batch = 2 个矩阵</text><text x="192" y="210" font-size="17" fill="#315a7d">每个矩阵 3 × 4</text>
+ <text x="367" y="188" font-size="34" fill="#526678">@</text>
+ <rect x="425" y="100" width="275" height="150" rx="14" fill="#eee9f7" stroke="#9582b4"/>
+ <text x="562" y="137" font-size="20" font-weight="700" fill="#342553">B.shape = (2, 4, 5)</text>
+ <text x="562" y="177" font-size="17" fill="#675587">batch = 2 个矩阵</text><text x="562" y="210" font-size="17" fill="#675587">每个矩阵 4 × 5</text>
+ <text x="735" y="188" font-size="34" fill="#526678">=</text>
+ <rect x="795" y="100" width="160" height="150" rx="14" fill="#e5f3e8" stroke="#79a581"/>
+ <text x="875" y="137" font-size="20" font-weight="700" fill="#20452a">C.shape</text><text x="875" y="168" font-size="20" font-weight="700" fill="#20452a">= (2, 3, 5)</text>
+ <text x="875" y="210" font-size="17" fill="#426c49">2 个 3 × 5</text>
+</g>
+<text x="63" y="290" font-family="sans-serif" font-size="17" fill="#425466">每个 batch： (3×4) @ (4×5) → (3×5)；内维 4 必须相等，batch 维 2 对 2。</text>
+</svg>

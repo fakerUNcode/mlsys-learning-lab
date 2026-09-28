@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="510" viewBox="0 0 1180 510" role="img" aria-labelledby="title desc">
+<title id="title">CUDA 编译路径和运行路径</title>
+<desc id="desc">左侧展示 cu 源码通过 CUDA Toolkit 中的 nvcc 编译为可执行程序；下方展示 PyTorch 或 Triton 发起运算或 JIT kernel。运行时通过 CUDA Runtime 或 Driver API、WSL GPU 驱动接口和 Windows NVIDIA 驱动，最终在 NVIDIA GPU 上执行。nvidia-smi 报告驱动支持的 CUDA 版本不等于已安装 Toolkit。</desc>
+<rect width="1180" height="510" rx="18" fill="#f7fafc"/>
+<text x="34" y="43" font-family="sans-serif" font-size="25" font-weight="700" fill="#18324b">CUDA 工作路径：编译与运行是不同步骤</text>
+<g font-family="sans-serif">
+ <rect x="38" y="83" width="220" height="98" rx="14" fill="#e8f1f8" stroke="#7192ad" stroke-width="2"/>
+ <text x="148" y="119" text-anchor="middle" font-size="19" font-weight="700" fill="#18324b">自定义 CUDA 源码</text>
+ <text x="148" y="150" text-anchor="middle" font-size="17" fill="#425466">vector_add.cu</text>
+ <path d="M260 132H311" stroke="#315a7d" stroke-width="3"/><path d="M297 122L311 132L297 142" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <rect x="320" y="83" width="224" height="98" rx="14" fill="#fff3d9" stroke="#d39024" stroke-width="2"/>
+ <text x="432" y="119" text-anchor="middle" font-size="19" font-weight="700" fill="#735000">CUDA Toolkit 12.8</text>
+ <text x="432" y="150" text-anchor="middle" font-size="17" fill="#735721">nvcc 编译器</text>
+ <path d="M546 132H597" stroke="#315a7d" stroke-width="3"/><path d="M583 122L597 132L583 142" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <rect x="606" y="83" width="230" height="98" rx="14" fill="#e8f3e9" stroke="#79a581" stroke-width="2"/>
+ <text x="721" y="119" text-anchor="middle" font-size="19" font-weight="700" fill="#20452a">本机可执行程序</text>
+ <text x="721" y="150" text-anchor="middle" font-size="16" fill="#426c49">包含面向 sm_120 的 kernel</text>
+ <text x="38" y="225" font-family="sans-serif" font-size="18" font-weight="700" fill="#315a7d">运行路径（执行 kernel 时会经过相应 API 到达 GPU）</text>
+ <rect x="38" y="250" width="300" height="100" rx="14" fill="#eef5fa" stroke="#9bb2c5" stroke-width="2"/>
+ <text x="188" y="287" text-anchor="middle" font-size="19" font-weight="700" fill="#18324b">PyTorch CUDA 运算</text>
+ <text x="188" y="319" text-anchor="middle" font-size="16" fill="#425466">或 Triton JIT kernel</text>
+ <rect x="606" y="250" width="230" height="100" rx="14" fill="#eef5fa" stroke="#9bb2c5" stroke-width="2"/>
+ <text x="721" y="284" text-anchor="middle" font-size="18" font-weight="700" fill="#18324b">CUDA 执行接口</text>
+ <text x="721" y="315" text-anchor="middle" font-size="15" fill="#425466">Runtime API 或 Driver API</text>
+ <text x="721" y="337" text-anchor="middle" font-size="14" fill="#425466">提交 kernel、管理数据</text>
+ <path d="M721 182V238" stroke="#315a7d" stroke-width="3"/><path d="M711 224L721 238L731 224" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <path d="M338 300H590" stroke="#315a7d" stroke-width="3"/><path d="M576 290L590 300L576 310" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <rect x="855" y="250" width="285" height="100" rx="14" fill="#f0eafa" stroke="#a28bc4" stroke-width="2"/>
+ <text x="997" y="286" text-anchor="middle" font-size="18" font-weight="700" fill="#49366c">WSL GPU 接口</text>
+ <text x="997" y="317" text-anchor="middle" font-size="16" fill="#5a4b73">Windows NVIDIA 驱动</text>
+ <path d="M837 300H847" stroke="#315a7d" stroke-width="3"/><path d="M833 290L847 300L833 310" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <path d="M997 351V388" stroke="#315a7d" stroke-width="3"/><path d="M987 374L997 388L1007 374" fill="none" stroke="#315a7d" stroke-width="3"/>
+ <rect x="855" y="398" width="285" height="76" rx="14" fill="#e4f1f5" stroke="#68a0b0" stroke-width="2"/>
+ <text x="997" y="430" text-anchor="middle" font-size="20" font-weight="700" fill="#18324b">NVIDIA GPU</text>
+ <text x="997" y="455" text-anchor="middle" font-size="15" fill="#425466">NVIDIA GPU · sm_120</text>
+ <rect x="38" y="398" width="760" height="76" rx="14" fill="#fff7e8" stroke="#d6b36b"/>
+ <text x="58" y="428" font-size="16" font-weight="700" fill="#735000">读环境信息时注意：</text>
+ <text x="58" y="454" font-size="16" fill="#5d5140">`nvidia-smi` 的 CUDA 12.8 表示驱动支持的 CUDA 版本；是否安装 Toolkit / nvcc 要单独检查。</text>
+</g>
+</svg>

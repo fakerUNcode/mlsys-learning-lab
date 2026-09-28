@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="400" viewBox="0 0 1080 400" role="img" aria-labelledby="title desc">
+<title id="title">转置后 reshape 如何复制到新 storage</title><desc id="desc">转置视图按逻辑顺序访问原 storage 的零三一四二五。reshape 一维失败，因为步长不固定；reshape 会把这些值复制到新 storage 连续槽位零至五。</desc>
+<rect width="1080" height="400" rx="18" fill="#f7fafc"/>
+<text x="34" y="46" font-family="sans-serif" font-size="24" font-weight="700" fill="#18324b">转置后的 reshape：保留逻辑读数顺序，必要时复制到新 storage</text>
+<rect x="38" y="91" width="330" height="185" rx="14" fill="#fff3d9" stroke="#d39024"/>
+<text x="60" y="124" font-family="sans-serif" font-size="18" font-weight="700" fill="#5d3b00">源视图 t：shape (3,2)</text>
+<text x="60" y="157" font-family="sans-serif" font-size="16" fill="#5d3b00">逻辑值：0, 3, 1, 4, 2, 5</text>
+<text x="60" y="188" font-family="sans-serif" font-size="16" fill="#5d3b00">原槽位：0, 3, 1, 4, 2, 5</text>
+<text x="60" y="225" font-family="sans-serif" font-size="15" fill="#735721">相邻变化：+3, −2, +3, −2</text>
+<text x="60" y="254" font-family="sans-serif" font-size="15" fill="#735721">一维 stride 必须固定 → view(6) 失败</text>
+<path d="M385 183H470" stroke="#315a7d" stroke-width="3"/><path d="M456 173L470 183L456 193" fill="none" stroke="#315a7d" stroke-width="3"/>
+<text x="427" y="165" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#315a7d">reshape</text>
+<rect x="491" y="91" width="545" height="185" rx="14" fill="#e8f3e9" stroke="#79a581"/>
+<text x="516" y="124" font-family="sans-serif" font-size="18" font-weight="700" fill="#20452a">结果 r：新 storage，shape (6,)</text>
+<g font-family="sans-serif" text-anchor="middle" font-size="17">
+ <g fill="#fff" stroke="#79a581"><rect x="525" y="152" width="72" height="54"/><rect x="601" y="152" width="72" height="54"/><rect x="677" y="152" width="72" height="54"/><rect x="753" y="152" width="72" height="54"/><rect x="829" y="152" width="72" height="54"/><rect x="905" y="152" width="72" height="54"/></g>
+ <g fill="#20452a"><text x="561" y="185">0</text><text x="637" y="185">3</text><text x="713" y="185">1</text><text x="789" y="185">4</text><text x="865" y="185">2</text><text x="941" y="185">5</text></g>
+ <g fill="#58735d"><text x="561" y="231">slot 0</text><text x="637" y="231">slot 1</text><text x="713" y="231">slot 2</text><text x="789" y="231">slot 3</text><text x="865" y="231">slot 4</text><text x="941" y="231">slot 5</text></g>
+</g>
+<text x="518" y="257" font-family="sans-serif" font-size="15" fill="#426c49">按 t 的逻辑顺序抄值；目标槽位在新 storage 中连续排列。</text>
+<rect x="44" y="305" width="990" height="55" rx="12" fill="#eef2f5"/>
+<text x="539" y="339" text-anchor="middle" font-family="sans-serif" font-size="17" fill="#425466">源槽位 0 与新 storage 的槽位 0 编号相同，但不是同一块存储；修改 r 不会改 t。</text>
+</svg>

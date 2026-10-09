@@ -10,13 +10,13 @@
 
 在计算机的物理内存中，不存在真正的“二维表格”或“三维空间”。所有的内存地址都是排成一条直线的（一维数组）。
 
-如果我们有一个 $3 \times 4$（3 行 4 列）的二维矩阵，计算机在存储时，会采用“行主序（Row-Major）”的方式，也就是先把第 0 行的所有元素放完，接着放第 1 行，再放第 2 行。
+如果我们有一个 `3 \times 4`（3 行 4 列）的二维矩阵，计算机在存储时，会采用“行主序（Row-Major）”的方式，也就是先把第 0 行的所有元素放完，接着放第 1 行，再放第 2 行。
 
 
 
 **2. 二维坐标映射到一维地址的经典公式**
 
-假设我们有一个宽度为 $W$ 的二维矩阵。我们要找到其中坐标为 $(x, y)$ 的元素（即第 $y$ 行，第 $x$ 列），它在内存这条直线上的绝对位置 $I$ 是多少？
+假设我们有一个宽度为 `W` 的二维矩阵。我们要找到其中坐标为 `(x, y)` 的元素（即第 `y` 行，第 `x` 列），它在内存这条直线上的绝对位置 `I` 是多少？
 
 核心法则是：**你前面有几行，就要跳过几个完整的宽度，再加上你在当前行的列偏移。**
 
@@ -30,30 +30,30 @@
 - **Block（线程块）**：包含在 Grid 中。
 - **Thread（线程）**：包含在 Block 中。
 
-我们最常用的是**二维结构**（用来处理图像或矩阵）。CUDA 自动为我们提供了内置变量，我们需要利用这些变量推导出一个线程的**全局二维坐标 $(I_x, I_y)$**，进而推导出它对应处理的数据在**一维内存中的绝对索引 $I_{global}$**。
+我们最常用的是**二维结构**（用来处理图像或矩阵）。CUDA 自动为我们提供了内置变量，我们需要利用这些变量推导出一个线程的**全局二维坐标 `(I_x, I_y)`**，进而推导出它对应处理的数据在**一维内存中的绝对索引 `I_{global}`**。
 
 
 
 ## 线程绝对索引推导公式
 
-$$I_x = B_x \times D_x + T_x$$
+`I_x = B_x \times D_x + T_x`
 
-$$I_y = B_y \times D_y + T_y$$
+`I_y = B_y \times D_y + T_y`
 
-$$I_{global} = I_y \times W + I_x$$
+`I_{global} = I_y \times W + I_x`
 
 ## 符号全翻译（绝对不省略）
 
-- $I_x$：当前线程在整个 Grid 中的全局 X 坐标（列坐标）。
-- $I_y$：当前线程在整个 Grid 中的全局 Y 坐标（行坐标）。
-- $I_{global}$：当前线程负责处理的数据在内存中的一维绝对位置（索引）。
-- $B_x$：当前线程所在的 Block 在 X 方向（横向）的编号，对应代码 `blockIdx.x`。
-- $B_y$：当前线程所在的 Block 在 Y 方向（纵向）的编号，对应代码 `blockIdx.y`。
-- $D_x$：每个 Block 在 X 方向包含的线程总数（宽度），对应代码 `blockDim.x`。
-- $D_y$：每个 Block 在 Y 方向包含的线程总数（高度），对应代码 `blockDim.y`。
-- $T_x$：当前线程在自己所属 Block 内部的 X 方向局部坐标，对应代码 `threadIdx.x`。
-- $T_y$：当前线程在自己所属 Block 内部的 Y 方向局部坐标，对应代码 `threadIdx.y`。
-- $W$：我们要处理的数据矩阵的总宽度（一共有多少列）。
+- `I_x`：当前线程在整个 Grid 中的全局 X 坐标（列坐标）。
+- `I_y`：当前线程在整个 Grid 中的全局 Y 坐标（行坐标）。
+- `I_{global}`：当前线程负责处理的数据在内存中的一维绝对位置（索引）。
+- `B_x`：当前线程所在的 Block 在 X 方向（横向）的编号，对应代码 `blockIdx.x`。
+- `B_y`：当前线程所在的 Block 在 Y 方向（纵向）的编号，对应代码 `blockIdx.y`。
+- `D_x`：每个 Block 在 X 方向包含的线程总数（宽度），对应代码 `blockDim.x`。
+- `D_y`：每个 Block 在 Y 方向包含的线程总数（高度），对应代码 `blockDim.y`。
+- `T_x`：当前线程在自己所属 Block 内部的 X 方向局部坐标，对应代码 `threadIdx.x`。
+- `T_y`：当前线程在自己所属 Block 内部的 Y 方向局部坐标，对应代码 `threadIdx.y`。
+- `W`：我们要处理的数据矩阵的总宽度（一共有多少列）。
 
 ## 详细推导过程
 
@@ -61,13 +61,13 @@ $$I_{global} = I_y \times W + I_x$$
 
 **第一步：计算全局 X 坐标（列）**
 
-$$Base_x = B_x \times D_x$$
+`Base_x = B_x \times D_x`
 
 (计算当前块前面有多少个完整的线程宽度)
 
 (即：块的横向编号乘以每个块的横向人数)
 
-$$I_x = Base_x + T_x$$
+`I_x = Base_x + T_x`
 
 (在前面积累的总线程数偏移基础上，加上当前线程在块内的横向局部编号)
 
@@ -75,13 +75,13 @@ $$I_x = Base_x + T_x$$
 
 **第二步：计算全局 Y 坐标（行）**
 
-$$Base_y = B_y \times D_y$$
+`Base_y = B_y \times D_y`
 
 (计算当前块前面有多少个完整的块高度)
 
 (即：块的纵向编号乘以每个块的纵向人数)
 
-$$I_y = Base_y + T_y$$
+`I_y = Base_y + T_y`
 
 (在前面积累的总行数偏移基础上，加上当前线程在块内的纵向局部编号)
 
@@ -89,13 +89,13 @@ $$I_y = Base_y + T_y$$
 
 **第三步：将二维坐标展平为一维内存地址**
 
-$$Offset_y = I_y \times W$$
+`Offset_y = I_y \times W`
 
 (计算当前线程前面完整跨过了多少行数据)
 
-(即：全局 Y 坐标乘以矩阵的总宽度 $W$)
+(即：全局 Y 坐标乘以矩阵的总宽度 `W`)
 
-$$I_{global} = Offset_y + I_x$$
+`I_{global} = Offset_y + I_x`
 
 (在跨过完整行数的基准上)
 
@@ -105,7 +105,7 @@ $$I_{global} = Offset_y + I_x$$
 
 ## 三维索引推导（3D 体积数据与 3D 卷积场景）
 
-在处理 3D 卷积、医学 CT 体积数据或流体力学网格时，数据由三维张量 $(D, H, W)$ 即深度、高度、宽度组成。CUDA 原生支持 3D 维度的 `dim3`（包含 $x, y, z$ 分量）。
+在处理 3D 卷积、医学 CT 体积数据或流体力学网格时，数据由三维张量 `(D, H, W)` 即深度、高度、宽度组成。CUDA 原生支持 3D 维度的 `dim3`（包含 `x, y, z` 分量）。
 
 - **D (Depth - 深度)**：通常指数据的“层数”。在医学 CT 中，它代表扫描切片（Slice）的总数；在时空序列中，可能代表时间帧数；对应三维坐标系中的 **Z 轴**。
 
@@ -114,24 +114,24 @@ $$I_{global} = Offset_y + I_x$$
 - **W (Width - 宽度)**：指单层切片或截面的宽度（水平方向的像素或网格数）；对应三维坐标系中的 **X 轴**。
 
 ### 三维空间坐标计算公式
-$$I_x = B_x \times D_x + T_x$$
-$$I_y = B_y \times D_y + T_y$$
-$$I_z = B_z \times D_z + T_z$$
+`I_x = B_x \times D_x + T_x`
+`I_y = B_y \times D_y + T_y`
+`I_z = B_z \times D_z + T_z`
 
-- $I_x, I_y, I_z$：当前线程在 3D 空间中的全局长、宽、高坐标。
+- `I_x, I_y, I_z`：当前线程在 3D 空间中的全局长、宽、高坐标。
 - 对应代码：
   - `int x = blockIdx.x * blockDim.x + threadIdx.x;`
   - `int y = blockIdx.y * blockDim.y + threadIdx.y;`
   - `int z = blockIdx.z * blockDim.z + threadIdx.z;`
 
 ### 三维坐标展平为一维显存地址公式（行优先/切片优先）
-我们要定位坐标为 $(x, y, z)$ 的体素（Voxel）在一维线性显存中的绝对地址：
-$$I_{3D\_global} = I_z \times (W \times H) + I_y \times W + I_x$$
+我们要定位坐标为 `(x, y, z)` 的体素（Voxel）在一维线性显存中的绝对地址：
+`I_{3D\_global} = I_z \times (W \times H) + I_y \times W + I_x`
 
 - **推导等号说明书**：
-  - $I_z \times (W \times H)$：当前体素之前已经完整跳过了 $I_z$ 个完整二维切片（Slice），每个切片包含 $W \times H$ 个数据。
-  - $+ I_y \times W$：在当前切片内，完整跳过了前面的 $I_y$ 行数据。
-  - $+ I_x$：加上当前行内的列偏移。
+  - `I_z \times (W \times H)`：当前体素之前已经完整跳过了 `I_z` 个完整二维切片（Slice），每个切片包含 `W \times H` 个数据。
+  - `+ I_y \times W`：在当前切片内，完整跳过了前面的 `I_y` 行数据。
+  - `+ I_x`：加上当前行内的列偏移。
 
 
 
@@ -140,9 +140,9 @@ $$I_{3D\_global} = I_z \times (W \times H) + I_y \times W + I_x$$
 请把你调用的这个算子（Kernel）想象成一个**庞大的城市（Grid）**：
 
 - **Grid（城市）：** 这个城市被划分为规则的网格状街区。
-- **Block（街区 $B_x, B_y$）：** 比如 $(B_x=2, B_y=1)$ 代表“东三区，北二区”（注意编号从 0 开始）。每个街区的长宽面积是统一规定的（$D_x, D_y$）。
-- **Thread（房屋 $T_x, T_y$）：** 街区内部的某栋房子。
-- **计算 $I_x, I_y$ 的意义：** 如果你想给整个城市的所有房子发一个全局唯一的二维坐标（比如“全市第 15 大道，第 8 街”），你就必须先算出现在处于哪一个街区（跳过前面的街区），再加上房子在街区内部的相对位置。
+- **Block（街区 `B_x, B_y`）：** 比如 `(B_x=2, B_y=1)` 代表“东三区，北二区”（注意编号从 0 开始）。每个街区的长宽面积是统一规定的（`D_x, D_y`）。
+- **Thread（房屋 `T_x, T_y`）：** 街区内部的某栋房子。
+- **计算 `I_x, I_y` 的意义：** 如果你想给整个城市的所有房子发一个全局唯一的二维坐标（比如“全市第 15 大道，第 8 街”），你就必须先算出现在处于哪一个街区（跳过前面的街区），再加上房子在街区内部的相对位置。
 
 ![jLLlRz9067_FftZ2te0oqkjB4in4ZJ7ndIIwE6CwUWEoqYxbbj4Oaqt7X0qTSrbOtDIHw4OsGboY3i5bNuPhsRVm-iTIivinHlkY77r-p-_FFLUOA1999_C59LJCI0e651T3eU9iNfsJTAa0Sr9cLihYUyHWDHrdYAHc5Hm0o7X6cbT86fV8TIMVLGjO9P1XDwo7GbutX6_hUHaYvjRdGVUGldz5](https://fakercodes.oss-cn-hangzhou.aliyuncs.com/sl/jLLlRz9067_FftZ2te0oqkjB4in4ZJ7ndIIwE6CwUWEoqYxbbj4Oaqt7X0qTSrbOtDIHw4OsGboY3i5bNuPhsRVm-iTIivinHlkY77r-p-_FFLUOA1999_C59LJCI0e651T3eU9iNfsJTAa0Sr9cLihYUyHWDHrdYAHc5Hm0o7X6cbT86fV8TIMVLGjO9P1XDwo7GbutX6_hUHaYvjRdGVUGldz5.svg)
 
@@ -297,14 +297,14 @@ nvcc matrix_add.cu -o matrix_add
 
 在配置 `<<<blocksPerGrid, threadsPerBlock>>>` 时，并非参数越大越好，硬件有严格的物理边界。若超出边界，Kernel 会直接发射失败（返回 `cudaErrorInvalidConfiguration`）：
 
-| 硬件参数维度             | 物理上限 (Compute Capability $\ge$ 3.0，现代 GPU 通用) | 常见选择与工程建议                                           |
+| 硬件参数维度             | 物理上限 (Compute Capability `\ge` 3.0，现代 GPU 通用) | 常见选择与工程建议                                           |
 | :----------------------- | :----------------------------------------------------- | :----------------------------------------------------------- |
-| **单 Block 线程总数**    | **最大 1024** ($D_x \times D_y \times D_z \le 1024$)   | **切忌超标**。工业界通常设为 128, 256 或 512（必须是 32 的整数倍） |
-| **Block 内部维度限制**   | $x \le 1024,\; y \le 1024,\; z \le 64$                 | 三维 Block 布局时，注意 $z$ 轴最大只能到 64                  |
-| **Grid 的 X 维度上限**   | **$2^{31} - 1$** (约 21.4 亿，几乎无限制)              | 一维数组或超大展平计算主要拉大 Grid 的 X 轴                  |
-| **Grid 的 Y/Z 维度上限** | **65535** ($2^{16} - 1$)                               | **高危陷阱**：若处理高分辨二维图像，`blocksY` 一旦超过 65535 会直接静默报错 |
+| **单 Block 线程总数**    | **最大 1024** (`D_x \times D_y \times D_z \le 1024`)   | **切忌超标**。工业界通常设为 128, 256 或 512（必须是 32 的整数倍） |
+| **Block 内部维度限制**   | `x \le 1024,\; y \le 1024,\; z \le 64`                 | 三维 Block 布局时，注意 `z` 轴最大只能到 64                  |
+| **Grid 的 X 维度上限**   | **`2^{31} - 1`** (约 21.4 亿，几乎无限制)              | 一维数组或超大展平计算主要拉大 Grid 的 X 轴                  |
+| **Grid 的 Y/Z 维度上限** | **65535** (`2^{16} - 1`)                               | **高危陷阱**：若处理高分辨二维图像，`blocksY` 一旦超过 65535 会直接静默报错 |
 
-> **核心结论**：`dim3 threadsPerBlock(16, 16)` 共有 $16 \times 16 = 256$ 个线程，小于 1024，合法；但若设为 `dim3(32, 32)`（1024 线程）虽在边缘，但若设为 `dim3(33, 32)`（1056 线程）将直接崩溃。
+> **核心结论**：`dim3 threadsPerBlock(16, 16)` 共有 `16 \times 16 = 256` 个线程，小于 1024，合法；但若设为 `dim3(32, 32)`（1024 线程）虽在边缘，但若设为 `dim3(33, 32)`（1056 线程）将直接崩溃。
 
 
 
@@ -345,9 +345,9 @@ nvcc matrix_add.cu -o matrix_add
 ### 纯粹的【并行操作】（由 GPU 的百万线程同时执行）
 
 - 当代码执行到 `matrixAddOperator<<<blocksPerGrid, threadsPerBlock>>>(...)` 这一行时：
-  - CPU 发出启动指令后，GPU 的硬件调度器瞬间唤醒了 **1,000,000 个线程**（因为 $1000 \times 1000 = 1,000,000$）。
+  - CPU 发出启动指令后，GPU 的硬件调度器瞬间唤醒了 **1,000,000 个线程**（因为 `1000 \times 1000 = 1,000,000`）。
   - 这 100 万个线程在硬件上**同时**执行算子内部的代码。
-  - 每一个线程只干一件极其微小的事情：算出自己的 `col` 和 `row`，找到对应的 `index`，然后把 $A[index] + B[index]$ 算出来赋给 $C[index]$。这 100 万次加法运算是**完全在同一物理瞬间并行发生的**。
+  - 每一个线程只干一件极其微小的事情：算出自己的 `col` 和 `row`，找到对应的 `index`，然后把 `A[index] + B[index]` 算出来赋给 `C[index]`。这 100 万次加法运算是**完全在同一物理瞬间并行发生的**。
 
 ### 为什么从代码上看，完全看不出并行？
 
@@ -369,7 +369,7 @@ nvcc matrix_add.cu -o matrix_add
 
    而在 CUDA 中，我们取消了 `for` 循环，而是派出了 100 万个工人。每个工人通过公式：
 
-   $$index = row \times width + col$$
+   `index = row \times width + col`
 
    各自算出自己的**绝对工号（唯一身份）**。工号为 0 的工人只算第 0 个数据，工号为 999999 的工人只算最后 1 个数据。大家各司其职，瞬间并发完成。
 
@@ -379,15 +379,15 @@ nvcc matrix_add.cu -o matrix_add
 
 我们可以通过一个公式来理解 GPU 硬件的调度机制：
 
-$$C_{total} = SM_{count} \times Core_{per\_SM}$$
+`C_{total} = SM_{count} \times Core_{per\_SM}`
 
 #### 符号全翻译
 
-- $C_{total}$：GPU 内部物理拥有的并行计算核心总数。
-- $SM_{count}$：GPU 内部流多处理器（Streaming Multiprocessor）的数量（可以理解为工厂里的大车间数量）。
-- $Core_{per\_SM}$：每个车间内部包含的 CUDA 核心（计算工人）数量。
-- $\times$：乘法运算。
-- $=$：赋值符号。
+- `C_{total}`：GPU 内部物理拥有的并行计算核心总数。
+- `SM_{count}`：GPU 内部流多处理器（Streaming Multiprocessor）的数量（可以理解为工厂里的大车间数量）。
+- `Core_{per\_SM}`：每个车间内部包含的 CUDA 核心（计算工人）数量。
+- `\times`：乘法运算。
+- `=`：赋值符号。
 
 ####  硬件执行原理
 
@@ -397,15 +397,15 @@ $$C_{total} = SM_{count} \times Core_{per\_SM}$$
 
 ![image-20260906101619055](https://fakercodes.oss-cn-hangzhou.aliyuncs.com/sl/image-20260906101619055.png)
 
-$$\text{Step 1: 分配任务到大车间 (SM)}$$
+`\text{Step 1: 分配任务到大车间 (SM)}`
 
 (GPU把 100 万个线程按 Block 为单位，塞进几十个名为 SM 的流多处理器车间里排队)
 
-$$\text{Step 2: 组装成线程束 (Warp)}$$
+`\text{Step 2: 组装成线程束 (Warp)}`
 
 (在车间内部，硬件把 32 个线程打包成一个“Warp（线程束）”，这是 GPU 硬件调度的最小物理单位)
 
-$$\text{Step 3: 极速硬件轮转 (Zero-Overhead Scheduling)}$$
+`\text{Step 3: 极速硬件轮转 (Zero-Overhead Scheduling)}`
 
 (假设一个物理核心同时分配了 64 个 Warp 任务。当第 1 个 Warp 正在等待从显存读取数据（几百个时钟周期的延迟）时，物理核心**瞬间**切换到第 2 个 Warp 开始计算，中间没有任何软件开销！)
 
@@ -439,7 +439,7 @@ __global__ void vectorAddGridStride(const float *A, const float *B, float *C, in
 
 ## 直观类比：发牌模型
 
-- **前文的单元素模式**：一副有 100 张牌（$N=100$），你找来 100 个人，每人手里拿一张牌就算完。
+- **前文的单元素模式**：一副有 100 张牌（`N=100`），你找来 100 个人，每人手里拿一张牌就算完。
 - **Grid-stride 模式**：你只组织了一桌 4 个人的固定牌局（`stride = 4`）。
   - 0号工人拿第 0、4、8、12... 张牌；
   - 1号工人拿第 1、5、9、13... 张牌；
@@ -447,6 +447,6 @@ __global__ void vectorAddGridStride(const float *A, const float *B, float *C, in
 
 ##  为什么这是 NVIDIA 推荐的 Best Practice？
 
-1. **解耦硬件调度与数据规模**：无论数据量 $N$ 是 1000 还是 10 亿，你都可以把 Grid 大小固定在能打满 GPU SM 的最优参数（如固定 128 个 Block，每个 Block 256 线程），无需每次动态重算 Grid 尺寸。
+1. **解耦硬件调度与数据规模**：无论数据量 `N` 是 1000 还是 10 亿，你都可以把 Grid 大小固定在能打满 GPU SM 的最优参数（如固定 128 个 Block，每个 Block 256 线程），无需每次动态重算 Grid 尺寸。
 2. **天然支持内存合并访问（Coalesced Access）**：在网格跨步循环中，每个线程循环的起点是自己计算出的全局绝对工号 `idx`。相邻的两个线程（比如线程 0 和线程 1），它们的初始 `idx` 本身就是连续的整数 0 和 1。每次循环结束时，所有线程都会同时向前跳过一个完全相同的固定距离，这个距离就是 `stride`（整个 Grid 一次能调动的工人总规模）。在任意第 `k` 次循环中，相邻的这两个线程访问的数组索引分别是 `k * stride + 0` 和 `k * stride + 1`。无论循环进行到哪一步，这两个目标地址相减的差值永远是绝对的 1。即相邻线程在同一步循环里访问的显存地址依然是连续的（`idx, idx+1, idx+2...`），保证显存总线带宽利用率拉满。
 3. **便于本地调试**：只要在 Host 端把线程配置写成 `<<<1, 1>>>`，该 Kernel 就会瞬间无缝退化为标准单线程 CPU 风格循环，极易单步断点 debug。

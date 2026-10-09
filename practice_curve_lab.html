@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>二维 Bézier 曲线练习台</title>
+  <style>
+    :root { color-scheme: dark; --bg:#10141c; --panel:#181f2b; --line:#2b3545; --text:#e8edf5; --muted:#9aa8bb; --cyan:#65d5d0; --amber:#ffbb70; }
+    * { box-sizing:border-box }
+    body { margin:0; padding:28px; background:radial-gradient(ellipse at 15% 0%,#202d3a 0,transparent 42%),var(--bg); color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif }
+    main { width:min(1120px,100%); margin:auto }
+    h1 { margin:0 0 7px; font-size:25px; letter-spacing:.02em }
+    .intro { margin:0 0 20px; color:var(--muted) }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:16px; align-items:start }
+    .card { border:1px solid var(--line); border-radius:14px; background:color-mix(in srgb,var(--panel) 95%,transparent); box-shadow:0 14px 44px #0003 }
+    .visual { padding:12px }
+    canvas { width:100%; height:auto; display:block; border-radius:9px; background:#111823; touch-action:none; user-select:none }
+    .status { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:11px 4px 1px; color:var(--muted); font-size:13px }
+    .live { color:var(--cyan); font-weight:650 }
+    aside { padding:17px }
+    h2 { margin:0 0 12px; font-size:16px }
+    .control { margin:15px 0 }
+    label { display:flex; justify-content:space-between; gap:8px; margin-bottom:6px; color:#d7e0eb; font-size:13px }
+    output { color:var(--cyan); font-variant-numeric:tabular-nums }
+    input[type=range] { width:100%; accent-color:var(--cyan) }
+    .note { color:var(--muted); font-size:12px; margin:14px 0 0 }
+    .legend { display:flex; flex-wrap:wrap; gap:14px; padding:12px 5px 1px; color:var(--muted); font-size:12px }
+    .key { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px }
+    .safe { margin-top:16px; padding:11px 13px; border:1px solid #314344; border-radius:10px; color:#b8d6d4; background:#182526; font-size:12px }
+    @media(max-width:800px) { body{padding:16px}.layout{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<main>
+  <h1>二维 Bézier 曲线练习台</h1>
+  <p class="intro">调整两个控制点，用一条三次 Bézier 曲线近似一段不断变化的合成轨迹。</p>
+  <div class="layout">
+    <section class="card visual">
+      <canvas id="plot" width="900" height="520" aria-label="合成轨迹与 Bézier 曲线画布"></canvas>
+      <div class="legend">
+        <span><i class="key" style="background:#ffbb70"></i>合成样本</span>
+        <span><i class="key" style="background:#65d5d0"></i>你的 Bézier 曲线</span>
+        <span><i class="key" style="background:#9ba9bc"></i>控制点连线</span>
+      </div>
+      <div class="status"><span id="state">待机 · 在画布内按住右键运行循环</span><span id="score">拟合误差：—</span></div>
+    </section>
+    <aside class="card">
+      <h2>控制点</h2>
+      <div class="control"><label for="x1">控制点 1 · 横向 <output id="x1v"></output></label><input id="x1" type="range" min="15" max="85" value="34"></div>
+      <div class="control"><label for="y1">控制点 1 · 纵向 <output id="y1v"></output></label><input id="y1" type="range" min="8" max="92" value="23"></div>
+      <div class="control"><label for="x2">控制点 2 · 横向 <output id="x2v"></output></label><input id="x2" type="range" min="15" max="85" value="67"></div>
+      <div class="control"><label for="y2">控制点 2 · 纵向 <output id="y2v"></output></label><input id="y2" type="range" min="8" max="92" value="76"></div>
+      <div class="control"><label for="noise">样本扰动 <output id="noisev"></output></label><input id="noise" type="range" min="0" max="18" value="7"></div>
+      <p class="note">误差是样本点到曲线对应采样点的平均距离。每轮会生成新的合成样本，因此可以观察单条曲线对不同轨迹的拟合效果。</p>
+      <div class="safe">本页只在画布上绘图，不读取或移动系统鼠标，不发送键盘输入，也不生成游戏宏文件。</div>
+    </aside>
+  </div>
+</main>
+<script>
+(() => {
+  const canvas = document.querySelector('#plot');
+  const ctx = canvas.getContext('2d');
+  const sliders = ['x1','y1','x2','y2','noise'].map(id => document.getElementById(id));
+  const stateEl = document.querySelector('#state');
+  const scoreEl = document.querySelector('#score');
+  const W = canvas.width, H = canvas.height, count = 300, stepMs = 5;
+  let running = false, pointerHeld = false, accumulator = 0, lastFrame = 0, index = 0;
+  let target = [], seed = 1;
+
+  function rand() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+  function point(x, y) { return {x: x * W / 100, y: y * H / 100}; }
+  function controls() { return [point(12,50), point(+sliders[0].value,+sliders[1].value), point(+sliders[2].value,+sliders[3].value), point(88,50)]; }
+  function bezier(t, p) {
+    const u = 1-t;
+    return {x:u*u*u*p[0].x+3*u*u*t*p[1].x+3*u*t*t*p[2].x+t*t*t*p[3].x,
+            y:u*u*u*p[0].y+3*u*u*t*p[1].y+3*u*t*t*p[2].y+t*t*t*p[3].y};
+  }
+  function makeTarget() {
+    seed = (seed + 0x9e3779b9) >>> 0;
+    const a = point(12,50), b = point(88,50);
+    const p = [a, point(25, 20+rand()*60), point(73, 20+rand()*60), b];
+    const q = [a, point(32, 20+rand()*60), point(65, 20+rand()*60), b];
+    const noise = +sliders[4].value;
+    target = Array.from({length:count}, (_,i) => {
+      const t = i/(count-1), smooth = bezier(t,p), secondary = bezier(t,q);
+      const envelope = Math.sin(Math.PI*t);
+      return {x:smooth.x*.72+secondary.x*.28+(rand()-.5)*noise*2.5*envelope,
+              y:smooth.y*.72+secondary.y*.28+(rand()-.5)*noise*2.5*envelope};
+    });
+    index = 0;
+    updateScore();
+    draw();
+  }
+  function updateScore() {
+    const p = controls(); let sum = 0;
+    for (let i=0;i<count;i++) { const a=target[i], b=bezier(i/(count-1),p); sum += Math.hypot(a.x-b.x,a.y-b.y); }
+    scoreEl.textContent = `拟合误差：${(sum/count).toFixed(1)} px`;
+  }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#111823'; ctx.fillRect(0,0,W,H);
+    ctx.lineWidth=1; ctx.strokeStyle='#263140';
+    for(let x=0;x<=W;x+=W/10){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(let y=0;y<=H;y+=H/8){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    const p=controls();
+    ctx.setLineDash([5,6]); ctx.strokeStyle='#9ba9bc88'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[1].x,p[1].y);ctx.moveTo(p[2].x,p[2].y);ctx.lineTo(p[3].x,p[3].y);ctx.stroke();ctx.setLineDash([]);
+    ctx.strokeStyle='#ffbb70';ctx.lineWidth=2;ctx.beginPath();target.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.stroke();
+    ctx.strokeStyle='#65d5d0';ctx.lineWidth=3;ctx.beginPath();for(let i=0;i<count;i++){const v=bezier(i/(count-1),p);i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y)}ctx.stroke();
+    for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(p[i].x,p[i].y,i===0||i===3?5:7,0,Math.PI*2);ctx.fillStyle=(i===1||i===2)?'#9ba9bc':'#e8edf5';ctx.fill();ctx.strokeStyle='#111823';ctx.lineWidth=2;ctx.stroke()}
+    if(running){const v=target[index];ctx.beginPath();ctx.arc(v.x,v.y,6,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#ffbb70';ctx.lineWidth=3;ctx.stroke()}
+  }
+  function frame(now) {
+    if(!running)return;
+    if(!lastFrame)lastFrame=now;
+    accumulator += Math.min(100,now-lastFrame); lastFrame=now;
+    while(accumulator>=stepMs && running){ accumulator-=stepMs; index++; if(index>=count){ makeTarget(); } }
+    draw(); requestAnimationFrame(frame);
+  }
+  function start(){if(running)return;running=true;lastFrame=0;accumulator=0;stateEl.innerHTML='<span class="live">运行中 · 5 ms 模拟节拍</span>';requestAnimationFrame(frame)}
+  function stop(){if(!running)return;running=false;stateEl.textContent='已停止 · 在画布内按住右键运行循环';draw()}
+  canvas.addEventListener('contextmenu', e=>e.preventDefault());
+  canvas.addEventListener('pointerdown', e=>{if(e.button===2){pointerHeld=true;canvas.setPointerCapture(e.pointerId);start()}});
+  canvas.addEventListener('pointerup', e=>{if(e.button===2){pointerHeld=false;stop()}});
+  canvas.addEventListener('pointercancel', ()=>{pointerHeld=false;stop()});
+  window.addEventListener('blur', ()=>{pointerHeld=false;stop()});
+  sliders.forEach(input=>input.addEventListener('input',()=>{
+    document.getElementById(input.id+'v').textContent=input.value;
+    if(input.id==='noise')makeTarget(); else {updateScore();draw()}
+  }));
+  sliders.forEach(input=>document.getElementById(input.id+'v').textContent=input.value);
+  makeTarget();
+})();
+</script>
+</body>
+</html>

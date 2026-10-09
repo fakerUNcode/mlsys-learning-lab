@@ -7,23 +7,23 @@
 
 在 CUDA 中，Block 在硬件层面会被进一步划分为固定大小的调度单位，即 Warp（线程束）。
 
-$$W_{size} \stackrel{\text{NVIDIA硬件标准定义}}{=} 32$$
+`W_{size} \stackrel{\text{NVIDIA硬件标准定义}}{=} 32`
 
-设一维 Block 中的线程局部索引为 $T_{id}$，其对应的 Warp 编号 $W_{id}$ 计算如下：
+设一维 Block 中的线程局部索引为 `T_{id}`，其对应的 Warp 编号 `W_{id}` 计算如下：
 
-$$T_{id} \stackrel{\text{读取CUDA内置变量}}{=} \text{threadIdx.x}$$
+`T_{id} \stackrel{\text{读取CUDA内置变量}}{=} \text{threadIdx.x}`
 
-$$W_{id} \stackrel{\text{索引整除Warp容量}}{=} \lfloor \frac{T_{id}}{W_{size}} \rfloor$$
+`W_{id} \stackrel{\text{索引整除Warp容量}}{=} \lfloor \frac{T_{id}}{W_{size}} \rfloor`
 
-$$\text{Warp}_{total} \stackrel{\text{向上取整计算总数}}{=} \lceil \frac{B_{size}}{W_{size}} \rceil$$
+`\text{Warp}_{total} \stackrel{\text{向上取整计算总数}}{=} \lceil \frac{B_{size}}{W_{size}} \rceil`
 
 ## 符号说明
 
-- $W_{size}$：单个 Warp 包含的物理线程数量。
-- $T_{id}$：当前线程在 Block 内的局部一维索引。
-- $W_{id}$：当前线程所在的 Warp 编号。
-- $B_{size}$：当前 Block 包含的总线程数量（`blockDim.x`）。
-- $\lfloor x \rfloor$ / $\lceil x \rceil$：向下取整与向上取整算子。
+- `W_{size}`：单个 Warp 包含的物理线程数量。
+- `T_{id}`：当前线程在 Block 内的局部一维索引。
+- `W_{id}`：当前线程所在的 Warp 编号。
+- `B_{size}`：当前 Block 包含的总线程数量（`blockDim.x`）。
+- `\lfloor x \rfloor` / `\lceil x \rceil`：向下取整与向上取整算子。
 
 ## 直观理解
 
@@ -87,7 +87,7 @@ int main() {
 
 - 根据公式计算：
 
-  $$W_{total} = \lceil \frac{100}{32} \rceil = 4$$
+  `W_{total} = \lceil \frac{100}{32} \rceil = 4`
 
   **补充细节**：硬件虽然在底层分配了 4 个 Warp，但在第 4 个 Warp（即 Warp 3，负责 tid 96~99）中，只有前 4 个线程是活跃的。剩余的 28 个线程会被硬件掩码（Mask）标记为不活跃状态。它们不产生实际结果，但在指令发射时仍会占用执行周期。
 

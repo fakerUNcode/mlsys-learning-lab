@@ -10,7 +10,7 @@
 |---|---|---|---|
 | B01/T01 | 当前设备环境、GPU/PyTorch、CUDA Toolkit 与 profiler | 已验收 | [环境报告](../../../reports/stage-02/2026-09-27-t01-environment.md) |
 | B01/T02 | Tensor 创建、索引、广播、批量矩阵乘法 | 已验收 | [T02 练习与批阅](t02/README.md) |
-| B01/T03 | 存储、stride、连续性、view/reshape、dtype/device | 进行中 | [T03 实验记录](t03/README.md) |
+| B01/T03 | 存储、stride、连续性、view/reshape、dtype/device | 已验收（2026-10-08） | [T03 实验记录](t03/README.md) |
 
 ## T02 章节
 

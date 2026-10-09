@@ -25,10 +25,10 @@
 | R19 | [《深入理解 AI Infra》](https://bojieli.github.io/ai-infra-book/) | 第 1～3 章模型/负载，第 4～5 章硬件/运行时，第 8 章推理；选学第 9、11 章 |
 | R20 | [AIInfraGuide](https://caomaolufei.github.io/AIInfraGuide/guides/ai-infra%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/) | 按 Tensor/Transformer/CUDA/性能分析/框架主题查漏，不把整站通读设为前置 |
 | R21 | [本地模型基础任务](../learning/stage-02/README.md)、[推理服务讲义](../learning/LLM推理服务技术详解/README.md)、[C++ 讲义](../learning/stage-01/lessons/README.md) | 与现有学习记录衔接；服务 00～06 已学，后续读 07～09 |
-| R22 | [研究设计](../../overlap-decode/docs/RESEARCH_DESIGN.md)、[实验协议](../../overlap-decode/docs/EXPERIMENT_PROTOCOL.md) | 项目范围、采样契约、数据划分、成本、在线信息边界与贡献定义 |
-| R23 | [研究检查点](../../overlap-decode/docs/RESEARCH_CHECKPOINT.md)、[里程碑](../../overlap-decode/docs/MILESTONES.md)、[相关工作](../../overlap-decode/docs/RELATED_WORK.md) | 第六个月决策、阶段出口、复现/改进边界；选题前再次检索 |
-| R24 | [实验报告模板](../../overlap-decode/reports/templates/experiment.md)、[来源记录](../../overlap-decode/reports/PROVENANCE.md) | 原始数据、环境、命令、迁入来源与实际贡献 |
+| R22 | [基准测试规范](../benchmarks/README.md)、[报告索引](../reports/README.md) | 实验边界、输入、计时、原始数据与结论范围 |
+| R23 | [本仓库学习路线](../Infra%20Introduction.md)、[任务清单](TASKS.md) | 阶段顺序、验收边界与实现/验证区分 |
+| R24 | [环境检查脚本说明](../scripts/README.md)、[报告规范](../reports/README.md) | 环境、命令、结果和来源信息的记录方式 |
 | R25 | [torch.compile 教程](https://docs.pytorch.org/tutorials/intermediate/torch_compile_tutorial.html)、[Triton 教程](https://triton-lang.org/main/getting-started/tutorials/) | 条件选学：graph break、编译开销、基础 tiling；随实际瓶颈使用 |
 | R26 | [vLLM 文档](https://docs.vllm.ai/)、[PyTorch Distributed](https://docs.pytorch.org/docs/stable/distributed.html) | 条件选学/后续方向：服务指标、batching、进程组与集合通信；执行前重新核对支持 |
 
-模型与数据集不预先硬编码：选定时添加官方 model card、dataset card 的链接、许可、不可变 revision 与阅读范围。岗位信息和论文投稿指南在相应任务开始时查当期官方来源，不在年度清单中写死过期要求。
+模型与数据集不预先硬编码：选定时添加官方 model card、dataset card 的链接、许可、不可变 revision 与阅读范围。软件版本和投稿规范可能变化，使用时查对应官方来源，不在长期清单中写死过期要求。

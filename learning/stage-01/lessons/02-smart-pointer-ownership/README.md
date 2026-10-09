@@ -64,19 +64,19 @@ if (auto cached_model = cache_entry.lock()) {
 
 对象销毁条件：
 
-$$
+```text
 n_s
 \overset{\text{减至零}}{=}
 0
 \Rightarrow_{\text{析构对象}}
 \text{释放资源}
-$$
+```
 
 
 ## 符号说明
 
-- \(n_s\)：强引用数量。
-- 下标 \(s\)：strong，强引用。
+- `n_s`：强引用数量。
+- 下标 `s`：strong，强引用。
 
 ## 程序实例
 

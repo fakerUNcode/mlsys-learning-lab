@@ -228,22 +228,22 @@ GPU buffer 通常不能按普通指针做浅拷贝，否则两个对象会对同
 
 核心区别：**unique = 独占，shared = 共同负责生命周期，weak = 只使用/观察，不管生命周期。**
 
-设强引用计数为 \(n_s\)。对象销毁条件是：
+设强引用计数为 `n_s`。对象销毁条件是：
 
-$$
+```text
 n_s
 \overset{\text{减至零}}{=}
 0
 \Rightarrow_{\text{释放对象}}
 \text{析构对象}
-$$
+```
 
 
 ## 符号说明
 
-- \(n_s\)：`shared_ptr` 的强引用数量。
-- 下标 \(s\)：strong，强引用。
-- `weak_ptr` 不增加 \(n_s\)。
+- `n_s`：`shared_ptr` 的强引用数量。
+- 下标 `s`：strong，强引用。
+- `weak_ptr` 不增加 `n_s`。
 
 `shared_ptr` 不是“更安全的默认指针”。它有控制块和原子计数成本，而且相互持有会形成环。观察者使用 `weak_ptr::lock()` 临时取得 `shared_ptr`，并检查对象是否仍存在。
 

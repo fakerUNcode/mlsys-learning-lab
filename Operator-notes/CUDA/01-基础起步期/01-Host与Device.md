@@ -60,17 +60,17 @@ int main() {
 
 ## 全局索引计算公式
 
-$$I_{global} = B_{id} \times B_{dim} + T_{id}$$
+`I_{global} = B_{id} \times B_{dim} + T_{id}`
 
 ## 符号全翻译
 
-- $I_{global}$：当前线程的全局唯一索引（Global Index），即“绝对工号”。
+- `I_{global}`：当前线程的全局唯一索引（Global Index），即“绝对工号”。
 
-- $B_{id}$：当前线程所在的线程块的编号（Block ID），在代码中对应 `blockIdx.x`。
+- `B_{id}`：当前线程所在的线程块的编号（Block ID），在代码中对应 `blockIdx.x`。
 
-- $B_{dim}$：每个线程块里面包含的线程总数（Block Dimension），在代码中对应 `blockDim.x`。
+- `B_{dim}`：每个线程块里面包含的线程总数（Block Dimension），在代码中对应 `blockDim.x`。
 
-- $T_{id}$：当前线程在自己所属线程块内部的局部编号（Thread ID），在代码中对应 `threadIdx.x`。
+- `T_{id}`：当前线程在自己所属线程块内部的局部编号（Thread ID），在代码中对应 `threadIdx.x`。
 
   
 
@@ -78,13 +78,13 @@ $$I_{global} = B_{id} \times B_{dim} + T_{id}$$
 
 为了计算出当前工人的绝对工号，我们需要分两步：
 
-$$I_{base} = B_{id} \times B_{dim}$$
+`I_{base} = B_{id} \times B_{dim}`
 
 (计算当前线程块之前的总人数)
 
 (即：前面的块数乘以每块的人数)
 
-$$I_{global} = I_{base} + T_{id}$$
+`I_{global} = I_{base} + T_{id}`
 
 (在前面总人数的基础上)
 
@@ -292,7 +292,7 @@ int main() {
 
 `vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, d_C, N);`
 
-$$\underbrace{\text{vectorAddKernel}}_{\text{执行的任务}} \overbrace{\text{<<<blocksPerGrid, threadsPerBlock>>>}}^{\text{组织架构与兵力部署}} (\underbrace{\text{d\_A, d\_B, d\_C, N}}_{\text{任务所需原料与参数}});$$
+`\underbrace{\text{vectorAddKernel}}_{\text{执行的任务}} \overbrace{\text{<<<blocksPerGrid, threadsPerBlock>>>}}^{\text{组织架构与兵力部署}} (\underbrace{\text{d\_A, d\_B, d\_C, N}}_{\text{任务所需原料与参数}});`
 
 1. `vectorAddKernel`（任务名称）
 
@@ -317,9 +317,9 @@ $$\underbrace{\text{vectorAddKernel}}_{\text{执行的任务}} \overbrace{\text{
 
 - **总兵力（启动的总线程数）**：
 
-  $$\text{总线程数} = \text{blocksPerGrid} \times \text{threadsPerBlock}$$
+  `\text{总线程数} = \text{blocksPerGrid} \times \text{threadsPerBlock}`
 
-  若为 $4096 \times 256$，则 GPU 会瞬间唤醒 **1,048,576 个线程**。
+  若为 `4096 \times 256`，则 GPU 会瞬间唤醒 **1,048,576 个线程**。
 
 
 

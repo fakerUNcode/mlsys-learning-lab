@@ -47,21 +47,21 @@ assert(stage1::sum_if_not_empty(values) == 10);
 
 计算过程：
 
-\[
+```text
 s
 \overset{\text{累加输入}}{=}
 2+3+5
-\]
+```
 
-\[
+```text
 s
 \overset{\text{完成加法}}{=}
 10
-\]
+```
 
 ## 符号说明
 
-- \(s\)：三个测试整数的累计和。
+- `s`：三个测试整数的累计和。
 
 ### 非法输入
 

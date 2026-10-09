@@ -240,24 +240,24 @@ const auto [end, error] =
 
 解析范围是左闭右开：
 
-\[
+```text
 [p_b,p_e)
-\]
+```
 
 尾后地址为：
 
-\[
+```text
 p_e
 \overset{\text{移动长度}}{=}
 p_b+n
-\]
+```
 
 ## 符号说明
 
-- \(p_b\)：begin pointer，首字符地址。
-- \(p_e\)：end pointer，尾后地址。
-- \(n\)：token 的字符数量。
-- \([p_b,p_e)\)：包含首地址、不包含尾后地址的范围。
+- `p_b`：begin pointer，首字符地址。
+- `p_e`：end pointer，尾后地址。
+- `n`：token 的字符数量。
+- `[p_b,p_e)`：包含首地址、不包含尾后地址的范围。
 
 `from_chars` 返回一个结果对象，结构化绑定把它拆成：
 

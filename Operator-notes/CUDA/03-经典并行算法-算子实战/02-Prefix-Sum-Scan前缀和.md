@@ -12,21 +12,21 @@
 
 1. **什么是“前缀和（Prefix Sum / Scan）”？**
 
-   - 给定一个输入数组 $X = [x_0, x_1, x_2, \dots, x_{n-1}]$。
-   - 输出一个同等长度的数组 $Y = [y_0, y_1, y_2, \dots, y_{n-1}]$。
-   - 每一个位置的 $y_i$，等于当前位置以及（或仅）其前面所有元素的和。
+   - 给定一个输入数组 `X = [x_0, x_1, x_2, \dots, x_{n-1}]`。
+   - 输出一个同等长度的数组 `Y = [y_0, y_1, y_2, \dots, y_{n-1}]`。
+   - 每一个位置的 `y_i`，等于当前位置以及（或仅）其前面所有元素的和。
 
 2. **包容性（Inclusive）与独占性（Exclusive）：**
 
    - **Inclusive Scan（包含当前元素）：**
 
-     $$y_i = \sum_{j=0}^{i} x_j$$
+     `y_i = \sum_{j=0}^{i} x_j`
 
      *例如：* 输入 `[1, 2, 3, 4]`，输出 `[1, 3, 6, 10]`。
 
    - **Exclusive Scan（不包含当前元素，从 0 开始）：**
 
-     $$y_0 = 0, \quad y_i = \sum_{j=0}^{i-1} x_j$$
+     `y_0 = 0, \quad y_i = \sum_{j=0}^{i-1} x_j`
 
      *例如：* 输入 `[1, 2, 3, 4]`，输出 `[0, 1, 3, 6]`。
 
@@ -36,7 +36,7 @@
 
    - **串行做法（极度依赖前一步）：**
 
-     在 CPU 上，我们写 `y[i] = y[i-1] + x[i]`。每一步都死死依赖于前一步算出来的结果。这在串行上极其简单，耗时 $O(N)$。
+     在 CPU 上，我们写 `y[i] = y[i-1] + x[i]`。每一步都死死依赖于前一步算出来的结果。这在串行上极其简单，耗时 `O(N)`。
 
    - **并行的巨大挑战：**
 
@@ -54,31 +54,31 @@ Kogge-Stone 算法的核心思想是：**多轮迭代，每一轮让跨度（Off
 
 ## 公式
 
-在第 $k$ 轮（跨度为 $offset = 2^k$）中，对于满足条件的每个线程 $tid$：
+在第 `k` 轮（跨度为 `offset = 2^k`）中，对于满足条件的每个线程 `tid`：
 
 
 
-$$Index_{target} = tid$$
+`Index_{target} = tid`
 
-$$Index_{source} = tid - offset$$
+`Index_{source} = tid - offset`
 
-$$val_{new} = s_{data}[Index_{target}] + s_{data}[Index_{source}]$$
+`val_{new} = s_{data}[Index_{target}] + s_{data}[Index_{source}]`
 
 ## 符号全翻译
 
-- $k$：当前扫描迭代的轮次序号（从 0 开始递增）。
+- `k`：当前扫描迭代的轮次序号（从 0 开始递增）。
 
-- $offset$：当前轮次的向左回溯跨度，取值为 $1, 2, 4, 8, \dots$。
+- `offset`：当前轮次的向左回溯跨度，取值为 `1, 2, 4, 8, \dots`。
 
-- $Index_{target}$：当前线程在共享内存中的写入槽位，等于自己的局部工号 $tid$。
+- `Index_{target}`：当前线程在共享内存中的写入槽位，等于自己的局部工号 `tid`。
 
-- $Index_{source}$：当前线程需要向左回溯抓取数据的来源槽位。
+- `Index_{source}`：当前线程需要向左回溯抓取数据的来源槽位。
 
-- $tid$：当前线程在线程块内的局部编号（对应代码中的 `threadIdx.x`）。
+- `tid`：当前线程在线程块内的局部编号（对应代码中的 `threadIdx.x`）。
 
-- $s_{data}$：存放在高速共享内存中的当前数据数组。
+- `s_{data}`：存放在高速共享内存中的当前数据数组。
 
-- $val_{new}$：两数相加后的临时过渡新值。
+- `val_{new}`：两数相加后的临时过渡新值。
 
   
 
@@ -88,7 +88,7 @@ $$val_{new} = s_{data}[Index_{target}] + s_{data}[Index_{source}]$$
 
 
 
-$$offset = 1$$
+`offset = 1`
 
 (初始化第一轮跨度为 1)
 
@@ -96,39 +96,39 @@ $$offset = 1$$
 
 
 
-$$Index_{source} = tid - offset$$
+`Index_{source} = tid - offset`
 
 (如果 tid >= offset，计算左侧邻居的槽位)
 
 
 
-$$val_{new} = s_{data}[tid] + s_{data}[Index_{source}] \\ = s_{data}[tid] + s_{data}[tid - offset] \\ = s_{data}[tid] + s_{data}[tid - 1]$$
+`val_{new} = s_{data}[tid] + s_{data}[Index_{source}] \\ = s_{data}[tid] + s_{data}[tid - offset] \\ = s_{data}[tid] + s_{data}[tid - 1]`
 
 (当前位置的值加上左侧邻居的值)
 
-($\Rightarrow$ 此时已完成相邻 2 个元素的局部累加)
+(`\Rightarrow` 此时已完成相邻 2 个元素的局部累加)
 
 
 
-$$\text{进入第二轮: } offset = 2$$
+`\text{进入第二轮: } offset = 2`
 
 (跨度倍增为 2)
 
 
 
-$$val_{new} = s_{data}[tid] + s_{data}[tid - 2]$$
+`val_{new} = s_{data}[tid] + s_{data}[tid - 2]`
 
 (当前已经累加了 2 个元素的值)
 
 (再加上向左偏移 2 个位置的元素、同样已累加了 2 个元素的值)
 
-($\Rightarrow$ 当前位置已经汇聚了前面 4 个元素的完整总和)
+(`\Rightarrow` 当前位置已经汇聚了前面 4 个元素的完整总和)
 
 ![image-20260906110853703](https://fakercodes.oss-cn-hangzhou.aliyuncs.com/sl/image-20260906110853703.png)
 
 ......
 
-经过 $\log_2(N)$ 轮之后，所有位置上的元素都会自动包含其左侧全部数字的总和！
+经过 `\log_2(N)` 轮之后，所有位置上的元素都会自动包含其左侧全部数字的总和！
 
 
 

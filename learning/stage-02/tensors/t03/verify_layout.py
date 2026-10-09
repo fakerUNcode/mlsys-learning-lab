@@ -43,6 +43,8 @@ def main():
     before_x = x.clone()
     a[0, 0] = -100
     print("after a[0,0] = -100, x changed:", not torch.equal(x, before_x))
+    a[0, 0] = before_x[0, 0]
+    print("restored x after alias check:", torch.equal(x, before_x))
 
     b = t.reshape(12)
     describe("b = t.reshape(12)", b)
@@ -80,6 +82,26 @@ def main():
         print("CPU and GPU storage pointers are different domains; do not compare as a sharing test.")
     else:
         print("CUDA unavailable: GPU transfer portion blocked; CPU/dtype checks above remain valid.")
+
+    print("\n=== F. Create, transpose, contiguous, view ===")
+    base = torch.arange(6).reshape(2, 3)
+    transposed = base.transpose(0, 1)
+    contiguous = transposed.contiguous()
+    flattened = contiguous.view(6)
+    describe("base", base)
+    describe("transposed", transposed)
+    describe("contiguous", contiguous)
+    describe("flattened = contiguous.view(6)", flattened)
+    print("transpose shares base storage:", transposed.untyped_storage().data_ptr() == base.untyped_storage().data_ptr())
+    print("contiguous shares transpose storage:", contiguous.untyped_storage().data_ptr() == transposed.untyped_storage().data_ptr())
+    print("view shares contiguous storage:", flattened.untyped_storage().data_ptr() == contiguous.untyped_storage().data_ptr())
+
+    print("\n=== F. A view write changes its source ===")
+    alias_source = torch.arange(6).reshape(2, 3)
+    alias_view = alias_source.view(6)
+    alias_view[0] = -1
+    print("source after view write:", alias_source.tolist())
+    print("view and source share storage:", alias_view.untyped_storage().data_ptr() == alias_source.untyped_storage().data_ptr())
 
 
 if __name__ == "__main__":

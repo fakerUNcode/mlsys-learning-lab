@@ -1,4 +1,4 @@
-"""Run the T02 shape exercises after writing predictions in t02/README.md."""
+"""Run the T02 shape exercises after writing predictions in this directory's README.md."""
 
 import torch
 

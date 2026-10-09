@@ -8,15 +8,15 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 
 ### B01：环境、Tensor 与布局，第 1 周
 
-- [x] T01 当前设备环境验收（L）。资料：R08 的 WSL 支持/限制与安装兼容，R09 的设备查询，R11 的工具可用性。产物：[环境验收报告](../reports/stage-02/2026-09-27-t01-environment.md)。GPU Tensor 加法、Triton 与原生 CUDA `.cu` kernel、PyTorch profiler 均已通过；CUDA Toolkit 12.8 已安装。详见报告中的 PATH 说明与复现命令。
-- [x] T02 Tensor 创建、索引与广播（L）。资料：R01 Tensors；R02 Broadcasting 全部基本规则。产物：[分章教程与练习](../learning/stage-02/tensors/t02/README.md)。12 题先预测后执行并运行核对；更正索引 shape；解释广播失败轴；独立复写第 4、6、12 题通过。
-- [x] T03 stride、连续性与别名（L）。资料：R02 Tensor Views 的 view/reshape/transpose/contiguous；R01 的 dtype/device。产物：[布局实验与批阅](../learning/stage-02/tensors/t03/README.md)、[完成记录](completed/T03.md)。2026-10-08 验收：现有脚本复测通过；新尺寸收尾题的 shape/stride/连续性、转置展开顺序和修改传播均答对；CPU/GPU 与 dtype 转换通过。批阅补充已连续输入的 contiguous 可返回原 Tensor。
-- [x] T04 C++ 既有能力短验收（L）。资料：R21 C++ RAII、移动、智能指针、模板小节。产物：[Buffer 所有权练习](../learning/stage-02/cpp-ownership/t04/README.md)、[完成记录](completed/T04.md)。2026-10-08 构建、CTest 1/1、ASan/UBSan 与禁止拷贝编译检查通过；工程验证范围和来源见报告。
+- [x] T01 当前设备环境验收（L）。资料：R08 的 WSL 支持/限制与安装兼容，R09 的设备查询，R11 的工具可用性。产物：[T01 章节入口](../learning/stage-02/t01-environment-verification/README.md)、[环境验收报告](../reports/stage-02/2026-09-27-t01-environment.md)。GPU Tensor 加法、Triton 与原生 CUDA `.cu` kernel、PyTorch profiler 均已通过；CUDA Toolkit 12.8 已安装。详见报告中的 PATH 说明与复现命令。
+- [x] T02 Tensor 创建、索引与广播（L）。资料：R01 Tensors；R02 Broadcasting 全部基本规则。产物：[分章教程与练习](../learning/stage-02/t02-tensor-basics/README.md)。12 题先预测后执行并运行核对；更正索引 shape；解释广播失败轴；独立复写第 4、6、12 题通过。
+- [x] T03 stride、连续性与别名（L）。资料：R02 Tensor Views 的 view/reshape/transpose/contiguous；R01 的 dtype/device。产物：[布局实验与批阅](../learning/stage-02/t03-tensor-layout-and-storage/README.md)、[完成记录](completed/T03.md)。2026-10-08 验收：现有脚本复测通过；新尺寸收尾题的 shape/stride/连续性、转置展开顺序和修改传播均答对；CPU/GPU 与 dtype 转换通过。批阅补充已连续输入的 contiguous 可返回原 Tensor。
+- [x] T04 C++ 既有能力短验收（L）。资料：R21 C++ RAII、移动、智能指针、模板小节。产物：[Buffer 所有权练习](../learning/stage-02/t04-cpp-buffer-ownership/README.md)、[完成记录](completed/T04.md)。2026-10-08 构建、CTest 1/1、ASan/UBSan 与禁止拷贝编译检查通过；工程验证范围和来源见报告。
 
 ### B02：梯度与训练闭环，第 2 周；依赖 T02～T03
 
-- [ ] T05 链式法则与有限差分（L）。资料：R01 Autograd；R03 计算图、gradcheck 的数值思想。产物：[手算与代码](../learning/stage-02/t05/README.md)、[数值验证报告](../reports/stage-02/2026-10-08-t05-validation.md)。标量复合函数和小线性层的 float64 有限差分/autograd 对照、步长/误差已验证；讲解题可用于补充独立理解检查。
-- [ ] T06 梯度累积与推理模式（L）。资料：R03 梯度累积、no-grad/inference mode；R01 Optimization。产物：故障对照实验。验收：演示不清梯度的累积、正确 zero_grad、detach 与推理禁用梯度的差别；解释 `model.eval()` 与禁用梯度各自作用。
+- [x] T05 链式法则与有限差分（L）。资料：R01 Autograd；R03 计算图、gradcheck 的数值思想。产物：[手算与代码](../learning/stage-02/t05-chain-rule-and-finite-differences/README.md)、[数值验证报告](../reports/stage-02/2026-10-08-t05-validation.md)。标量复合函数和小线性层的 float64 有限差分/autograd 对照、步长/误差已验证；讲解题可用于补充独立理解检查。
+- [x] T06 梯度累积与推理模式（L）。资料：R03 梯度累积、no-grad/inference mode；R01 Optimization。产物：[故障对照实验](../learning/stage-02/t06-gradient-accumulation-and-inference-modes/README.md)、[完成记录](completed/T06.md)、[验证报告](../reports/stage-02/2026-10-09-t06-validation.md)。验收：重复 backward 的累积、正确/遗漏 zero_grad 的 SGD 结果、detach、no-grad/inference mode 和 eval/autograd 独立行为均有可运行对照与证据；笔记补充 Dropout、Parameter、BatchNorm 与模块模式/梯度模式的职责边界。
 - [ ] T07 MLP 独立训练循环（L）。资料：R01 DataLoaders、Build Model、Optimization、Save & Load。产物：小合成数据训练脚本。验收：独立写 forward/loss/backward/step，预先定损失下降目标并达成；保存/加载后 eval logits 一致，记录种子；不要求训练高质量大模型。
 
 ### B03：Attention，第 3 周；依赖 B02

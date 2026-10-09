@@ -2,7 +2,7 @@
 
 状态：T04 的工程检查于 2026-10-08 通过。本版把材料整理成前置知识、类实现、验证程序三段，供第一次接触这份 C++ 程序的读者从头学习。
 
-产物：[Buffer 类](buffer.hpp)、[完整运行程序](buffer.cpp)、[独立构建配置](CMakeLists.txt)、[验证报告](../../../../reports/stage-02/2026-10-08-t04-validation.md)。
+产物：[Buffer 类](buffer.hpp)、[完整运行程序](buffer.cpp)、[独立构建配置](CMakeLists.txt)、[验证报告](../../../reports/stage-02/2026-10-08-t04-validation.md)。
 
 ## 阅读路线与程序做什么
 
@@ -276,7 +276,7 @@ Buffer& operator=(Buffer&& other) noexcept {
 ```bash
 g++ -std=c++17 -Wall -Wextra -Wpedantic -g \
   -fsanitize=address,undefined -fno-omit-frame-pointer \
-  learning/stage-02/cpp-ownership/t04/buffer.cpp -o /tmp/mlsys-t04-buffer
+  learning/stage-02/t04-cpp-buffer-ownership/buffer.cpp -o /tmp/mlsys-t04-buffer
 ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 \
   UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/mlsys-t04-buffer
 ```
@@ -284,15 +284,15 @@ ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 \
 或使用同目录 CMake/CTest 配置：
 
 ```bash
-cmake -S learning/stage-02/cpp-ownership/t04 -B /tmp/mlsys-t04-build \
+cmake -S learning/stage-02/t04-cpp-buffer-ownership -B /tmp/mlsys-t04-cpp-buffer-build \
   -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
-cmake --build /tmp/mlsys-t04-build
-ctest --test-dir /tmp/mlsys-t04-build --output-on-failure -V
+cmake --build /tmp/mlsys-t04-cpp-buffer-build
+ctest --test-dir /tmp/mlsys-t04-cpp-buffer-build --output-on-failure -V
 ```
 
 C++17 为本程序启用所用语言特性；警告选项帮助发现可疑代码；ASan 检查实际执行路径中的越界/释放问题，UBSan 检查部分未定义行为，泄漏选项检查退出时遗留的堆资源。它们不是对所有可能输入的证明，也没有检查并发访问。
 
-本轮恢复被截断的 `buffer.cpp` 尾部后重新构建运行，实际结果与[验证报告](../../../../reports/stage-02/2026-10-08-t04-validation.md)的五项 PASS 对应。验证只能说明这些场景；报告还记录编译器、CTest 和负例结果。
+本轮恢复被截断的 `buffer.cpp` 尾部后重新构建运行，实际结果与[验证报告](../../../reports/stage-02/2026-10-08-t04-validation.md)的五项 PASS 对应。验证只能说明这些场景；报告还记录编译器、CTest 和负例结果。
 
 <a id="t04-oral-record"></a>
 

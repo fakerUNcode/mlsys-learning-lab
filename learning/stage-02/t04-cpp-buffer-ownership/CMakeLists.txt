@@ -1,5 +1,5 @@
 # T04 独立构建入口：编译 buffer.cpp（包含 buffer.hpp），再交给 CTest 运行。
-# 从仓库根目录使用 cmake -S learning/stage-02/cpp-ownership/t04 -B <构建目录>。
+# 从仓库根目录使用 cmake -S learning/stage-02/t04-cpp-buffer-ownership -B <构建目录>。
 cmake_minimum_required(VERSION 3.16)
 project(t04_buffer_ownership LANGUAGES CXX)
 

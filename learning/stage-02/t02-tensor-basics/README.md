@@ -18,7 +18,7 @@
 0. 每章开头都附有本章需要的术语与前置知识；总目录的[统一术语表](../terms.md)是跨章节查阅用的补充，不是开始练习的前提。
 1. 再读本任务的章节教程：第 1 章[Tensor 与 shape](chapters/01_tensor_and_shape.md)、第 2 章[索引与切片](chapters/02_indexing_and_slicing.md)、第 3 章[广播](chapters/03_broadcasting.md)、第 4 章[批量矩阵乘法](chapters/04_batched_matmul.md)。其中完整讲解 Tensor shape、创建、索引与切片、广播全部判定规则、失败维度分析和批量矩阵乘法。
 2. 再阅读下方练习，先独立预测，不运行代码。
-3. 完成预测后运行 `python learning/stage-02/tensors/t02/verify_shapes.py`，对照实际 shape 和错误信息。
+3. 完成预测后运行 `python learning/stage-02/t02-tensor-basics/verify_shapes.py`，对照实际 shape 和错误信息。
 4. 复盘至少 3 题，遮住运行输出后独立写出推导过程。
 
 分章教程以项目自己的知识体系为主；如需对照术语或继续深入，可参考 R01 PyTorch [Tensors](https://docs.pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html) 和 R02 [Broadcasting semantics](https://docs.pytorch.org/docs/stable/notes/broadcasting.html)。
@@ -30,7 +30,7 @@
 1. 每个输入的 shape；
 2. 预测操作结果的 shape，或预测会报错；
 3. 广播题从右向左逐维写出对齐关系；失败题指出第一处不兼容的维度；
-4. 执行 `python learning/stage-02/tensors/t02/verify_shapes.py` 后对照结果；
+4. 执行 `python learning/stage-02/t02-tensor-basics/verify_shapes.py` 后对照结果；
 5. 在“复盘”处用自己的话改写至少 3 题的推导，不照抄输出。
 
 建议按章节顺序学习，再独立填写预测，然后运行验证脚本。脚本只显示实际结果，不提前显示答案表。

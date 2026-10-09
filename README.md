@@ -50,7 +50,7 @@ PyTorch 实验可安装 `python -m pip install -e '.[torch,benchmark]'`。CUDA �
 3. 对 GPU 计时先 warmup 并同步；区分 kernel 时间和端到端时间。
 4. 把环境、命令、参数、原始结果和限制写入实验报告。
 
-新读者可以从 [Tensor 入门与内存布局](learning/stage-02/tensors/README.md) 或 [C++ 示例目录](learning/stage-01/examples/README.md) 开始。CUDA 专题索引见 [CUDA 学习材料](learning/stage-00/before-learning/README.md)。
+新读者可以从 [PyTorch 与模型基础章节目录](learning/stage-02/README.md) 或 [C++ 示例目录](learning/stage-01/examples/README.md) 开始。CUDA 专题索引见 [CUDA 学习材料](learning/stage-00/before-learning/README.md)。
 
 ## 目录导航
 

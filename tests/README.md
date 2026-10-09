@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-根目录测试套件尚在建设中。阶段 1 C++ 示例已有独立 CTest，位于 [`learning/stage-01/examples`](../learning/stage-01/examples/)。T04 的 CPU Buffer 所有权验证也有[独立 CTest 入口](../learning/stage-02/cpp-ownership/t04/README.md)，保持在练习目录中。
+根目录测试套件尚在建设中。阶段 1 C++ 示例已有独立 CTest，位于 [`learning/stage-01/examples`](../learning/stage-01/examples/)。T04 的 CPU Buffer 所有权验证也有[独立 CTest 入口](../learning/stage-02/t04-cpp-buffer-ownership/README.md)，保持在练习目录中。
 
 ## 运行方式
 
@@ -25,10 +25,10 @@ ctest --test-dir /tmp/mlsys-stage1-build --output-on-failure
 T04 Buffer 所有权及内存检查（GCC/Clang）：
 
 ```bash
-cmake -S learning/stage-02/cpp-ownership/t04 -B /tmp/mlsys-t04-build \
+cmake -S learning/stage-02/t04-cpp-buffer-ownership -B /tmp/mlsys-t04-cpp-buffer-build \
   -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
-cmake --build /tmp/mlsys-t04-build
-ctest --test-dir /tmp/mlsys-t04-build --output-on-failure -V
+cmake --build /tmp/mlsys-t04-cpp-buffer-build
+ctest --test-dir /tmp/mlsys-t04-cpp-buffer-build --output-on-failure -V
 ```
 
 此 CTest 入口启用 ASan、UBSan 和泄漏检查，覆盖移动、自移动、空对象、容器迁移与异常清理；编译器禁止拷贝的验证方法见[报告](../reports/stage-02/2026-10-08-t04-validation.md)。

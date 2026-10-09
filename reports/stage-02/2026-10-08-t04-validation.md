@@ -4,7 +4,7 @@
 
 ## 来源与环境
 
-- 源码：[buffer.hpp](../../learning/stage-02/cpp-ownership/t04/buffer.hpp)、[buffer.cpp](../../learning/stage-02/cpp-ownership/t04/buffer.cpp)、[CMakeLists.txt](../../learning/stage-02/cpp-ownership/t04/CMakeLists.txt)。
+- 源码：[buffer.hpp](../../learning/stage-02/t04-cpp-buffer-ownership/buffer.hpp)、[buffer.cpp](../../learning/stage-02/t04-cpp-buffer-ownership/buffer.cpp)、[CMakeLists.txt](../../learning/stage-02/t04-cpp-buffer-ownership/CMakeLists.txt)。
 - 本轮沿用工作区已有实现与验证，补齐源码中的语法、行为和原理注释并重新运行检查；核读时发现 `buffer.cpp` 文件尾部停在空状态检查中间，恢复 moved-from 复用、vector 迁移、异常展开和 `main()`，随后按下方命令重新构建验证。
 - GCC：`g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0`。
 - CMake：3.28.3；C++17；Debug；CPU float 数组；确定性输入，无随机种子或 GPU 依赖。
@@ -15,10 +15,10 @@
 从仓库根目录：
 
 ```bash
-cmake -S learning/stage-02/cpp-ownership/t04 -B /tmp/mlsys-t04-build \
+cmake -S learning/stage-02/t04-cpp-buffer-ownership -B /tmp/mlsys-t04-cpp-buffer-build \
   -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
-cmake --build /tmp/mlsys-t04-build
-ctest --test-dir /tmp/mlsys-t04-build --output-on-failure -V
+cmake --build /tmp/mlsys-t04-cpp-buffer-build
+ctest --test-dir /tmp/mlsys-t04-cpp-buffer-build --output-on-failure -V
 ```
 
 CTest 的环境为 `ASAN_OPTIONS=detect_leaks=1:halt_on_error=1` 和 `UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1`。
@@ -40,6 +40,8 @@ CTest 汇总：
 1/1 Test #1: t04_buffer_ownership .............   Passed
 100% tests passed, 0 tests failed out of 1
 ```
+
+目录整理后于 2026-10-09 使用上方新源码路径和 `/tmp/mlsys-t04-cpp-buffer-build` 重新配置、构建并运行 CTest；结果仍为 1/1 通过，ASan/UBSan 无报错。
 
 本轮注释更新后重新运行上述命令，CTest 1/1 通过（报告运行时间 0.01 秒），两项拷贝负例重新检查也通过。该时间仅是验证程序运行记录，不是性能指标。
 
@@ -77,7 +79,7 @@ int main() { stage2::Buffer a(4); stage2::Buffer b(1); b = a; }
 复现方式为分别保存片段到临时 `.cpp` 文件，执行：
 
 ```bash
-g++ -std=c++17 -I learning/stage-02/cpp-ownership/t04 \
+g++ -std=c++17 -I learning/stage-02/t04-cpp-buffer-ownership \
   -fsyntax-only /tmp/t04-copy-check.cpp
 ```
 

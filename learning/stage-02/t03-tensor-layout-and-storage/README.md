@@ -201,4 +201,4 @@ v[1] = -1
 - CPU/GPU、dtype 转换：E 的 CPU dtype 转换和 CPU→CUDA→CPU 已实测。
 - 自测范围：F 示例与本轮新尺寸预测覆盖布局、存储共享和修改传播；答案可通过脚本复核。
 - 验证结论：2026-10-08 的代码和断言检查通过。保留已连续输入的 `contiguous()` 不复制这一边界提醒，后续按需回查。
-- 下一任务：T04 C++ 既有能力短验收，见[Buffer 所有权练习](../../cpp-ownership/t04/README.md)。
+- 下一任务：T04 C++ 既有能力短验收，见[Buffer 所有权练习](../t04-cpp-buffer-ownership/README.md)。

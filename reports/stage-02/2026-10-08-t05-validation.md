@@ -4,7 +4,7 @@
 
 ## 来源与环境
 
-- 产物：[学习材料与手算](../../learning/stage-02/t05/README.md)、[验证脚本](../../learning/stage-02/t05/verify_gradients.py)。
+- 产物：[学习材料与手算](../../learning/stage-02/t05-chain-rule-and-finite-differences/README.md)、[验证脚本](../../learning/stage-02/t05-chain-rule-and-finite-differences/verify_gradients.py)。
 - 参考：R01 [Autograd 教程](https://docs.pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html)；R03 [Autograd mechanics](https://docs.pytorch.org/docs/stable/notes/autograd.html)、[gradcheck API](https://docs.pytorch.org/docs/stable/generated/torch.autograd.gradcheck.html)、[gradcheck 原理](https://docs.pytorch.org/docs/stable/notes/gradcheck.html)。
 - Python 环境：仓库 `.venv`；PyTorch `2.11.0+cu128`。计算使用 CPU `torch.float64`；步长 `h=1e-6`；固定输入，无随机数、GPU 计算或训练。
 - 本轮脚本用于数值对照；脚本通过不代表读者已能独立推导或实现梯度。
@@ -14,7 +14,7 @@
 从仓库根目录执行：
 
 ```bash
-.venv/bin/python learning/stage-02/t05/verify_gradients.py
+.venv/bin/python learning/stage-02/t05-chain-rule-and-finite-differences/verify_gradients.py
 ```
 
 ## 数值结果
@@ -51,4 +51,4 @@ ReLU 在 0 的左右导数不同，不存在普通导数。对称中心差分会
 
 ## 下一步验收
 
-读者可按 [T05 自测题](../../learning/stage-02/t05/README.md#t05-oral-check)说明链式相乘、线性层梯度的索引含义，以及有限差分误差和 ReLU 零点差异。独立推导不在本报告的数值验证范围内。
+读者可按 [T05 自测题](../../learning/stage-02/t05-chain-rule-and-finite-differences/README.md#t05-oral-check)说明链式相乘、线性层梯度的索引含义，以及有限差分误差和 ReLU 零点差异。独立推导不在本报告的数值验证范围内。

@@ -1,6 +1,6 @@
 # PyTorch 与模型基础
 
-状态：B01/T01～T04 的材料和对应验证已完成；B02/T05 的手算与数值对照已完成，讲解题仍可用于读者自测；训练、Attention 与模型前向尚待补充。此目录延续历史编号，阶段顺序见[任务清单](../../plan/TASKS.md)。
+状态：B01/T01～T04 的材料和对应验证已完成；B02/T05 的手算与数值对照已完成，讲解题仍可用于读者自测；T06 梯度累积与推理模式已完成故障对照；MLP 训练、Attention 与模型前向尚待补充。此目录延续历史编号，阶段顺序见[任务清单](../../plan/TASKS.md)。
 
 ## 前四周
 
@@ -13,7 +13,20 @@
 
 每个实验建立独立目录，包含代码、验证和 README。已有 Tensor 实验；后续任务清单不计为完成成果。
 
-已完成的 T01～T03 材料见 [Tensor 学习目录](tensors/README.md)、[T02 作答与批阅](tensors/t02/README.md)和[T03 实验记录](tensors/t03/README.md)。T04 见 [Buffer 所有权练习与验收](cpp-ownership/t04/README.md)。T05 材料与脚本见[链式法则与有限差分](t05/README.md)，数值证据见[验证报告](../../reports/stage-02/2026-10-08-t05-validation.md)。
+## 章节目录
+
+每个已学习项目都按 `tNN-章节名` 放在本目录下。章节内保留对应 README、代码和分章材料；验证报告与独立验收记录集中放在仓库的 `reports/` 和 `plan/completed/`。
+
+| 目录 | 主题 | 入口与证据 |
+| --- | --- | --- |
+| [t01-environment-verification](t01-environment-verification/README.md) | 当前设备环境验收 | [环境报告](../../reports/stage-02/2026-09-27-t01-environment.md) |
+| [t02-tensor-basics](t02-tensor-basics/README.md) | Tensor 创建、索引、广播与批量矩阵乘法 | [完成记录](../../plan/completed/T02.md) |
+| [t03-tensor-layout-and-storage](t03-tensor-layout-and-storage/README.md) | storage、stride、视图、dtype 与 device | [完成记录](../../plan/completed/T03.md) |
+| [t04-cpp-buffer-ownership](t04-cpp-buffer-ownership/README.md) | C++ Buffer 所有权与移动 | [完成记录](../../plan/completed/T04.md)、[验证报告](../../reports/stage-02/2026-10-08-t04-validation.md) |
+| [t05-chain-rule-and-finite-differences](t05-chain-rule-and-finite-differences/README.md) | 链式法则、autograd 与有限差分 | [验证报告](../../reports/stage-02/2026-10-08-t05-validation.md) |
+| [t06-gradient-accumulation-and-inference-modes](t06-gradient-accumulation-and-inference-modes/README.md) | 梯度累积、detach 与推理模式 | [完成记录](../../plan/completed/T06.md)、[验证报告](../../reports/stage-02/2026-10-09-t06-validation.md) |
+
+T02 与 T03 共用的 Tensor 术语表在[本目录](terms.md)，配图源文件索引在[figure-index.md](figure-index.md)。旧的 `learning/stage-02/tensors/` 仅保留兼容入口，新的学习入口以本表为准。
 
 ## 第五至八周
 

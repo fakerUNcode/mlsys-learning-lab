@@ -24,8 +24,8 @@
 | 主题 | 需要读懂的基础 | 仓库入口 |
 | --- | --- | --- |
 | C++ 示例 | 源文件/头文件、函数、对象生命周期、构建与测试 | [C++ 学习阶段](learning/stage-01/README.md) |
-| PyTorch Tensor | shape、轴、索引、广播、dtype 与 device | [Tensor 学习索引](learning/stage-02/tensors/README.md) |
-| 梯度 | 函数复合、链式法则、矩阵维度和有限差分 | [T05 梯度导读](learning/stage-02/t05/README.md) |
+| PyTorch Tensor | shape、轴、索引、广播、dtype 与 device | [T02 Tensor 基础](learning/stage-02/t02-tensor-basics/README.md)、[T03 Tensor 布局](learning/stage-02/t03-tensor-layout-and-storage/README.md) |
+| 梯度 | 函数复合、链式法则、矩阵维度和有限差分 | [T05 梯度导读](learning/stage-02/t05-chain-rule-and-finite-differences/README.md)、[T06 梯度累积与推理模式](learning/stage-02/t06-gradient-accumulation-and-inference-modes/README.md) |
 | CUDA | Host/Device、线程索引、并行边界与同步 | [CUDA 专题索引](learning/stage-00/before-learning/README.md) |
 | 推理系统 | 前向执行、KV Cache、批处理、延迟与吞吐 | [推理服务技术详解](learning/LLM推理服务技术详解/README.md) |
 

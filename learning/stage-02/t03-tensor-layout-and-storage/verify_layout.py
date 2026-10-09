@@ -1,4 +1,4 @@
-"""Run T03 layout experiments after recording predictions in t03/README.md."""
+"""Run T03 layout experiments after recording predictions in this directory's README.md."""
 
 from itertools import product
 

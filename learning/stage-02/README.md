@@ -1,6 +1,6 @@
 # PyTorch 与模型基础
 
-状态：B01/T01～T04 的材料和对应验证已完成；B02/T05 的手算与数值对照已完成，讲解题仍可用于读者自测；T06 梯度累积与推理模式已完成故障对照；MLP 训练、Attention 与模型前向尚待补充。此目录延续历史编号，阶段顺序见[任务清单](../../plan/TASKS.md)。
+状态：B01/T01～T04 的材料和对应验证已完成；B02/T05 的手算与数值对照已完成，讲解题仍可用于读者自测；T06 梯度累积与推理模式已完成故障对照；T07 的脚本、详细笔记、程序验收及学习者手写练习已完成；Attention 与模型前向尚待补充。此目录延续历史编号，阶段顺序见[任务清单](../../plan/TASKS.md)。
 
 ## 前四周
 
@@ -25,6 +25,7 @@
 | [t04-cpp-buffer-ownership](t04-cpp-buffer-ownership/README.md) | C++ Buffer 所有权与移动 | [完成记录](../../plan/completed/T04.md)、[验证报告](../../reports/stage-02/2026-10-08-t04-validation.md) |
 | [t05-chain-rule-and-finite-differences](t05-chain-rule-and-finite-differences/README.md) | 链式法则、autograd 与有限差分 | [验证报告](../../reports/stage-02/2026-10-08-t05-validation.md) |
 | [t06-gradient-accumulation-and-inference-modes](t06-gradient-accumulation-and-inference-modes/README.md) | 梯度累积、detach 与推理模式 | [完成记录](../../plan/completed/T06.md)、[验证报告](../../reports/stage-02/2026-10-09-t06-validation.md) |
+| [t07-mlp-training-loop](t07-mlp-training-loop/README.md) | MLP、DataLoader 与独立训练闭环 | [验证报告](../../reports/stage-02/2026-10-10-t07-validation.md) |
 
 T02 与 T03 共用的 Tensor 术语表在[本目录](terms.md)，配图源文件索引在[figure-index.md](figure-index.md)。旧的 `learning/stage-02/tensors/` 仅保留兼容入口，新的学习入口以本表为准。
 

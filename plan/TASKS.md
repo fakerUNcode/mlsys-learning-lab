@@ -17,7 +17,7 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 
 - [x] T05 链式法则与有限差分（L）。资料：R01 Autograd；R03 计算图、gradcheck 的数值思想。产物：[手算与代码](../learning/stage-02/t05-chain-rule-and-finite-differences/README.md)、[数值验证报告](../reports/stage-02/2026-10-08-t05-validation.md)。标量复合函数和小线性层的 float64 有限差分/autograd 对照、步长/误差已验证；讲解题可用于补充独立理解检查。
 - [x] T06 梯度累积与推理模式（L）。资料：R03 梯度累积、no-grad/inference mode；R01 Optimization。产物：[故障对照实验](../learning/stage-02/t06-gradient-accumulation-and-inference-modes/README.md)、[完成记录](completed/T06.md)、[验证报告](../reports/stage-02/2026-10-09-t06-validation.md)。验收：重复 backward 的累积、正确/遗漏 zero_grad 的 SGD 结果、detach、no-grad/inference mode 和 eval/autograd 独立行为均有可运行对照与证据；笔记补充 Dropout、Parameter、BatchNorm 与模块模式/梯度模式的职责边界。
-- [ ] T07 MLP 独立训练循环（L）。资料：R01 DataLoaders、Build Model、Optimization、Save & Load。产物：小合成数据训练脚本。验收：独立写 forward/loss/backward/step，预先定损失下降目标并达成；保存/加载后 eval logits 一致，记录种子；不要求训练高质量大模型。
+- [x] T07 MLP 独立训练循环（L）。资料：R01 DataLoaders、Build Model、Optimization、Save & Load。产物：[详细笔记与手写步骤](../learning/stage-02/t07-mlp-training-loop/README.md)、[小合成数据训练脚本](../learning/stage-02/t07-mlp-training-loop/train_mlp.py)、[程序验证报告](../reports/stage-02/2026-10-10-t07-validation.md)。2026-10-10 验收：学习者独立提交 forward/loss/backward/step、批次训练外壳、梯度方向与 checkpoint 解释；程序预设损失目标达成、保存/加载后 eval logits 完全一致且种子有记录。批阅补充适用范围：logit 梯度符号描述直接对 logits 做梯度下降，不保证共享参数更新后每个样本的 logit 都按同方向变化；交叉熵梯度趋近零也不保证参数或 logits 在一般训练中有限步停止增长。不要求训练高质量大模型。
 
 ### B03：Attention，第 3 周；依赖 B02
 

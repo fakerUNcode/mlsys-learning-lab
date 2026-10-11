@@ -24,7 +24,7 @@
 | R18 | [FlashAttention](https://arxiv.org/abs/2205.14135) | IO-aware 思路、分块/在线 softmax 与复杂度；本年度不要求完整高性能重写 |
 | R19 | [《深入理解 AI Infra》](https://bojieli.github.io/ai-infra-book/) | 第 1～3 章模型/负载，第 4～5 章硬件/运行时，第 8 章推理；选学第 9、11 章 |
 | R20 | [AIInfraGuide](https://caomaolufei.github.io/AIInfraGuide/guides/ai-infra%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/) | 按 Tensor/Transformer/CUDA/性能分析/框架主题查漏，不把整站通读设为前置 |
-| R21 | [本地模型基础任务](../learning/stage-02/README.md)、[推理服务讲义](../learning/LLM推理服务技术详解/README.md)、[C++ 讲义](../learning/stage-01/lessons/README.md) | 与现有学习记录衔接；服务 00～06 已学，后续读 07～09 |
+| R21 | [本地模型基础任务](../learning/batches/README.md)、[推理服务讲义](../learning/LLM推理服务技术详解/README.md)、[C++ 讲义](../learning/stage-01/lessons/README.md) | 与现有学习记录衔接；服务 00～06 已学，后续读 07～09 |
 | R22 | [基准测试规范](../benchmarks/README.md)、[报告索引](../reports/README.md) | 实验边界、输入、计时、原始数据与结论范围 |
 | R23 | [本仓库学习路线](../Infra%20Introduction.md)、[任务清单](TASKS.md) | 阶段顺序、验收边界与实现/验证区分 |
 | R24 | [环境检查脚本说明](../scripts/README.md)、[报告规范](../reports/README.md) | 环境、命令、结果和来源信息的记录方式 |

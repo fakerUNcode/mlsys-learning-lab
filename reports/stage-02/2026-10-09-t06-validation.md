@@ -4,7 +4,7 @@
 
 ## 来源与环境
 
-- 学习材料：[T06 README](../../learning/stage-02/t06-gradient-accumulation-and-inference-modes/README.md)；源码：[compare_grad_modes.py](../../learning/stage-02/t06-gradient-accumulation-and-inference-modes/compare_grad_modes.py)。
+- 学习材料：[T06 README](../../learning/batches/b02-gradients-training-loop/t06-gradient-accumulation-and-inference-modes/README.md)；源码：[compare_grad_modes.py](../../learning/batches/b02-gradients-training-loop/t06-gradient-accumulation-and-inference-modes/compare_grad_modes.py)。
 - 参考资料：R01 [Optimization](https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html)；R03 [Autograd mechanics](https://docs.pytorch.org/docs/stable/notes/autograd.html)、[Zeroing out gradients](https://docs.pytorch.org/tutorials/recipes/recipes/zeroing_out_gradients.html)。官方文档于 2026-10-09 查阅。
 - 术语核对：[Dropout API](https://docs.pytorch.org/docs/stable/generated/torch.nn.Dropout.html)、[Parameters, buffers, and modules](https://docs.pytorch.org/docs/stable/notes/modules.html)、[BatchNorm1d API](https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html)。用于核对模块模式、参数登记、buffer 和 BatchNorm 运行统计的笔记表述。
 - 环境：仓库 `.venv`，PyTorch `2.11.0+cu128`；运算在 CPU `torch.float64` 上进行；Dropout 使用固定随机种子 17。没有数据集、GPU 运算或性能计时。
@@ -14,7 +14,7 @@
 从仓库根目录运行：
 
 ```bash
-.venv/bin/python learning/stage-02/t06-gradient-accumulation-and-inference-modes/compare_grad_modes.py
+.venv/bin/python learning/batches/b02-gradients-training-loop/t06-gradient-accumulation-and-inference-modes/compare_grad_modes.py
 ```
 
 程序用断言验证数值与状态。全部通过时最后一行是 `T06 checks passed`。

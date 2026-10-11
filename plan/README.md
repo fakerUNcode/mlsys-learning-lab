@@ -34,6 +34,6 @@
 
 ## 仓库落点
 
-基础练习放在 `learning/stage-02/`、`cuda_kernels/`、`pytorch_extensions/` 和 `reports/`。所有代码、报告与复现命令均以本仓库为入口；如后续拆分独立项目，应在其 README 中重新说明依赖和来源，不依赖本目录之外的相对路径。
+基础练习按 TASKS 的 B 批次放在 `learning/batches/`，CUDA 和扩展练习分别位于 `cuda_kernels/` 与 `pytorch_extensions/`；报告位于 `reports/`。所有代码、报告与复现命令均以本仓库为入口；如后续拆分独立项目，应在其 README 中重新说明依赖和来源，不依赖本目录之外的相对路径。
 
 历史 C++ 00～03、模板/现代类型和推理服务 00～06 保留原完成记录；本清单只列后续验收与补缺。所有新增任务初始未完成，不把历史 smoke test 当成当前 GPU 已验收。

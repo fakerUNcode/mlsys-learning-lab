@@ -2,15 +2,15 @@
 
 这里是全仓库的实验记录索引。状态描述仓库内材料、代码与验证证据，不代表任何读者的个人能力评价；目录或讲义已经存在本身不代表结论已验证。
 
-## 当前进度（2026-10-09）
+## 当前进度（2026-10-11）
 
 | 项目 | 最新状态 | 证据与边界 | 下一步 |
 | --- | --- | --- | --- |
 | 环境与计时 | 基础闭环已有 | 历史环境报告、Vector Add；新设备仍需重新验收 | 验证实际工具链、profiling 权限与可用显存 |
 | C++ 第 00～03 节 | 已完成 | 既有 runtime、智能指针与 STL 程序及 CTest | 保留，按需回查 |
-| C++ 模板与现代类型 | T04 工程与自动验证通过 | [Buffer 练习](../learning/stage-02/t04-cpp-buffer-ownership/README.md)与[验证报告](../reports/stage-02/2026-10-08-t04-validation.md)；实现来源与自动检查范围见报告 | 保留回查 |
+| C++ 模板与现代类型 | T04 工程与自动验证通过 | [Buffer 练习](../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/README.md)与[验证报告](../reports/stage-02/2026-10-08-t04-validation.md)；实现来源与自动检查范围见报告 | 保留回查 |
 | C++20、ABI 等专题 | 按需补缺 | 不将讲义存在视为已掌握或必修 | 遇到扩展构建等问题再补 |
-| PyTorch、梯度、模型前向 | B01/T01～T04 已验收；T05 数值验证通过、口述待验收；T06 故障对照完成 | [阶段章节索引](../learning/stage-02/README.md)、[T02 Tensor 基础](../learning/stage-02/t02-tensor-basics/README.md)、[T03 Tensor 布局](../learning/stage-02/t03-tensor-layout-and-storage/README.md)、[T05 手算与脚本](../learning/stage-02/t05-chain-rule-and-finite-differences/README.md)、[T06 梯度累积](../learning/stage-02/t06-gradient-accumulation-and-inference-modes/README.md)；T02/T03/T04 独立验收记录保留 | 完成 T05 口述后继续 T07 |
+| PyTorch、梯度、模型前向 | B01/T01～T04 已验收；T05 口述待验收；T06/T07 有程序证据；T08 reference 与三组 SDPA 对照通过，独立复写待确认 | [B 批次章节索引](../learning/batches/README.md)、[T08 Attention](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[T08 报告](../reports/stage-02/2026-10-11-t08-validation.md) | T09 因果 mask 与多头 |
 | LLM 推理服务 00～06 | 讲义与记录已保存 | 不等同模型部署或性能实验 | 用后续模型实现补充验证 |
 | CUDA 与扩展优化 | 待推进 | 笔记与模块约定；无成熟自定义 kernel 项目 | 完成模型基础后进入 |
 | 模型级推理实验 | 本仓库尚无完整 runner | 目前以基础知识和小型验证为主 | 在本仓库建立可复现实现与报告 |
@@ -32,6 +32,7 @@
 | [2026-09-27](2026-09-27.md) | T01 设备验收与 T02 Tensor shape | CUDA Toolkit/kernel 验收通过；完成 Tensor、索引、广播练习及独立复写 |
 | [2026-10-08](2026-10-08.md) | T03/T04 收尾、T05 数值验证与程序导读重写 | T03/T04 已验收；T05 float64 对照与 gradcheck 通过、口述待验收；T04/T05 已补齐前置知识、设计决策和证据映射 |
 | [2026-10-09](2026-10-09.md) | Stage-02 章节目录整理与 T06 梯度模式实验 | 章节入口按 `tNN-章节名` 归整；T06 实验与术语说明复核通过；T05 独立口述仍待验收 |
+| [2026-10-11](2026-10-11.md) | T08 单头缩放点积 Attention | 三组 CPU float64 reference/SDPA 对照通过；FLOPs 和中间矩阵已记录；独立复写待确认 |
 
 ## 更新规则
 
@@ -42,4 +43,4 @@
 3. 哪些概念仍然不会；
 4. 下一次只推进哪一个明确任务。
 
-总路线和阶段验收标准见 [Infra 学习指南](../Infra%20Introduction.md)，当前课程入口见 [PyTorch 与模型基础](../learning/stage-02/README.md)。
+总路线和阶段验收标准见 [Infra 学习指南](../Infra%20Introduction.md)，当前课程入口见 [PyTorch 与模型基础](../learning/batches/README.md)。

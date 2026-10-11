@@ -7,7 +7,7 @@
 - Python 虚拟环境：仓库 `.venv`。
 - PyTorch：`2.11.0+cu128`；本实验 device 为 CPU。
 - 种子：`20261010`；DataLoader shuffle generator 使用 `20261011`。
-- 命令：`.venv/bin/python learning/stage-02/t07-mlp-training-loop/train_mlp.py`。
+- 命令：`.venv/bin/python learning/batches/b02-gradients-training-loop/t07-mlp-training-loop/train_mlp.py`。
 - 参考：R01 [DataLoaders](https://docs.pytorch.org/tutorials/beginner/basics/data_tutorial.html)、[Build Model](https://docs.pytorch.org/tutorials/beginner/basics/buildmodel_tutorial.html)、[Optimization](https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html)、[Save & Load](https://docs.pytorch.org/tutorials/beginner/basics/saveloadrun_tutorial.html)，官方在线文档于 2026-10-10 查阅。
 
 ## 预先确定的目标

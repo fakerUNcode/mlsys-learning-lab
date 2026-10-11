@@ -2,7 +2,7 @@
 
 本章从二维合成分类数据开始，逐步写出一个多层感知机（MLP）的 `forward → loss → backward → step`。目标是读懂并能脱离答案手写这个闭环，理解每个 Tensor 的形状、损失梯度怎样到达参数、参数在哪一步改变，以及如何验证训练和保存/加载。任务要求损失目标必须在观察结果前定好；本实验预先设为“最终训练集交叉熵 < 0.12，且不超过初始损失的 10%”。不要求高质量大模型或泛化结论。
 
-程序入口：[train_mlp.py](train_mlp.py)。运行证据：[T07 验证报告](../../../reports/stage-02/2026-10-10-t07-validation.md)。本章承接 [T05 链式法则](../t05-chain-rule-and-finite-differences/README.md) 和 [T06 梯度清零、反向与评估模式](../t06-gradient-accumulation-and-inference-modes/README.md)。
+程序入口：[train_mlp.py](train_mlp.py)。运行证据：[T07 验证报告](../../../../reports/stage-02/2026-10-10-t07-validation.md)。本章承接 [T05 链式法则](../t05-chain-rule-and-finite-differences/README.md) 和 [T06 梯度清零、反向与评估模式](../t06-gradient-accumulation-and-inference-modes/README.md)。
 
 ![image-20261010102853638](https://fakercodes.oss-cn-hangzhou.aliyuncs.com/sl/image-20261010102853638.png)
 
@@ -640,7 +640,7 @@ SGD 用当前梯度的一阶局部方向更新。非凸神经网络损失面可�
 从仓库根目录执行：
 
 ```text
-.venv/bin/python learning/stage-02/t07-mlp-training-loop/train_mlp.py
+.venv/bin/python learning/batches/b02-gradients-training-loop/t07-mlp-training-loop/train_mlp.py
 ```
 
 成功时末尾出现 `save_load_max_logit_error=0.0` 和 `T07 checks passed`。若损失断言失败，错误信息指出绝对阈值或相对下降比例未达到；若 checkpoint 输出不一致，`assert_close` 会抛出异常。脚本不下载数据，CPU 和已安装的 PyTorch 即可运行。

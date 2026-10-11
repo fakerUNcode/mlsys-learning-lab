@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-根目录测试套件尚在建设中。阶段 1 C++ 示例已有独立 CTest，位于 [`learning/stage-01/examples`](../learning/stage-01/examples/)。T04 的 CPU Buffer 所有权验证也有[独立 CTest 入口](../learning/stage-02/t04-cpp-buffer-ownership/README.md)，保持在练习目录中。
+根目录测试套件尚在建设中。旧 C++ 学习目录的示例已有独立 CTest，位于 [`learning/stage-01/examples`](../learning/stage-01/examples/)。T04 的 CPU Buffer 所有权验证也有[独立 CTest 入口](../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/README.md)，保持在练习目录中。
 
 ## 运行方式
 
@@ -25,7 +25,7 @@ ctest --test-dir /tmp/mlsys-stage1-build --output-on-failure
 T04 Buffer 所有权及内存检查（GCC/Clang）：
 
 ```bash
-cmake -S learning/stage-02/t04-cpp-buffer-ownership -B /tmp/mlsys-t04-cpp-buffer-build \
+cmake -S learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership -B /tmp/mlsys-t04-cpp-buffer-build \
   -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
 cmake --build /tmp/mlsys-t04-cpp-buffer-build
 ctest --test-dir /tmp/mlsys-t04-cpp-buffer-build --output-on-failure -V

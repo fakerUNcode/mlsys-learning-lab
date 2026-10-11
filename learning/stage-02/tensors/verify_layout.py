@@ -4,6 +4,6 @@ from pathlib import Path
 import runpy
 
 runpy.run_path(
-    str(Path(__file__).resolve().parents[1] / "t03-tensor-layout-and-storage" / "verify_layout.py"),
+    str(Path(__file__).resolve().parents[2] / "batches" / "b01-environment-tensor-layout" / "t03-tensor-layout-and-storage" / "verify_layout.py"),
     run_name="__main__",
 )

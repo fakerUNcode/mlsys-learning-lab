@@ -1,6 +1,6 @@
 # T06：梯度累积、计算图与推理模式
 
-状态：故障对照脚本和 CPU（Central Processing Unit，中央处理器）`float64`（64 位双精度浮点数）运行证据已完成。任务记录：[T06 完成记录](../../../plan/completed/T06.md)；实测环境与输出：[验证报告](../../../reports/stage-02/2026-10-09-t06-validation.md)。本章承接 [T05 链式法则与有限差分](../t05-chain-rule-and-finite-differences/README.md)：T05 练习“梯度怎么算”，T06 解释梯度如何被保存、清理、截断，以及何时不需要记录它。
+状态：故障对照脚本和 CPU（Central Processing Unit，中央处理器）`float64`（64 位双精度浮点数）运行证据已完成。任务记录：[T06 完成记录](../../../../plan/completed/T06.md)；实测环境与输出：[验证报告](../../../../reports/stage-02/2026-10-09-t06-validation.md)。本章承接 [T05 链式法则与有限差分](../t05-chain-rule-and-finite-differences/README.md)：T05 练习“梯度怎么算”，T06 解释梯度如何被保存、清理、截断，以及何时不需要记录它。
 
 本章的中心问题是：梯度到底帮训练做什么？答案是，梯度告诉优化器损失在当前参数附近的变化方向和敏感程度；优化器再依据梯度和学习率修改参数。T06 用标量 SGD（Stochastic Gradient Descent，随机梯度下降）演示这条路径，并对照常见的状态错误。推理（inference）是用已训练模型产生预测的阶段，不再通过损失更新参数；后半章区分推理时的模块行为、计算图截断和梯度记录开关。
 
@@ -9,7 +9,7 @@
 从仓库根目录运行：
 
 ```bash
-.venv/bin/python learning/stage-02/t06-gradient-accumulation-and-inference-modes/compare_grad_modes.py
+.venv/bin/python learning/batches/b02-gradients-training-loop/t06-gradient-accumulation-and-inference-modes/compare_grad_modes.py
 ```
 
 入口脚本：[compare_grad_modes.py](compare_grad_modes.py)。脚本只用人工构造的小型 CPU Tensor，不读取数据，也不训练真实模型。当前已观察环境为 PyTorch `2.11.0+cu128`（`cu128` 表示该构建带 CUDA 12.8 支持，但本程序仍在 CPU 上运行）、`torch.float64`；模型中的随机层使用随机种子 17。随机种子是伪随机数生成器的初始状态，同一环境重置为同一种子可复现本次掩码；不同设备或软件版本不保证随机序列逐项相同。所有断言通过时，最后打印 `T06 checks passed`；断言是运行时条件检查，失败会抛出 `AssertionError`（断言失败异常）并使程序退出。

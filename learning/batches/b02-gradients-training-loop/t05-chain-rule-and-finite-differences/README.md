@@ -1,6 +1,6 @@
 # T05：链式法则与有限差分——从前置知识读懂完整脚本
 
-状态：程序、手算和 CPU `float64` 数值对照已完成；独立推导仍需读者自测。所属 B02。产物：[完整验证脚本](verify_gradients.py)、[数值验证报告](../../../reports/stage-02/2026-10-08-t05-validation.md)。
+状态：程序、手算和 CPU `float64` 数值对照已完成；独立推导仍需读者自测。所属 B02。产物：[完整验证脚本](verify_gradients.py)、[数值验证报告](../../../../reports/stage-02/2026-10-08-t05-validation.md)。
 
 本页按“必要前置知识 → 手算 → 源码执行顺序 → 使用方法”组织。目标是读完前置部分后，可以直接读完脚本中的每一种 Python/Tensor 语法，知道每个函数改动了哪些值、如何得到梯度、误差表示什么。程序不训练模型，也不依赖 GPU。
 
@@ -419,10 +419,10 @@ PyTorch 对 ReLU 零点采用反向梯度约定 `0`。因此在这个非光滑�
 从仓库根目录运行：
 
 ```bash
-.venv/bin/python learning/stage-02/t05-chain-rule-and-finite-differences/verify_gradients.py
+.venv/bin/python learning/batches/b02-gradients-training-loop/t05-chain-rule-and-finite-differences/verify_gradients.py
 ```
 
-在本轮 PyTorch `2.11.0+cu128` 环境，标量梯度最大误差为 `4.592e-10`；线性层输入、权重、偏置误差分别为 `1.587e-9`、`1.538e-9`、`1.213e-9`。两组 gradcheck 均返回 True。完整输出、限制和参考资料见[验证报告](../../../reports/stage-02/2026-10-08-t05-validation.md)。
+在本轮 PyTorch `2.11.0+cu128` 环境，标量梯度最大误差为 `4.592e-10`；线性层输入、权重、偏置误差分别为 `1.587e-9`、`1.538e-9`、`1.213e-9`。两组 gradcheck 均返回 True。完整输出、限制和参考资料见[验证报告](../../../../reports/stage-02/2026-10-08-t05-validation.md)。
 
 <a id="t05-oral-check"></a>
 

@@ -4,7 +4,7 @@
 
 ## 来源与环境
 
-- 源码：[buffer.hpp](../../learning/stage-02/t04-cpp-buffer-ownership/buffer.hpp)、[buffer.cpp](../../learning/stage-02/t04-cpp-buffer-ownership/buffer.cpp)、[CMakeLists.txt](../../learning/stage-02/t04-cpp-buffer-ownership/CMakeLists.txt)。
+- 源码：[buffer.hpp](../../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/buffer.hpp)、[buffer.cpp](../../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/buffer.cpp)、[CMakeLists.txt](../../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/CMakeLists.txt)。
 - 本轮沿用工作区已有实现与验证，补齐源码中的语法、行为和原理注释并重新运行检查；核读时发现 `buffer.cpp` 文件尾部停在空状态检查中间，恢复 moved-from 复用、vector 迁移、异常展开和 `main()`，随后按下方命令重新构建验证。
 - GCC：`g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0`。
 - CMake：3.28.3；C++17；Debug；CPU float 数组；确定性输入，无随机种子或 GPU 依赖。
@@ -15,7 +15,7 @@
 从仓库根目录：
 
 ```bash
-cmake -S learning/stage-02/t04-cpp-buffer-ownership -B /tmp/mlsys-t04-cpp-buffer-build \
+cmake -S learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership -B /tmp/mlsys-t04-cpp-buffer-build \
   -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
 cmake --build /tmp/mlsys-t04-cpp-buffer-build
 ctest --test-dir /tmp/mlsys-t04-cpp-buffer-build --output-on-failure -V
@@ -79,7 +79,7 @@ int main() { stage2::Buffer a(4); stage2::Buffer b(1); b = a; }
 复现方式为分别保存片段到临时 `.cpp` 文件，执行：
 
 ```bash
-g++ -std=c++17 -I learning/stage-02/t04-cpp-buffer-ownership \
+g++ -std=c++17 -I learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership \
   -fsyntax-only /tmp/t04-copy-check.cpp
 ```
 

@@ -4,16 +4,17 @@
 
 ## 当前任务
 
-从 [PyTorch 与模型基础](stage-02/README.md) 开始：Tensor、布局、梯度、Attention、Decoder Block、生成与 KV Cache。达到阶段验收即可推进，不要求重新通读 C++。
+从[按 B 批次组织的模型基础章节](batches/README.md)开始：Tensor、布局、梯度、Attention、Decoder Block、生成与 KV Cache。达到阶段验收即可推进，不要求重新通读 C++。
 
 | 材料 | 状态与使用方式 |
 | --- | --- |
 | [stage-00](stage-00/README.md) | 既有环境、CUDA 资料与可信计时入口，持续复用 |
-| [stage-01](stage-01/README.md) | 保留的 C++ 讲义、程序和练习，按实际缺口回查 |
-| [stage-02](stage-02/README.md) | 新主线任务清单，尚未完成学习验收 |
+| [stage-01 历史材料](stage-01/README.md) | 旧编号下的 C++ 讲义、程序和练习，按实际缺口回查 |
+| [按 B 批次组织的章节](batches/README.md) | 对应 TASKS 阶段 1 的 B01～B06；当前推进到 B03 |
+| [stage-02 历史入口](stage-02/README.md) | 兼容说明；新章节请使用 B 批次目录 |
 | [LLM 推理服务技术详解](LLM推理服务技术详解/README.md) | 已学 00～06 的记录保留；概念阅读与模型实现分开验收 |
 
-目录编号延续历史，不与年度阶段编号强行对应。后续 GPU、算子与量化材料在真正进入时增加；已有材料不移动，保持链接可用。
+stage-01/stage-02 是历史目录编号，不对应 TASKS 当前同号阶段。stage-02 保留兼容说明；新的模型基础材料按 TASKS 的 B 批次归档。后续 GPU、算子与量化材料在对应批次推进时增加。
 
 ## 验证如何进入主项目
 

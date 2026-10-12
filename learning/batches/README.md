@@ -4,13 +4,13 @@
 
 ## 阶段 1
 
-TASKS 的阶段 1 是模型基础，共 B01～B06。当前进度为 B03；B03 的 T08 已有 reference 和数值对照，T09/T10 尚待完成。
+TASKS 的阶段 1 是模型基础，共 B01～B06。当前进度为 B03；T08 reference 与 T09 多头因果实现及 CPU 语义测试已有，T10 尚待完成。
 
 | 批次 | 主题 | 任务 | 章节入口 | 状态 |
 | --- | --- | --- | --- | --- |
 | B01 | 环境、Tensor 与布局 | T01～T04 | [B01 目录](b01-environment-tensor-layout/README.md) | 现有材料已迁入 |
 | B02 | 梯度与训练闭环 | T05～T07 | [B02 目录](b02-gradients-training-loop/README.md) | 现有材料已迁入 |
-| B03 | Attention | T08～T10 | [B03 目录](b03-attention/README.md) | T08 已有；T09/T10 待做 |
+| B03 | Attention | T08～T10 | [B03 目录](b03-attention/README.md) | T08/T09 已有程序证据；T10 待做 |
 | B04 | Decoder Block | T11～T13 | TASKS 中定义 | 待创建材料 |
 | B05 | 生成、KV 与资源估算 | T14～T16 | TASKS 中定义 | 待创建材料 |
 | B06 | 真实 target-only baseline | T17～T20 | TASKS 中定义 | 待创建材料 |

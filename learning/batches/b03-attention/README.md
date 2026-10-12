@@ -14,4 +14,4 @@ T08 的程序可从仓库根目录运行：
 .venv/bin/python learning/batches/b03-attention/t08-scaled-dot-product-attention/attention_reference.py
 ```
 
-T08 的 CPU float64 对照与 T09 的 CPU 多头因果语义检查通过；T10 尚待完成。程序验收不等同于学习者已独立复写，任务范围与阶段门槛以[任务清单](../../../plan/TASKS.md)为准。
+T08 的 CPU float64 对照与 T09 的 CPU 多头因果语义检查通过；T09 学习者脱离讲义独立复写已验收，T08 独立复写状态仍见各自记录；T10 尚待完成。任务范围与阶段门槛以[任务清单](../../../plan/TASKS.md)为准。

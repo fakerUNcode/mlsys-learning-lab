@@ -2,7 +2,7 @@
 
 这里是全仓库的实验记录索引。状态描述仓库内材料、代码与验证证据，不代表任何读者的个人能力评价；目录或讲义已经存在本身不代表结论已验证。
 
-## 当前进度（2026-10-11）
+## 当前进度（2026-10-12）
 
 | 项目 | 最新状态 | 证据与边界 | 下一步 |
 | --- | --- | --- | --- |
@@ -10,7 +10,7 @@
 | C++ 第 00～03 节 | 已完成 | 既有 runtime、智能指针与 STL 程序及 CTest | 保留，按需回查 |
 | C++ 模板与现代类型 | T04 工程与自动验证通过 | [Buffer 练习](../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/README.md)与[验证报告](../reports/stage-02/2026-10-08-t04-validation.md)；实现来源与自动检查范围见报告 | 保留回查 |
 | C++20、ABI 等专题 | 按需补缺 | 不将讲义存在视为已掌握或必修 | 遇到扩展构建等问题再补 |
-| PyTorch、梯度、模型前向 | B01/T01～T04 已验收；T05 口述待验收；T06/T07 有程序证据；T08 单头和 T09 因果多头 CPU 检查通过，T09 独立复写已验收 | [B 批次章节索引](../learning/batches/README.md)、[T08 Attention](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[T09 Attention](../learning/batches/b03-attention/t09-causal-mask-and-multihead/README.md)、[T09 报告](../reports/stage-02/2026-10-11-t09-validation.md) | T10 数值稳定性与成本 |
+| PyTorch、梯度、模型前向 | B01/T01～T04 已验收；T05 口述待验收；T06/T07 有程序证据；T08～T10 CPU 检查通过，T10 另有 GPU float64 检查；T09 独立复写已验收 | [B 批次章节索引](../learning/batches/README.md)、[T08 Attention](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[T09 Attention](../learning/batches/b03-attention/t09-causal-mask-and-multihead/README.md)、[T10 数值与成本](../learning/batches/b03-attention/t10-numerical-stability-and-attention-cost/README.md)、[T10 报告](../reports/stage-02/2026-10-12-t10-validation.md) | T11 Embedding、残差、RMSNorm、SwiGLU |
 | LLM 推理服务 00～06 | 讲义与记录已保存 | 不等同模型部署或性能实验 | 用后续模型实现补充验证 |
 | CUDA 与扩展优化 | 待推进 | 笔记与模块约定；无成熟自定义 kernel 项目 | 完成模型基础后进入 |
 | 模型级推理实验 | 本仓库尚无完整 runner | 目前以基础知识和小型验证为主 | 在本仓库建立可复现实现与报告 |
@@ -33,6 +33,7 @@
 | [2026-10-08](2026-10-08.md) | T03/T04 收尾、T05 数值验证与程序导读重写 | T03/T04 已验收；T05 float64 对照与 gradcheck 通过、口述待验收；T04/T05 已补齐前置知识、设计决策和证据映射 |
 | [2026-10-09](2026-10-09.md) | Stage-02 章节目录整理与 T06 梯度模式实验 | 章节入口按 `tNN-章节名` 归整；T06 实验与术语说明复核通过；T05 独立口述仍待验收 |
 | [2026-10-11](2026-10-11.md) | T08 单头与 T09 因果多头 Attention | T08 三组 CPU float64 reference/SDPA 对照及 T09 六项 CPU 语义检查通过；T09 独立复写于 2026-10-12 验收通过 |
+| [2026-10-12](2026-10-12.md) | T10 数值稳定性与 Attention 成本 | 朴素 softmax 溢出与减最大值对照、全 mask 行约定、序列翻倍资源账；5 项 CPU 检查通过 |
 
 ## 更新规则
 

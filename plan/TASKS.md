@@ -23,7 +23,7 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 
 - [x] T08 单头缩放点积 Attention（L）。资料：R04 原论文 §3.2.1 与 SDPA 的基本参数。产物：[带三维形状标注的 reference 与初学笔记](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[完成记录](completed/T08.md)、[验证报告](../reports/stage-02/2026-10-11-t08-validation.md)。2026-10-11 验收：未调用封装 Attention 实现 QKᵀ、缩放、稳定 softmax、乘 V；CPU float64 三组尺寸与 PyTorch SDPA 对照通过，最大绝对误差不超过 6.661e-16；已解释 FLOPs 与 scores/weights 矩阵存储。学习者独立复写尚未验收。
 - [x] T09 因果 mask 与多头（L）。资料：R04 §3.2.2、多头图和 SDPA mask/is_causal/dropout 语义。产物：[多头因果实现与教学笔记](../learning/batches/b03-attention/t09-causal-mask-and-multihead/README.md)、[完成记录](completed/T09.md)、[验证报告](../reports/stage-02/2026-10-11-t09-validation.md)。2026-10-11 验收：6 项 CPU 检查通过；明确 SDPA bool mask 中 True=允许，改位置 4 之后 token 时位置 0～3 输出逐元素不变；覆盖 S=1/5/7、B=1/2/3、H=1/2/4；spy 确认 eval 实际传 `dropout_p=0.0`；讲清 QKV reshape、头/序列 transpose、连续化与合头。学习者脱离讲义独立复写于 2026-10-12 验收通过。
-- [ ] T10 数值稳定性与 Attention 成本（L）。资料：R04 softmax/缩放；R18 的 IO 问题与分块思想；R21 服务讲义 04～05 回查。产物：溢出反例与资源账。验收：展示减最大值的效果、全 mask 行的明确处理；计算序列翻倍的矩阵存储变化，解释 FlashAttention 减少的是哪些读写，不要求写完整 kernel。
+- [x] T10 数值稳定性与 Attention 成本（L）。资料：R04 §3.2.1；R18 §3.1～3.2；R21 服务讲义 04～05。产物：[CPU/GPU 实验与笔记](../learning/batches/b03-attention/t10-numerical-stability-and-attention-cost/README.md)、[完成记录](completed/T10.md)、[验证报告](../reports/stage-02/2026-10-12-t10-validation.md)。2026-10-12 验收：CPU 与 GPU float64 均显示朴素 softmax 溢出、减最大值后有限；全 mask 行显式返回零；S=4096→8192 时 score/probability/mask/FLOPs 为 4 倍，QKVO/KV cache 为 2 倍；解释 FlashAttention 避免完整 S×S 矩阵的 HBM 写出与读回，运算量仍为二次。CPU 5 项和 CUDA 2 项检查通过；低精度、真实后端性能及独立复写未验收。
 
 ### B04：Decoder Block，第 4 周；依赖 B03
 

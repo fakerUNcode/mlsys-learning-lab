@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | 阶段 0 | 已有 | [环境报告](stage0_environment.md) |
 | 历史阶段 1 | 程序保留，按需回查 | [C++ 实验](stage-01/README.md) |
-| 学习目录阶段 2 | T04 工程检查通过；T05 口述待验收；T08～T10 CPU 程序检查通过；T10 另有 GPU float64 检查；T09 独立复写通过 | [T04 Buffer 构建与内存检查](stage-02/2026-10-08-t04-validation.md)、[T05 链式法则与有限差分](stage-02/2026-10-08-t05-validation.md)、[T08 单头 Attention](stage-02/2026-10-11-t08-validation.md)、[T09 因果多头 Attention](stage-02/2026-10-11-t09-validation.md)、[T10 数值稳定性与成本](stage-02/2026-10-12-t10-validation.md) |
+| 学习目录阶段 2 | T04 工程检查通过；T05 数值验证通过；T08～T11 CPU 程序检查通过；T10 另有 GPU float64 检查 | [T04 Buffer 构建与内存检查](stage-02/2026-10-08-t04-validation.md)、[T05 链式法则与有限差分](stage-02/2026-10-08-t05-validation.md)、[T08 单头 Attention](stage-02/2026-10-11-t08-validation.md)、[T09 因果多头 Attention](stage-02/2026-10-11-t09-validation.md)、[T10 数值稳定性与成本](stage-02/2026-10-12-t10-validation.md)、[T11 Decoder Block 基础模块](stage-02/2026-10-13-t11-validation.md) |
 | 仓库职责更新 | 已验证基础程序兼容 | [2026-09-26 调整记录](../daily-record/2026-09-26.md) |
 
 阶段 0 的旧报告保留在原位置，避免已有链接失效。从阶段 1 起，每个阶段建立独立目录，并按实验章节拆分。

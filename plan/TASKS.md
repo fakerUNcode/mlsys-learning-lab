@@ -27,7 +27,7 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 
 ### B04：Decoder Block，第 4 周；依赖 B03
 
-- [ ] T11 Embedding、残差、RMSNorm、SwiGLU（L）。资料：R01 Module/Parameter；R05 对应类与 forward。产物：四个可单独运行的小模块。验收：核对公式/维度、归一化轴、epsilon 和激活，reference 数值对照；解释残差维度与参数量。
+- [x] T11 Embedding、残差、RMSNorm、SwiGLU（L）。资料：R01 Module/Parameter；R05 对应类与 forward。产物：[四个可单独运行的小模块与详细笔记](../learning/batches/b04-decoder-block/t11-embedding-residual-rmsnorm-swiglu/README.md)、[完成记录](completed/T11.md)、[验证报告](../reports/stage-02/2026-10-13-t11-validation.md)。2026-10-13 验收：CPU float64 reference 检查 6 项通过；shape、归一化最后一轴、Llama epsilon=1e-6、SiLU gate/up 乘法、残差同形约束与参数计数均有代码/笔记证据。未覆盖低精度、GPU、反向与性能。
 - [ ] T12 RoPE、GQA 与位置语义（L）。资料：R05 的 rotary embedding、KV head 扩展与 attention 实现；R06 位置/mask。产物：旋转与头映射练习。验收：区分 query heads 与 KV heads，手算一个二维旋转；验证增量位置与整段位置一致，列出实际模型配置对应项。
 - [ ] T13 简化 Decoder 前向与第一月复盘（L）。资料：R04 §3；R05 decoder layer；R13 算法导读；R19 第 2～3 章模型/负载相关小节。产物：一个小 Block、数据流图和四周复盘。验收：能从 token IDs 解释到 logits 的每个 shape；脱离模板复写 Attention 核心；导读能区分 target/draft/验证/纠正；按实际耗时调整后续预算。
 

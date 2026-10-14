@@ -1,0 +1,21 @@
+{
+  "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "revision": "fe8a4ea1ffedaf415f4da2f062534de366a451e6",
+  "hidden_size": 2048,
+  "query_heads": 32,
+  "kv_heads": 4,
+  "head_dim": 64,
+  "queries_per_kv_head": 8,
+  "q_proj_weight_shape": [
+    2048,
+    2048
+  ],
+  "k_v_proj_weight_shape_each": [
+    256,
+    2048
+  ],
+  "rope_theta": 10000.0,
+  "rope_scaling": null,
+  "max_position_embeddings": 2048,
+  "declared_weight_dtype": "bfloat16"
+}

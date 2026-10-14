@@ -1,0 +1,9 @@
+{
+  "rotated_q_max_error": 0.0,
+  "rotated_k_max_error": 0.0,
+  "chunk_attention_max_error": 0.0,
+  "sdpa_max_error": 3.3306690738754696e-16,
+  "reset_position_counterexample": 1.1602167808757586
+}
+query positions [6,7], key positions [0..7]:
+[[1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1]]

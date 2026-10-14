@@ -4,14 +4,14 @@
 
 ## 阶段 1
 
-TASKS 的阶段 1 是模型基础，共 B01～B06。当前进度进入 B04；T08～T10 有 CPU 程序证据，T10 另有 CUDA GPU 数值检查；T11 四个基础模块及 CPU reference 检查已完成。
+TASKS 的阶段 1 是模型基础，共 B01～B06。当前进度在 B04；T08～T10 有 CPU 程序证据，T10 另有 CUDA GPU 数值检查；T11 四个基础模块与 T12 旋转、头映射及位置实验的 CPU 检查已完成。
 
 | 批次 | 主题 | 任务 | 章节入口 | 状态 |
 | --- | --- | --- | --- | --- |
 | B01 | 环境、Tensor 与布局 | T01～T04 | [B01 目录](b01-environment-tensor-layout/README.md) | 现有材料已迁入 |
 | B02 | 梯度与训练闭环 | T05～T07 | [B02 目录](b02-gradients-training-loop/README.md) | 现有材料已迁入 |
 | B03 | Attention | T08～T10 | [B03 目录](b03-attention/README.md) | T08～T10 均有 CPU 证据；T10 另有 GPU float64 检查，未测低精度/性能 |
-| B04 | Decoder Block | T11～T13 | [B04 目录](b04-decoder-block/README.md) | T11 完成；T12～T13 待创建 |
+| B04 | Decoder Block | T11～T13 | [B04 目录](b04-decoder-block/README.md) | T11～T12 完成；T13 待创建 |
 | B05 | 生成、KV 与资源估算 | T14～T16 | TASKS 中定义 | 待创建材料 |
 | B06 | 真实 target-only baseline | T17～T20 | TASKS 中定义 | 待创建材料 |
 

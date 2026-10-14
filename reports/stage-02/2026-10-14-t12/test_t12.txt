@@ -1,0 +1,17 @@
+test_attention_rejects_bad_inputs (__main__.T12ReferenceTests.test_attention_rejects_bad_inputs) ... ok
+test_frozen_model_config (__main__.T12ReferenceTests.test_frozen_model_config) ... ok
+test_grouped_attention_against_head_loop (__main__.T12ReferenceTests.test_grouped_attention_against_head_loop) ... ok
+test_half_split_layout_and_frequencies (__main__.T12ReferenceTests.test_half_split_layout_and_frequencies) ... ok
+test_head_mapping_and_extremes (__main__.T12ReferenceTests.test_head_mapping_and_extremes) ... ok
+test_incremental_and_chunk_positions (__main__.T12ReferenceTests.test_incremental_and_chunk_positions) ... ok
+test_norm_zero_and_noncontiguous_input (__main__.T12ReferenceTests.test_norm_zero_and_noncontiguous_input) ... ok
+test_rectangular_mask_and_sdpa_alignment_counterexample (__main__.T12ReferenceTests.test_rectangular_mask_and_sdpa_alignment_counterexample) ... ok
+test_relative_dot_product (__main__.T12ReferenceTests.test_relative_dot_product) ... ok
+test_reset_positions_is_detected (__main__.T12ReferenceTests.test_reset_positions_is_detected) ... ok
+test_rope_rejects_bad_inputs (__main__.T12ReferenceTests.test_rope_rejects_bad_inputs) ... ok
+test_two_dimensional_hand_rotation (__main__.T12ReferenceTests.test_two_dimensional_hand_rotation) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.103s
+
+OK

@@ -1,0 +1,2 @@
+KV heads: [10.0, 20.0]
+query head -> KV value: [10.0, 10.0, 20.0, 20.0]

@@ -1,0 +1,32 @@
+[
+  {
+    "script": "rope.py",
+    "returncode": 0,
+    "stdout": "input [3,4], position=1 rad: [-1.7449770216271667, 4.685622177896248]\nsquared norms: 25.0 25.0\n",
+    "stderr": ""
+  },
+  {
+    "script": "gqa.py",
+    "returncode": 0,
+    "stdout": "KV heads: [10.0, 20.0]\nquery head -> KV value: [10.0, 10.0, 20.0, 20.0]\n",
+    "stderr": ""
+  },
+  {
+    "script": "position_demo.py",
+    "returncode": 0,
+    "stdout": "{\n  \"rotated_q_max_error\": 0.0,\n  \"rotated_k_max_error\": 0.0,\n  \"chunk_attention_max_error\": 0.0,\n  \"sdpa_max_error\": 3.3306690738754696e-16,\n  \"reset_position_counterexample\": 1.1602167808757586\n}\nquery positions [6,7], key positions [0..7]:\n[[1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1]]\n",
+    "stderr": ""
+  },
+  {
+    "script": "config_example.py",
+    "returncode": 0,
+    "stdout": "{\n  \"model_id\": \"TinyLlama/TinyLlama-1.1B-Chat-v1.0\",\n  \"revision\": \"fe8a4ea1ffedaf415f4da2f062534de366a451e6\",\n  \"hidden_size\": 2048,\n  \"query_heads\": 32,\n  \"kv_heads\": 4,\n  \"head_dim\": 64,\n  \"queries_per_kv_head\": 8,\n  \"q_proj_weight_shape\": [\n    2048,\n    2048\n  ],\n  \"k_v_proj_weight_shape_each\": [\n    256,\n    2048\n  ],\n  \"rope_theta\": 10000.0,\n  \"rope_scaling\": null,\n  \"max_position_embeddings\": 2048,\n  \"declared_weight_dtype\": \"bfloat16\"\n}\n",
+    "stderr": ""
+  },
+  {
+    "script": "test_t12.py",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "test_attention_rejects_bad_inputs (__main__.T12ReferenceTests.test_attention_rejects_bad_inputs) ... ok\ntest_frozen_model_config (__main__.T12ReferenceTests.test_frozen_model_config) ... ok\ntest_grouped_attention_against_head_loop (__main__.T12ReferenceTests.test_grouped_attention_against_head_loop) ... ok\ntest_half_split_layout_and_frequencies (__main__.T12ReferenceTests.test_half_split_layout_and_frequencies) ... ok\ntest_head_mapping_and_extremes (__main__.T12ReferenceTests.test_head_mapping_and_extremes) ... ok\ntest_incremental_and_chunk_positions (__main__.T12ReferenceTests.test_incremental_and_chunk_positions) ... ok\ntest_norm_zero_and_noncontiguous_input (__main__.T12ReferenceTests.test_norm_zero_and_noncontiguous_input) ... ok\ntest_rectangular_mask_and_sdpa_alignment_counterexample (__main__.T12ReferenceTests.test_rectangular_mask_and_sdpa_alignment_counterexample) ... ok\ntest_relative_dot_product (__main__.T12ReferenceTests.test_relative_dot_product) ... ok\ntest_reset_positions_is_detected (__main__.T12ReferenceTests.test_reset_positions_is_detected) ... ok\ntest_rope_rejects_bad_inputs (__main__.T12ReferenceTests.test_rope_rejects_bad_inputs) ... ok\ntest_two_dimensional_hand_rotation (__main__.T12ReferenceTests.test_two_dimensional_hand_rotation) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.032s\n\nOK\n"
+  }
+]

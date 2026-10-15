@@ -1,0 +1,11 @@
+test_composed_logits_match_explicit_stage_reference (__main__.T13DecoderTests.test_composed_logits_match_explicit_stage_reference)
+Repeat block scheduling explicitly to detect top-level wiring errors. ... ok
+test_future_token_does_not_change_earlier_logits (__main__.T13DecoderTests.test_future_token_does_not_change_earlier_logits) ... ok
+test_parameter_count_and_named_vocab_scores (__main__.T13DecoderTests.test_parameter_count_and_named_vocab_scores) ... ok
+test_rejects_float_ids_and_incompatible_heads (__main__.T13DecoderTests.test_rejects_float_ids_and_incompatible_heads) ... ok
+test_token_ids_to_logits_shapes_and_finite_values (__main__.T13DecoderTests.test_token_ids_to_logits_shapes_and_finite_values) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.067s
+
+OK

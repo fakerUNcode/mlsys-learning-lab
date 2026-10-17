@@ -35,9 +35,9 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 
 第一月复盘预算：T14～T16 暂各留 2～3 次有记录的工作会话（总计 6～9 次）；这不是小时换算。T14 起记录净投入分钟，完成一项后调整余下预算，B05 末据此复核 B06。
 
-- [ ] T14 小语言模型训练与逐 token 生成（L）。资料：R01 训练闭环；R05 decoder/LM head；R07 greedy/sampling。产物：玩具 decoder LM。验收：解释标签右移与 next-token loss，能过拟合小固定样本并自回归生成；逐步记录 prefix 与 logits，不以文本观感当正确性证据。
-- [ ] T15 KV Cache reference（L）。资料：R06 缓存解释、mask 和位置；R05 attention forward。产物：有/无缓存对照。验收：至少 3 个 prompt 长度和连续 16 个增量步的 next-token logits 一致；缓存长度不重复增长；覆盖 prefill 与单步 decode，解释为何只缓存 K/V。
-- [ ] T16 权重/KV/激活预算（L/P）。资料：R06 cache；R19 第 1、3 章资源与负载小节；R21 服务讲义 03 回查。产物：估算表。验收：按层数、KV heads、head dim、dtype、batch、长度计算缓存量，区分 allocated/reserved 与余量；估算对照实测，解释差额，预留双模型与验证激活空间。
+- [x] T14 小语言模型训练与逐 token 生成（L）。资料：R01 训练闭环；R05 decoder/LM head；R07 greedy/sampling。产物：[玩具 decoder LM 与详细笔记](../learning/batches/b05-generation-kv-resources/t14-tiny-lm-training-generation/README.md)、[完成记录](completed/T14.md)、[验证报告与逐步 logits](../reports/stage-02/2026-10-15-t14-validation.md)。2026-10-15 验收：标签右移切片通过；T13 小模型 CPU float32 对固定 8 个 next-token 标签过拟合，最终交叉熵 0.00848716、argmax 全命中；greedy/sampling 生成均逐步记录 prefix 与完整词表 logits，检查选择规则、EOS 停止和固定 seed 重放；5 项 CPU 测试通过。未覆盖真实语料/tokenizer、KV Cache、GPU/低精度或性能。
+- [x] T15 KV Cache reference（L）。资料：R06 缓存解释、mask 和位置；R05 attention forward。产物：[prefill/decode 有无缓存对照与逐步记录](../learning/batches/b05-generation-kv-resources/t15-kv-cache-reference/README.md)、[完成记录](completed/T15.md)、[验证报告与 51 条逐步结果](../reports/stage-02/2026-10-17-t15-validation.md)。2026-10-17 验收：CPU float64 单层 reference 对 prompt 长度 1/3/5 各跑 16 个增量步；所有 next-token logits 在 `atol=1e-12` 下通过，最大误差 `2.220446049250313e-16`；缓存从 P 增长到 P+16，旧 cache 不变；覆盖 prefill/单步 decode、绝对位置和矩形因果 mask，并解释只保留历史 K/V。未覆盖真实模型、GPU、低精度或性能。
+- [x] T16 权重/KV/激活预算（L/P）。资料：R06 cache；R19 第 1、3 章资源与负载小节；R21 服务讲义 03 回查。产物：[公式、CUDA 实测和双模型容量表](../learning/batches/b05-generation-kv-resources/t16-memory-budget/README.md)、[完成记录](completed/T16.md)、[验证报告与原始数据](../reports/stage-02/2026-10-17-t16-validation.md)。2026-10-17 验收：通用公式含层数/KV heads/head dim/dtype/batch/cache 长度；toy CUDA 审计的 KV Tensor 逻辑字节与实际 `nbytes` 精确一致，记录 allocated/reserved 与 prefill/verifier reference peak；假设 BF16 7B+1B 双模型的表格单列双 cache、2 GiB 验证 activation reserve 和 10% total runtime/safety reserve，并指出本机容量缺口。未加载真实大模型或验证生产 verifier activation。
 
 ### B06：真实 target-only baseline，第 7～8 周；依赖 B05 与 GPU 可用
 

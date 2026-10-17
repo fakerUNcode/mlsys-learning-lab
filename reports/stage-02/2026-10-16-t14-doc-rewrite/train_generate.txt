@@ -1,0 +1,16 @@
+device=cpu dtype=float32 seed=1415
+parameters=600
+sequences=[[0, 3, 4, 5, 2], [1, 5, 4, 3, 2]]
+inputs=[[0, 3, 4, 5], [1, 5, 4, 3]]
+targets=[[3, 4, 5, 2], [5, 4, 3, 2]]
+logits.shape=(2, 4, 6)
+shape_trace={"after_attention_residual": [2, 4, 8], "after_mlp_residual": [2, 4, 8], "attention": [2, 4, 4, 2], "attn_norm": [2, 4, 8], "block_input": [2, 4, 8], "embedding": [2, 4, 8], "final_norm": [2, 4, 8], "k_v": [2, 2, 4, 2], "logits": [2, 4, 6], "q": [2, 4, 4, 2], "token_ids": [2, 4]}
+steps=33 initial_loss=1.86223102 final_loss=0.00848716
+exact_training_token_accuracy=1.000000
+all_training_targets_argmax_correct=True
+greedy_prefix=[0] generated=[0, 3, 4, 5, 2]
+greedy_trace=[{"step": 0, "prefix": [0], "logits": [-2.08483, -1.48303, -1.112241, 5.420698, -2.469152, -1.439482], "next_token": 3, "strategy": "greedy"}, {"step": 1, "prefix": [0, 3], "logits": [-2.180016, -1.762271, -1.265029, -2.766634, 4.382885, -1.013857], "next_token": 4, "strategy": "greedy"}, {"step": 2, "prefix": [0, 3, 4], "logits": [-0.024956, -0.669792, -3.030372, -3.020716, -0.678374, 5.581882], "next_token": 5, "strategy": "greedy"}, {"step": 3, "prefix": [0, 3, 4, 5], "logits": [-1.031677, -0.977586, 5.390007, -1.142771, 0.14912, -2.311063], "next_token": 2, "strategy": "greedy"}]
+greedy_prefix=[1] generated=[1, 5, 4, 3, 2]
+greedy_trace=[{"step": 0, "prefix": [1], "logits": [-1.372936, -1.658014, -3.082191, -2.405653, -0.854115, 5.225011], "next_token": 5, "strategy": "greedy"}, {"step": 1, "prefix": [1, 5], "logits": [-1.856388, -1.400387, -0.461616, -3.640146, 4.706555, -0.669364], "next_token": 4, "strategy": "greedy"}, {"step": 2, "prefix": [1, 5, 4], "logits": [-1.399934, -0.87404, -1.729139, 5.719, -2.522874, -1.453249], "next_token": 3, "strategy": "greedy"}, {"step": 3, "prefix": [1, 5, 4, 3], "logits": [-1.021356, -1.027055, 5.629817, -0.400533, 0.197625, -2.751174], "next_token": 2, "strategy": "greedy"}]
+sampling_prefix=[0] generated=[0, 3, 4, 5, 2]
+sampling_trace=[{"step": 0, "prefix": [0], "logits": [-2.08483, -1.48303, -1.112241, 5.420698, -2.469152, -1.439482], "next_token": 3, "strategy": "sampling"}, {"step": 1, "prefix": [0, 3], "logits": [-2.180016, -1.762271, -1.265029, -2.766634, 4.382885, -1.013857], "next_token": 4, "strategy": "sampling"}, {"step": 2, "prefix": [0, 3, 4], "logits": [-0.024956, -0.669792, -3.030372, -3.020716, -0.678374, 5.581882], "next_token": 5, "strategy": "sampling"}, {"step": 3, "prefix": [0, 3, 4, 5], "logits": [-1.031677, -0.977586, 5.390007, -1.142771, 0.14912, -2.311063], "next_token": 2, "strategy": "sampling"}]

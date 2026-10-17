@@ -10,10 +10,12 @@
 | --- | --- | --- |
 | 阶段 0 | 已有 | [环境报告](stage0_environment.md) |
 | 历史阶段 1 | 程序保留，按需回查 | [C++ 实验](stage-01/README.md) |
-| 学习目录阶段 2 | T04 工程检查通过；T05 数值验证通过；T08～T13 CPU 程序检查通过；T10 另有 GPU float64 检查 | [T04 Buffer 构建与内存检查](stage-02/2026-10-08-t04-validation.md)、[T05 链式法则与有限差分](stage-02/2026-10-08-t05-validation.md)、[T08 单头 Attention](stage-02/2026-10-11-t08-validation.md)、[T09 因果多头 Attention](stage-02/2026-10-11-t09-validation.md)、[T10 数值稳定性与成本](stage-02/2026-10-12-t10-validation.md)、[T11 Decoder Block 基础模块](stage-02/2026-10-13-t11-validation.md)、[T12 旋转、头映射与位置语义](stage-02/2026-10-14-t12-validation.md)、[T13 小型 Decoder 前向](stage-02/2026-10-14-t13-validation.md) |
+| 学习目录阶段 2 | T04 工程检查通过；T05 数值验证通过；T08～T15 CPU 程序检查通过；T10 另有 GPU float64 检查；T16 有 toy GPU memory audit | [T04 Buffer 构建与内存检查](stage-02/2026-10-08-t04-validation.md)、[T05 链式法则与有限差分](stage-02/2026-10-08-t05-validation.md)、[T08 单头 Attention](stage-02/2026-10-11-t08-validation.md)、[T09 因果多头 Attention](stage-02/2026-10-11-t09-validation.md)、[T10 数值稳定性与成本](stage-02/2026-10-12-t10-validation.md)、[T11 Decoder Block 基础模块](stage-02/2026-10-13-t11-validation.md)、[T12 旋转、头映射与位置语义](stage-02/2026-10-14-t12-validation.md)、[T13 小型 Decoder 前向](stage-02/2026-10-14-t13-validation.md)、[T14 训练与逐 token 生成](stage-02/2026-10-15-t14-validation.md)、[T15 KV Cache reference](stage-02/2026-10-17-t15-validation.md)、[T16 权重/KV/激活预算](stage-02/2026-10-17-t16-validation.md) |
 | 仓库职责更新 | 已验证基础程序兼容 | [2026-09-26 调整记录](../daily-record/2026-09-26.md) |
 
 阶段 0 的旧报告保留在原位置，避免已有链接失效。从阶段 1 起，每个阶段建立独立目录，并按实验章节拆分。
+
+T14 的系统基础笔记重写、源码逐行注释与复测证据另见 [2026-10-16 修订记录](stage-02/2026-10-16-t14-doc-rewrite.md)。
 
 ## 文件约定
 

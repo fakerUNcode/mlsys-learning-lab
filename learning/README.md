@@ -10,7 +10,7 @@
 | --- | --- |
 | [stage-00](stage-00/README.md) | 既有环境、CUDA 资料与可信计时入口，持续复用 |
 | [stage-01 历史材料](stage-01/README.md) | 旧编号下的 C++ 讲义、程序和练习，按实际缺口回查 |
-| [按 B 批次组织的章节](batches/README.md) | 对应 TASKS 阶段 1 的 B01～B06；当前推进到 B03 |
+| [按 B 批次组织的章节](batches/README.md) | 对应 TASKS 阶段 1 的 B01～B06；当前推进到 B06 |
 | [stage-02 历史入口](stage-02/README.md) | 兼容说明；新章节请使用 B 批次目录 |
 | [LLM 推理服务技术详解](LLM推理服务技术详解/README.md) | 已学 00～06 的记录保留；概念阅读与模型实现分开验收 |
 

@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-17",
+  "torch": "2.11.0+cu128",
+  "cuda_runtime": "12.8",
+  "weight_and_kv_dtype": "float32 for the measured toy audit; hypothetical capacity rows use bf16 (2 bytes/element)",
+  "cuda_audit": {
+    "device": "NVIDIA GeForce RTX 5080 Laptop GPU",
+    "total_device_bytes": 17094475776,
+    "free_device_bytes_at_start": 15685648384,
+    "free_device_bytes_at_end": 15612248064,
+    "allocator_baseline_bytes": 0,
+    "reserved_baseline_bytes": 0,
+    "weight_measurement": {
+      "target_parameters": 776,
+      "draft_parameters": 744,
+      "target_plus_draft_formula_bytes": 6080,
+      "target_parameter_tensor_bytes": 3104,
+      "draft_parameter_tensor_bytes": 2976,
+      "unattributed_active_bytes_after_model_load": 8256,
+      "allocated_after_models_bytes": 14336,
+      "allocated_delta_bytes": 14336,
+      "reserved_after_models_bytes": 2097152
+    },
+    "kv_measurement": {
+      "batch": 2,
+      "cache_length": 128,
+      "target_formula_bytes": 8192,
+      "draft_formula_bytes": 4096,
+      "target_plus_draft_formula_bytes": 12288,
+      "target_actual_tensor_bytes": 8192,
+      "draft_actual_tensor_bytes": 4096,
+      "formula_matches_actual_tensor_bytes": true,
+      "allocated_after_kv_bytes": 26624,
+      "allocated_delta_for_kv_bytes": 12288,
+      "reserved_after_kv_bytes": 2097152
+    },
+    "forward_peak_measurement": {
+      "prefill": {
+        "batch": 2,
+        "sequence": 128,
+        "input_ids_bytes": 2048,
+        "positions_bytes": 2048,
+        "output_logits_bytes": 17408,
+        "warm_baseline_allocated_bytes": 8549376,
+        "baseline_allocated_bytes": 8549376,
+        "peak_allocated_bytes": 9712640,
+        "peak_extra_allocated_bytes": 1163264,
+        "peak_reserved_bytes": 23068672
+      },
+      "full_prefix_verifier_proxy": {
+        "batch": 2,
+        "sequence": 133,
+        "input_ids_bytes": 2128,
+        "positions_bytes": 2128,
+        "output_logits_bytes": 18088,
+        "warm_baseline_allocated_bytes": 8550400,
+        "baseline_allocated_bytes": 8550400,
+        "peak_allocated_bytes": 9807360,
+        "peak_extra_allocated_bytes": 1256960,
+        "peak_reserved_bytes": 23068672
+      },
+      "note": "peak extra allocated includes output and live temporaries; it excludes model/KV tensors already live and is not a production verifier measurement"
+    },
+    "measurement_limits": [
+      "CUDA context and non-PyTorch allocations are not represented by memory_allocated",
+      "memory_reserved is allocator pool size and must not be added to memory_allocated",
+      "external processes can change device free memory during the run"
+    ]
+  },
+  "hypothetical_capacity": [
+    {
+      "scenario": "hypothetical 7B target + 1B draft, bf16",
+      "batch": 1,
+      "context_tokens": 4096,
+      "verification_tokens": 5,
+      "cache_length_budget": 4101,
+      "target_weight_gib": 13.0385160446167,
+      "draft_weight_gib": 1.862645149230957,
+      "target_kv_gib": 0.5006103515625,
+      "draft_kv_gib": 0.1877288818359375,
+      "activation_reserve_gib": 2.0,
+      "framework_and_safety_reserve_gib": 1.5920471185818315,
+      "required_total_gib": 19.181547545827925,
+      "device_total_gib": 15.92047119140625,
+      "device_free_at_audit_start_gib": 14.6083984375,
+      "fits": false,
+      "headroom_or_shortfall_gib": -3.261076354421675,
+      "headroom_or_shortfall_vs_free_gib": -4.573149108327925
+    },
+    {
+      "scenario": "hypothetical 7B target + 1B draft, bf16",
+      "batch": 2,
+      "context_tokens": 4096,
+      "verification_tokens": 5,
+      "cache_length_budget": 4101,
+      "target_weight_gib": 13.0385160446167,
+      "draft_weight_gib": 1.862645149230957,
+      "target_kv_gib": 1.001220703125,
+      "draft_kv_gib": 0.375457763671875,
+      "activation_reserve_gib": 2.0,
+      "framework_and_safety_reserve_gib": 1.5920471185818315,
+      "required_total_gib": 19.869886779226363,
+      "device_total_gib": 15.92047119140625,
+      "device_free_at_audit_start_gib": 14.6083984375,
+      "fits": false,
+      "headroom_or_shortfall_gib": -3.9494155878201127,
+      "headroom_or_shortfall_vs_free_gib": -5.261488341726363
+    },
+    {
+      "scenario": "hypothetical 7B target + 1B draft, bf16",
+      "batch": 4,
+      "context_tokens": 4096,
+      "verification_tokens": 5,
+      "cache_length_budget": 4101,
+      "target_weight_gib": 13.0385160446167,
+      "draft_weight_gib": 1.862645149230957,
+      "target_kv_gib": 2.00244140625,
+      "draft_kv_gib": 0.75091552734375,
+      "activation_reserve_gib": 2.0,
+      "framework_and_safety_reserve_gib": 1.5920471185818315,
+      "required_total_gib": 21.246565246023238,
+      "device_total_gib": 15.92047119140625,
+      "device_free_at_audit_start_gib": 14.6083984375,
+      "fits": false,
+      "headroom_or_shortfall_gib": -5.326094054616988,
+      "headroom_or_shortfall_vs_free_gib": -6.638166808523238
+    }
+  ]
+}

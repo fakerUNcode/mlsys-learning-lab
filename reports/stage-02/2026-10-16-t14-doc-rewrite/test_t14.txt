@@ -1,0 +1,10 @@
+test_greedy_generation_records_replayable_prefix_and_logits (__main__.T14TinyLMTests.test_greedy_generation_records_replayable_prefix_and_logits) ... ok
+test_labels_are_shifted_one_token_to_the_right (__main__.T14TinyLMTests.test_labels_are_shifted_one_token_to_the_right) ... ok
+test_model_overfits_every_fixed_next_token_target (__main__.T14TinyLMTests.test_model_overfits_every_fixed_next_token_target) ... ok
+test_sampling_is_reproducible_for_a_fixed_seed (__main__.T14TinyLMTests.test_sampling_is_reproducible_for_a_fixed_seed) ... ok
+test_training_restores_process_thread_setting (__main__.T14TinyLMTests.test_training_restores_process_thread_setting) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.100s
+
+OK

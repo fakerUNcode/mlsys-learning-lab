@@ -1,0 +1,74 @@
+{
+  "executable_ast": {
+    "train_generate.py": {
+      "unchanged_ignoring_docstrings": true,
+      "ast_sha256": "cbc2be89647c011967edeaae56810b3445f6f672dd7771953d98c7000969aacf",
+      "statements_with_adjacent_comment": 129,
+      "uncommented_statements": []
+    },
+    "test_t14.py": {
+      "unchanged_ignoring_docstrings": true,
+      "ast_sha256": "74fa3b5e8eb4cb961f4e6138ccce09538ff6a4ae458c76303dae832062e1b4cf",
+      "statements_with_adjacent_comment": 43,
+      "uncommented_statements": []
+    }
+  },
+  "documentation": {
+    "learning/batches/b05-generation-kv-resources/t14-tiny-lm-training-generation/README.md": {
+      "lines": 858,
+      "local_links_resolved": 13,
+      "display_equations": 21,
+      "inline_equations": 74,
+      "headings_max_10_chars": true,
+      "fences_balanced": true
+    },
+    "learning/batches/b05-generation-kv-resources/README.md": {
+      "lines": 13,
+      "local_links_resolved": 4,
+      "display_equations": 0,
+      "inline_equations": 0,
+      "headings_max_10_chars": true,
+      "fences_balanced": true
+    },
+    "plan/completed/T14.md": {
+      "lines": 49,
+      "local_links_resolved": 6,
+      "display_equations": 0,
+      "inline_equations": 0,
+      "headings_max_10_chars": true,
+      "fences_balanced": true
+    },
+    "reports/README.md": {
+      "lines": 61,
+      "local_links_resolved": 14,
+      "display_equations": 0,
+      "inline_equations": 0,
+      "headings_max_10_chars": true,
+      "fences_balanced": true
+    },
+    "reports/stage-02/2026-10-15-t14-validation.md": {
+      "lines": 72,
+      "local_links_resolved": 2,
+      "display_equations": 0,
+      "inline_equations": 0,
+      "headings_max_10_chars": true,
+      "fences_balanced": true
+    },
+    "reports/stage-02/2026-10-16-t14-doc-rewrite.md": {
+      "lines": 52,
+      "local_links_resolved": 7,
+      "display_equations": 0,
+      "inline_equations": 0,
+      "headings_max_10_chars": true,
+      "fences_balanced": true
+    }
+  },
+  "katex": {
+    "version": "0.19.0",
+    "formulas": 95,
+    "throwOnError": true,
+    "strict": "error",
+    "passed": true
+  },
+  "source_and_evidence_whitespace_check_passed": true
+}

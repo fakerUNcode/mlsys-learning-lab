@@ -1,0 +1,41 @@
+{
+  "teaching_softmax_p3": 0.596418003109085,
+  "teaching_cross_entropy": 0.5168135102475448,
+  "teaching_logit_gradient": [
+    0.08071639937818299,
+    0.08071639937818299,
+    0.08071639937818299,
+    -0.403581996890915,
+    0.08071639937818299,
+    0.08071639937818299
+  ],
+  "gradient_matches_probability_minus_label": true,
+  "adamw_first_step_from_1_with_gradient_0_2": 0.980000001,
+  "input_stride": [
+    5,
+    1
+  ],
+  "input_contiguous": false,
+  "target_stride": [
+    5,
+    1
+  ],
+  "target_contiguous": false,
+  "flattened_targets": [
+    3,
+    4,
+    5,
+    2,
+    5,
+    4,
+    3,
+    2
+  ],
+  "documented_trace_rows_equal_runtime_output": 8,
+  "temperature_p3": {
+    "0.5": 0.9161047784667921,
+    "1.0": 0.596418003109085,
+    "2.0": 0.35218742835175143
+  },
+  "runtime_stdout_matches_original": true
+}

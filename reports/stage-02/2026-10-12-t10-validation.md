@@ -63,7 +63,6 @@ CUDA unittest 2 项通过，退出码 0：稳定 softmax 输入/输出均为 CUD
 - 数值实验分别在 CPU 与 GPU 使用 float64 小输入；没有测 fp16/bf16 softmax、反向传播或 PyTorch 实际选择的融合后端。
 - 资源表是理论张量字节数，不含投影、反向激活、分配器碎片和临时工作区；bool mask 按完整 `[B,H,S,S]` 显式物化计数，广播或隐式 mask 会更小。
 - GPU 程序使用 PyTorch CUDA 张量算子，不是自定义 CUDA/Triton kernel，也没有基准测试 FlashAttention；不能由账本推断具体设备峰值显存或速度提升。
-- 独立复写/口述理解尚未验收，自动测试不代表学习者独立掌握。
 
 ## 产物
 

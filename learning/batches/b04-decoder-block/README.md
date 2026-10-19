@@ -12,4 +12,4 @@ T11 的四个模块均可单独运行，CPU float64 reference 检查 6 项通过
 
 T12 的四个例子与 12 项 CPU 检查通过；五组输入整段 / 增量位置及注意力输出一致，核对固定 TinyLlama 配置。未加载真实模型或测试正式缓存、GPU、低精度与性能。
 
-T13 的单层 CPU float64 小模型覆盖 `[B,S]` token IDs 至 `[B,S,V]` logits，5 项检查通过，涵盖关键 shape 与因果隔离。推测解码仅解释 target/draft/验证/纠正职责，没有算法或性能实现。第一月复盘和 B05 会话预算见 [T13 章节](t13-small-decoder-forward/README.md)。下一任务为 B05/T14。
+T13 的单层 CPU float64 小模型覆盖 `[B,S]` token IDs 至 `[B,S,V]` logits，5 项检查通过，涵盖关键 shape 与因果隔离。推测解码仅解释 target/draft/验证/纠正职责，没有算法或性能实现。第一月复盘和 B05 会话预算见 [T13 章节](t13-small-decoder-forward/README.md)。T14 已在 [B05](../b05-generation-kv-resources/README.md) 完成训练与逐 token 生成；下一任务为 T15 KV Cache reference。

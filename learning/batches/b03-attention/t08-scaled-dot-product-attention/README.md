@@ -608,7 +608,7 @@ $$
 
 从仓库根目录运行：`.venv/bin/python learning/batches/b03-attention/t08-scaled-dot-product-attention/attention_reference.py`。核心函数 `attention_reference` 接受同 device、同 dtype、同形状的 `[B,S,D]` 浮点 Tensor，返回输出及用于检查的分数/权重；只读输入并分配结果，不启动线程。调用期间不可并发原地修改输入。
 
-自动断言说明这些三组 CPU float64 输入下，手写结果与 PyTorch SDPA 接近，且稳定 softmax 对超大 logits 保持有限。容差为 `rtol=1e-10, atol=1e-12`，其他设备或 dtype 应另测。断言不证明学习者能独立复写，也未覆盖 GPU、mask、因果语义、多头、dropout、反向传播和性能。
+自动断言说明这些三组 CPU float64 输入下，手写结果与 PyTorch SDPA 接近，且稳定 softmax 对超大 logits 保持有限。容差为 `rtol=1e-10, atol=1e-12`，其他设备或 dtype 应另测。该程序未覆盖 GPU、mask、因果语义、多头、dropout、反向传播和性能。
 
 ## 直观理解
 

@@ -37,5 +37,4 @@ S 翻倍时显式 score/weight 元素数按 S 平方增长。softmax 的 O(B*S*S
 
 - 结果覆盖三组 CPU float64 小输入，不代表 GPU、半精度、速度或真实模型。
 - Reference 显式保留完整 scores/weights，未实现融合、分块、反向传播、mask、因果语义或 dropout。
-- 程序断言不能证明学习者已独立复写；个人掌握需另行确认。
 - README 包含逐步 shape、生活化概念解释、稳定 softmax、缩放动机和成本估算。

@@ -9,21 +9,21 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 ### B01：环境、Tensor 与布局，第 1 周
 
 - [x] T01 当前设备环境验收（L）。资料：R08 的 WSL 支持/限制与安装兼容，R09 的设备查询，R11 的工具可用性。产物：[T01 章节入口](../learning/batches/b01-environment-tensor-layout/t01-environment-verification/README.md)、[环境验收报告](../reports/stage-02/2026-09-27-t01-environment.md)。GPU Tensor 加法、Triton 与原生 CUDA `.cu` kernel、PyTorch profiler 均已通过；CUDA Toolkit 12.8 已安装。详见报告中的 PATH 说明与复现命令。
-- [x] T02 Tensor 创建、索引与广播（L）。资料：R01 Tensors；R02 Broadcasting 全部基本规则。产物：[分章教程与练习](../learning/batches/b01-environment-tensor-layout/t02-tensor-basics/README.md)。12 题先预测后执行并运行核对；更正索引 shape；解释广播失败轴；独立复写第 4、6、12 题通过。
+- [x] T02 Tensor 创建、索引与广播（L）。资料：R01 Tensors；R02 Broadcasting 全部基本规则。产物：[分章教程与练习](../learning/batches/b01-environment-tensor-layout/t02-tensor-basics/README.md)。12 题预测与脚本运行核对；记录索引 shape 和广播失败轴的更正。
 - [x] T03 stride、连续性与别名（L）。资料：R02 Tensor Views 的 view/reshape/transpose/contiguous；R01 的 dtype/device。产物：[布局实验与批阅](../learning/batches/b01-environment-tensor-layout/t03-tensor-layout-and-storage/README.md)、[完成记录](completed/T03.md)。2026-10-08 验收：现有脚本复测通过；新尺寸收尾题的 shape/stride/连续性、转置展开顺序和修改传播均答对；CPU/GPU 与 dtype 转换通过。批阅补充已连续输入的 contiguous 可返回原 Tensor。
 - [x] T04 C++ 既有能力短验收（L）。资料：R21 C++ RAII、移动、智能指针、模板小节。产物：[Buffer 所有权练习](../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/README.md)、[完成记录](completed/T04.md)。2026-10-08 构建、CTest 1/1、ASan/UBSan 与禁止拷贝编译检查通过；工程验证范围和来源见报告。
 
 ### B02：梯度与训练闭环，第 2 周；依赖 T02～T03
 
-- [x] T05 链式法则与有限差分（L）。资料：R01 Autograd；R03 计算图、gradcheck 的数值思想。产物：[手算与代码](../learning/batches/b02-gradients-training-loop/t05-chain-rule-and-finite-differences/README.md)、[数值验证报告](../reports/stage-02/2026-10-08-t05-validation.md)。标量复合函数和小线性层的 float64 有限差分/autograd 对照、步长/误差已验证；讲解题可用于补充独立理解检查。
+- [x] T05 链式法则与有限差分（L）。资料：R01 Autograd；R03 计算图、gradcheck 的数值思想。产物：[手算与代码](../learning/batches/b02-gradients-training-loop/t05-chain-rule-and-finite-differences/README.md)、[数值验证报告](../reports/stage-02/2026-10-08-t05-validation.md)。标量复合函数和小线性层的 float64 有限差分/autograd 对照、步长/误差已验证。
 - [x] T06 梯度累积与推理模式（L）。资料：R03 梯度累积、no-grad/inference mode；R01 Optimization。产物：[故障对照实验](../learning/batches/b02-gradients-training-loop/t06-gradient-accumulation-and-inference-modes/README.md)、[完成记录](completed/T06.md)、[验证报告](../reports/stage-02/2026-10-09-t06-validation.md)。验收：重复 backward 的累积、正确/遗漏 zero_grad 的 SGD 结果、detach、no-grad/inference mode 和 eval/autograd 独立行为均有可运行对照与证据；笔记补充 Dropout、Parameter、BatchNorm 与模块模式/梯度模式的职责边界。
-- [x] T07 MLP 独立训练循环（L）。资料：R01 DataLoaders、Build Model、Optimization、Save & Load。产物：[详细笔记与手写步骤](../learning/batches/b02-gradients-training-loop/t07-mlp-training-loop/README.md)、[小合成数据训练脚本](../learning/batches/b02-gradients-training-loop/t07-mlp-training-loop/train_mlp.py)、[程序验证报告](../reports/stage-02/2026-10-10-t07-validation.md)。2026-10-10 验收：学习者独立提交 forward/loss/backward/step、批次训练外壳、梯度方向与 checkpoint 解释；程序预设损失目标达成、保存/加载后 eval logits 完全一致且种子有记录。批阅补充适用范围：logit 梯度符号描述直接对 logits 做梯度下降，不保证共享参数更新后每个样本的 logit 都按同方向变化；交叉熵梯度趋近零也不保证参数或 logits 在一般训练中有限步停止增长。不要求训练高质量大模型。
+- [x] T07 MLP 训练循环（L）。资料：R01 DataLoaders、Build Model、Optimization、Save & Load。产物：[详细笔记与训练步骤](../learning/batches/b02-gradients-training-loop/t07-mlp-training-loop/README.md)、[小合成数据训练脚本](../learning/batches/b02-gradients-training-loop/t07-mlp-training-loop/train_mlp.py)、[程序验证报告](../reports/stage-02/2026-10-10-t07-validation.md)。程序预设损失目标达成、保存/加载后 eval logits 完全一致且种子有记录。批阅补充适用范围：logit 梯度符号描述直接对 logits 做梯度下降，不保证共享参数更新后每个样本的 logit 都按同方向变化；交叉熵梯度趋近零也不保证参数或 logits 在一般训练中有限步停止增长。不要求训练高质量大模型。
 
 ### B03：Attention，第 3 周；依赖 B02
 
-- [x] T08 单头缩放点积 Attention（L）。资料：R04 原论文 §3.2.1 与 SDPA 的基本参数。产物：[带三维形状标注的 reference 与初学笔记](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[完成记录](completed/T08.md)、[验证报告](../reports/stage-02/2026-10-11-t08-validation.md)。2026-10-11 验收：未调用封装 Attention 实现 QKᵀ、缩放、稳定 softmax、乘 V；CPU float64 三组尺寸与 PyTorch SDPA 对照通过，最大绝对误差不超过 6.661e-16；已解释 FLOPs 与 scores/weights 矩阵存储。学习者独立复写尚未验收。
-- [x] T09 因果 mask 与多头（L）。资料：R04 §3.2.2、多头图和 SDPA mask/is_causal/dropout 语义。产物：[多头因果实现与教学笔记](../learning/batches/b03-attention/t09-causal-mask-and-multihead/README.md)、[完成记录](completed/T09.md)、[验证报告](../reports/stage-02/2026-10-11-t09-validation.md)。2026-10-11 验收：6 项 CPU 检查通过；明确 SDPA bool mask 中 True=允许，改位置 4 之后 token 时位置 0～3 输出逐元素不变；覆盖 S=1/5/7、B=1/2/3、H=1/2/4；spy 确认 eval 实际传 `dropout_p=0.0`；讲清 QKV reshape、头/序列 transpose、连续化与合头。学习者脱离讲义独立复写于 2026-10-12 验收通过。
-- [x] T10 数值稳定性与 Attention 成本（L）。资料：R04 §3.2.1；R18 §3.1～3.2；R21 服务讲义 04～05。产物：[CPU/GPU 实验与笔记](../learning/batches/b03-attention/t10-numerical-stability-and-attention-cost/README.md)、[完成记录](completed/T10.md)、[验证报告](../reports/stage-02/2026-10-12-t10-validation.md)。2026-10-12 验收：CPU 与 GPU float64 均显示朴素 softmax 溢出、减最大值后有限；全 mask 行显式返回零；S=4096→8192 时 score/probability/mask/FLOPs 为 4 倍，QKVO/KV cache 为 2 倍；解释 FlashAttention 避免完整 S×S 矩阵的 HBM 写出与读回，运算量仍为二次。CPU 5 项和 CUDA 2 项检查通过；低精度、真实后端性能及独立复写未验收。
+- [x] T08 单头缩放点积 Attention（L）。资料：R04 原论文 §3.2.1 与 SDPA 的基本参数。产物：[带三维形状标注的 reference 与初学笔记](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[完成记录](completed/T08.md)、[验证报告](../reports/stage-02/2026-10-11-t08-validation.md)。2026-10-11 验收：未调用封装 Attention 实现 QKᵀ、缩放、稳定 softmax、乘 V；CPU float64 三组尺寸与 PyTorch SDPA 对照通过，最大绝对误差不超过 6.661e-16；已解释 FLOPs 与 scores/weights 矩阵存储。
+- [x] T09 因果 mask 与多头（L）。资料：R04 §3.2.2、多头图和 SDPA mask/is_causal/dropout 语义。产物：[多头因果实现与教学笔记](../learning/batches/b03-attention/t09-causal-mask-and-multihead/README.md)、[完成记录](completed/T09.md)、[验证报告](../reports/stage-02/2026-10-11-t09-validation.md)。2026-10-11 验收：6 项 CPU 检查通过；明确 SDPA bool mask 中 True=允许，改位置 4 之后 token 时位置 0～3 输出逐元素不变；覆盖 S=1/5/7、B=1/2/3、H=1/2/4；spy 确认 eval 实际传 `dropout_p=0.0`；笔记说明 QKV reshape、头/序列 transpose、连续化与合头。
+- [x] T10 数值稳定性与 Attention 成本（L）。资料：R04 §3.2.1；R18 §3.1～3.2；R21 服务讲义 04～05。产物：[CPU/GPU 实验与笔记](../learning/batches/b03-attention/t10-numerical-stability-and-attention-cost/README.md)、[完成记录](completed/T10.md)、[验证报告](../reports/stage-02/2026-10-12-t10-validation.md)。2026-10-12 验收：CPU 与 GPU float64 均显示朴素 softmax 溢出、减最大值后有限；全 mask 行显式返回零；S=4096→8192 时 score/probability/mask/FLOPs 为 4 倍，QKVO/KV cache 为 2 倍；FlashAttention 避免完整 S×S 矩阵的 HBM 写出与读回，运算量仍为二次。CPU 5 项和 CUDA 2 项检查通过；低精度、真实后端性能未覆盖。
 
 ### B04：Decoder Block，第 4 周；依赖 B03
 
@@ -44,7 +44,7 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 - [ ] T17 选择模型、冻结许可与版本（P）。资料：R07 加载/生成；选用模型官方 model card/config/tokenizer 文件；R22 来源要求。产物：冻结配置与准备 manifest。验收：目标模型按实测预算选择，记录不可变 40 位 revision、tokenizer/特殊 token/dtype/依赖，确认许可；不使用“latest”作为实验版本。
 - [ ] T18 真实前向、缓存与采样契约（P）。资料：R05 换成所选模型实现；R06 cache API；R07 温度/top-k/top-p/EOS。产物：target runner 与采样配置。验收：固定前缀缓存 logits 对照完整前向；明确变换顺序、greedy 单独语义、EOS/输出上限；模型加载与错误配置可定位。
 - [ ] T19 target-only 初始 benchmark（P）。资料：R09 event/同步；R11 时间线；R22 计时协议。产物：初始报告和原始样本。验收：分开 prefill/decode 与完整请求，固定输出预算、预热、多次重复、同步；至少两种上下文长度，记录输出数、token/s、显存、版本与命令。
-- [ ] T20 阶段 1 独立验收与实现范围复核（L/P）。资料：R21 模型基础通过标准；R23 阶段出口。产物：阶段报告与能力/证据对照。验收：定位一个 shape/mask/cache 错误并解释训练→生成链；T01 GPU 与 T18～T19 有证据；未覆盖部分保留待确认。
+- [ ] T20 阶段 1 证据复核（L/P）。资料：R21 模型基础通过标准；R23 阶段出口。产物：阶段报告与任务/证据对照。验收：报告包含一个 shape/mask/cache 错误案例及其复现和修复证据；T01 GPU 与 T18～T19 有证据；未覆盖部分保留待确认。
 
 **出口：训练循环、Attention、KV 与真实 target-only 各有独立证据。GPU 阻塞先修环境，不进入真实推测性能实验。**
 
@@ -100,7 +100,7 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 
 - [ ] T42 固定 K 成本拆分（P）。资料：R11 PyTorch/Nsight 时间线；R22 计时。产物：独立计时数据与 profiler trace。验收：拆 draft/verify/sample/cache/control/prefill，记录同步与 CPU launch；profiler 不与最终计时混用，能解释分项与端到端差额。
 - [ ] T43 固定 K 初始性能报告（P）。资料：R13 收益分析；R22 benchmark；R24 模板。产物：K 扫描报告。验收：对 target-only 公平比较，记录接受前缀、target 调用、延迟、显存、退化负载；不能仅用平均接受率判断收益。
-- [ ] T44 阶段 3 独立验收（L/P）。资料：R23 里程碑；R22 正确性/计时。产物：运行演示与证据索引。验收：从 token 到回滚能逐步解释并独立修复一次 off-by-one；T34～T38 全通过，至少一组真实固定 K 完整请求可复现，清楚说明尚未实现的策略。
+- [ ] T44 阶段 3 证据复核（L/P）。资料：R23 里程碑；R22 正确性/计时。产物：运行演示与证据索引。验收：演示和报告覆盖 token 到回滚的数据流，并包含 off-by-one 案例的复现与修复记录；T34～T38 全通过，至少一组真实固定 K 完整请求可复现，列出尚未实现的策略。
 
 **出口：固定 K 完整闭环正确，且可解释真实成本。再进入动态对照，不边修缓存边宣称策略收益。**
 
@@ -195,7 +195,7 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 ### B28：项目讲解与复现材料，第 48 周
 
 - [ ] T78 3 分钟/10 分钟项目讲稿（L/P）。资料：T71 贡献结论、T76 报告、实际 trace。产物：讲稿和演示。验收：讲清问题→方法→正确性→成本→结果→边界，能回答高接受率为何变慢、拒绝后缓存如何回滚、如何公平对照；不混淆复现与原创。
-- [ ] T79 关键概念与证据复核（L）。资料：T20/T69 阶段记录；R21 C++/服务讲义 07～09；R09 CUDA。产物：薄弱项清单与对应补验计划。验收：能解释资源生命周期、stream/同步、缓存/调度与采样证明；用独立小题补足未覆盖部分。
+- [ ] T79 关键概念与证据复核（L）。资料：T20/T69 阶段记录；R21 C++/服务讲义 07～09；R09 CUDA。产物：薄弱项清单与对应补验计划。验收：清单标出资源生命周期、stream/同步、缓存/调度与采样证明的资料和证据位置；以针对性实验补足技术证据缺口。
 - [ ] T80 发布后复现与反馈整理（L/P）。资料：T74 发布材料；R24 环境和报告规范。产物：复现记录与问题清单。验收：记录复现环境、命令、结果差异和可操作的文档/代码修正；不包含个人账号或联系信息。
 
 **出口：项目可复现、报告主张可信，关键设计与限制能由证据说明。论文发表不是项目完成的前置。**

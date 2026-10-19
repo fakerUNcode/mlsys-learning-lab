@@ -4,7 +4,7 @@
 
 ## 当前进度
 
-更新日期：2026-10-15。
+更新日期：2026-10-19。
 
 | 项目 | 最新状态 | 证据与边界 | 下一步 |
 | --- | --- | --- | --- |
@@ -12,7 +12,7 @@
 | C++ 第 00～03 节 | 已完成 | 既有 runtime、智能指针与 STL 程序及 CTest | 保留，按需回查 |
 | C++ 模板与现代类型 | T04 工程与自动验证通过 | [Buffer 练习](../learning/batches/b01-environment-tensor-layout/t04-cpp-buffer-ownership/README.md)与[验证报告](../reports/stage-02/2026-10-08-t04-validation.md)；实现来源与自动检查范围见报告 | 保留回查 |
 | C++20、ABI 等专题 | 按需补缺 | 不将讲义存在视为已掌握或必修 | 遇到扩展构建等问题再补 |
-| PyTorch、梯度、模型前向 | B01/T01～T04 已验收；T05 数值验证通过；T06/T07 有程序证据；T08～T14 CPU 检查通过，T10 另有 GPU float64 检查 | [B 批次章节索引](../learning/batches/README.md)、[T08 Attention](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[T09 Attention](../learning/batches/b03-attention/t09-causal-mask-and-multihead/README.md)、[T10 数值与成本](../learning/batches/b03-attention/t10-numerical-stability-and-attention-cost/README.md)、[T11 四个 Decoder 模块](../learning/batches/b04-decoder-block/t11-embedding-residual-rmsnorm-swiglu/README.md)、[T11 报告](../reports/stage-02/2026-10-13-t11-validation.md)、[T12 位置与头映射](../learning/batches/b04-decoder-block/t12-rope-gqa-position/README.md)、[T12 报告](../reports/stage-02/2026-10-14-t12-validation.md)、[T13 小型 Decoder](../learning/batches/b04-decoder-block/t13-small-decoder-forward/README.md)、[T13 报告](../reports/stage-02/2026-10-14-t13-validation.md)、[T14 toy LM 与生成](../learning/batches/b05-generation-kv-resources/t14-tiny-lm-training-generation/README.md)、[T14 报告](../reports/stage-02/2026-10-15-t14-validation.md) | B05/T15 KV Cache reference |
+| PyTorch、梯度、模型前向 | B01/T01～T04 已验收；T05 数值验证通过；T06/T07 有程序证据；T08～T15 CPU 检查通过，T10 另有 GPU float64 检查；T16 有 toy GPU memory audit；T17 冻结真实 target（Qwen3-4B @ 40 位 revision） | [B 批次章节索引](../learning/batches/README.md)、[T08 Attention](../learning/batches/b03-attention/t08-scaled-dot-product-attention/README.md)、[T09 Attention](../learning/batches/b03-attention/t09-causal-mask-and-multihead/README.md)、[T10 数值与成本](../learning/batches/b03-attention/t10-numerical-stability-and-attention-cost/README.md)、[T11 四个 Decoder 模块](../learning/batches/b04-decoder-block/t11-embedding-residual-rmsnorm-swiglu/README.md)、[T11 报告](../reports/stage-02/2026-10-13-t11-validation.md)、[T12 位置与头映射](../learning/batches/b04-decoder-block/t12-rope-gqa-position/README.md)、[T12 报告](../reports/stage-02/2026-10-14-t12-validation.md)、[T13 小型 Decoder](../learning/batches/b04-decoder-block/t13-small-decoder-forward/README.md)、[T13 报告](../reports/stage-02/2026-10-14-t13-validation.md)、[T14 toy LM 与生成](../learning/batches/b05-generation-kv-resources/t14-tiny-lm-training-generation/README.md)、[T14 报告](../reports/stage-02/2026-10-15-t14-validation.md)、[T15 KV Cache](../learning/batches/b05-generation-kv-resources/t15-kv-cache-reference/README.md)、[T16 显存预算](../learning/batches/b05-generation-kv-resources/t16-memory-budget/README.md)、[T17 选型冻结](../learning/batches/b06-target-only-baseline/t17-model-selection/README.md) | B06/T18 真实前向、缓存与采样契约 |
 | LLM 推理服务 00～06 | 讲义与记录已保存 | 不等同模型部署或性能实验 | 用后续模型实现补充验证 |
 | CUDA 与扩展优化 | 待推进 | 笔记与模块约定；无成熟自定义 kernel 项目 | 完成模型基础后进入 |
 | 模型级推理实验 | 本仓库尚无完整 runner | 目前以基础知识和小型验证为主 | 在本仓库建立可复现实现与报告 |
@@ -39,6 +39,8 @@
 | [2026-10-13](2026-10-13.md) | T11 Decoder Block 基础模块 | Embedding、残差、RMSNorm、SwiGLU 四个独立模块；6 项 CPU reference 检查通过 |
 | [2026-10-14](2026-10-14.md) | T12 位置语义、T13 小型 Decoder 前向与第一月复盘 | T12 四个例子和 12 项 CPU 检查；T13 token IDs→logits shape 路径及 5 项 CPU 检查 |
 | [2026-10-15](2026-10-15.md) | T14 小模型训练与逐 token 生成 | 固定样本 next-token loss 过拟合、两个 greedy prefix、sampling 重放及 4 项 CPU 检查 |
+| [2026-10-17](2026-10-17.md) | T15 KV Cache reference 与 T16 显存预算 | 51 步缓存对照 atol=1e-12；权重/KV/激活 CUDA 审计与假设容量表 |
+| [2026-10-19](2026-10-19.md) | T17 模型选型、许可与版本冻结 | 选定并冻结 Qwen3-4B（apache-2.0，40 位 revision，REST API 独立核对）；manifest 含 tokenizer/双 EOS/dtype/依赖 |
 
 ## 更新规则
 

@@ -4,7 +4,7 @@
 
 ## 阶段 1
 
-TASKS 的阶段 1 是模型基础，共 B01～B06。当前进度在 B06；T08～T10 有 CPU 程序证据，T10 另有 CUDA GPU 数值检查；T11～T13 的模块、位置实验与小型 Decoder 前向有 CPU 证据；T14 有固定样本训练和逐 token 生成 CPU 证据；T15 有单层 CPU float64 prefill/decode 缓存对照；T16 有 toy 双模型 CUDA 显存审计和假设容量表。T13 的推测解码算法仅作职责导读。
+TASKS 的阶段 1 是模型基础，共 B01～B06。当前进度在 B06；T08～T10 有 CPU 程序证据，T10 另有 CUDA GPU 数值检查；T11～T13 的模块、位置实验与小型 Decoder 前向有 CPU 证据；T14 有固定样本训练和逐 token 生成 CPU 证据；T15 有单层 CPU float64 prefill/decode 缓存对照；T16 有 toy 双模型 CUDA 显存审计和假设容量表；T17 已按实测预算选定并冻结真实 target（Qwen/Qwen3-4B @ 40 位 revision，许可/依赖/tokenizer 契约入 manifest）。T13 的推测解码算法仅作职责导读。
 
 | 批次 | 主题 | 任务 | 章节入口 | 状态 |
 | --- | --- | --- | --- | --- |
@@ -13,7 +13,7 @@ TASKS 的阶段 1 是模型基础，共 B01～B06。当前进度在 B06；T08～
 | B03 | Attention | T08～T10 | [B03 目录](b03-attention/README.md) | T08～T10 均有 CPU 证据；T10 另有 GPU float64 检查，未测低精度/性能 |
 | B04 | Decoder Block | T11～T13 | [B04 目录](b04-decoder-block/README.md) | T11～T13 完成；T13 未测真实模型、GPU、低精度、缓存及性能 |
 | B05 | 生成、KV 与资源估算 | T14～T16 | [B05 目录](b05-generation-kv-resources/README.md) | T14～T16 完成 |
-| B06 | 真实 target-only baseline | T17～T20 | TASKS 中定义 | 待创建材料 |
+| B06 | 真实 target-only baseline | T17～T20 | [B06 目录](b06-target-only-baseline/README.md) | T17 完成（选型冻结）；T18～T20 待创建 |
 
 后续阶段按同样方式逐批增加 B 目录；没有实际章节时不预先创建空任务目录。每个 B 目录保留任务清单对应的 T 子目录，便于独立运行、复用与验收。
 

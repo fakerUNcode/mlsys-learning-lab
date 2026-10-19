@@ -41,7 +41,7 @@ L 表示本仓库内的学习与验证工作；P 表示需要独立模型级实�
 
 ### B06：真实 target-only baseline，第 7～8 周；依赖 B05 与 GPU 可用
 
-- [ ] T17 选择模型、冻结许可与版本（P）。资料：R07 加载/生成；选用模型官方 model card/config/tokenizer 文件；R22 来源要求。产物：冻结配置与准备 manifest。验收：目标模型按实测预算选择，记录不可变 40 位 revision、tokenizer/特殊 token/dtype/依赖，确认许可；不使用“latest”作为实验版本。
+- [x] T17 选择模型、冻结许可与版本（P）。资料：R07 加载/生成；选用模型官方 model card/config/tokenizer 文件；R22 来源要求。产物：[选型与冻结章节](../learning/batches/b06-target-only-baseline/t17-model-selection/README.md)、[冻结 manifest](../learning/batches/b06-target-only-baseline/t17-model-selection/frozen_manifest.json)、[完成记录](completed/T17.md)、[验证报告](../reports/stage-02/2026-10-19-t17-model-selection.md)。2026-10-19 验收：按 T16 实测预算在 5 个 target 候选中选定 Qwen/Qwen3-4B（apache-2.0；权重 7.492 GiB，target-only 11.647 GiB、含 Qwen3-0.6B draft 的配对口径 13.485 GiB，均装入实测 free 14.608 GiB；8B 权重单独超 free 被排除）；冻结 40 位 revision `1cfa9a7208912126459214e8b04321603b3df60c`（REST API 独立核对同值，重复运行幂等）；tokenizer/特殊 token（含 generation_config 双 EOS 列表）、bfloat16、依赖四项版本与许可全部入 manifest，无 latest/main 浮动引用。权重未下载，T18 按 manifest 命令以 `--revision` 获取。
 - [ ] T18 真实前向、缓存与采样契约（P）。资料：R05 换成所选模型实现；R06 cache API；R07 温度/top-k/top-p/EOS。产物：target runner 与采样配置。验收：固定前缀缓存 logits 对照完整前向；明确变换顺序、greedy 单独语义、EOS/输出上限；模型加载与错误配置可定位。
 - [ ] T19 target-only 初始 benchmark（P）。资料：R09 event/同步；R11 时间线；R22 计时协议。产物：初始报告和原始样本。验收：分开 prefill/decode 与完整请求，固定输出预算、预热、多次重复、同步；至少两种上下文长度，记录输出数、token/s、显存、版本与命令。
 - [ ] T20 阶段 1 证据复核（L/P）。资料：R21 模型基础通过标准；R23 阶段出口。产物：阶段报告与任务/证据对照。验收：报告包含一个 shape/mask/cache 错误案例及其复现和修复证据；T01 GPU 与 T18～T19 有证据；未覆盖部分保留待确认。
